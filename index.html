@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KFC｜車輛巡檢</title>
+
+  <style>
+    :root{
+      --red:#c8102e;
+      --black:#242424;
+      --gray:#77736d;
+      --linen:#f4f0e8;
+      --paper:#fbfaf7;
+      --line:#ddd8ce;
+      --green:#356b4b;
+      --danger:#b42318;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      background:var(--linen);
+      color:var(--black);
+      font-family:-apple-system,BlinkMacSystemFont,
+        "Noto Sans TC","Helvetica Neue",sans-serif;
+    }
+
+    .app{
+      max-width:560px;
+      min-height:100vh;
+      margin:auto;
+      background:var(--paper);
+    }
+
+    header{
+      padding:24px 22px 20px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .eyebrow{
+      font-size:10px;
+      letter-spacing:.2em;
+      color:var(--gray);
+      margin-bottom:4px;
+    }
+
+    h1{
+      margin:0;
+      font-size:26px;
+      letter-spacing:.08em;
+    }
+
+    .brand{
+      color:var(--red);
+      font-weight:800;
+      font-size:18px;
+    }
+
+    main{
+      padding:18px 16px 32px;
+    }
+
+    .intro{
+      padding:6px 6px 20px;
+    }
+
+    .intro-title{
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .intro-sub{
+      margin-top:5px;
+      font-size:13px;
+      color:var(--gray);
+    }
+
+    .card{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:18px;
+      margin-bottom:12px;
+    }
+
+    .section{
+      color:var(--red);
+      font-size:11px;
+      letter-spacing:.12em;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:8px;
+    }
+
+    input[type="text"],
+    input[type="number"]{
+      width:100%;
+      padding:13px 14px;
+      border:1px solid #cbc6bc;
+      border-radius:10px;
+      background:white;
+      font-size:17px;
+      outline:none;
+    }
+
+    #plate{
+      font-size:23px;
+      letter-spacing:.18em;
+      font-weight:600;
+    }
+
+    .plate-row{
+      display:grid;
+      grid-template-columns:1fr 76px;
+      gap:8px;
+    }
+
+    button{
+      font-family:inherit;
+    }
+
+    .read-btn{
+      border:1px solid var(--black);
+      background:white;
+      border-radius:10px;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    .vehicle{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--gray);
+    }
+
+    .previous{
+      margin-top:14px;
+      padding:13px;
+      background:#f7f4ed;
+      border-radius:10px;
+      border-left:3px solid var(--red);
+      font-size:12px;
+      line-height:1.8;
+    }
+
+    .check{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 0;
+      border-bottom:1px solid #eeeae2;
+    }
+
+    .check:last-child{
+      border-bottom:0;
+    }
+
+    .check-name{
+      font-size:14px;
+    }
+
+    .options{
+      display:flex;
+      gap:6px;
+    }
+
+    .options label{
+      margin:0;
+      padding:7px 10px;
+      border:1px solid #d8d3ca;
+      border-radius:20px;
+      font-size:12px;
+      font-weight:500;
+      color:#68635c;
+    }
+
+    .options input{
+      display:none;
+    }
+
+    .ok{
+      background:#eef5ef !important;
+      border-color:#a9c0ad !important;
+      color:var(--green) !important;
+    }
+
+    .bad{
+      background:#fff0ee !important;
+      border-color:#e1a8a0 !important;
+      color:var(--danger) !important;
+    }
+
+    .submit{
+      width:100%;
+      border:0;
+      border-radius:12px;
+      background:var(--red);
+      color:white;
+      padding:15px;
+      font-size:16px;
+      font-weight:700;
+      letter-spacing:.08em;
+    }
+
+    .message{
+      text-align:center;
+      font-size:12px;
+      margin:12px 0;
+      min-height:18px;
+    }
+
+    .success{color:var(--green)}
+    .error{color:var(--danger)}
+
+    .hidden{
+      display:none;
+    }
+
+    .footer{
+      text-align:center;
+      color:#aaa59c;
+      font-size:9px;
+      letter-spacing:.18em;
+      margin-top:28px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <header>
+    <div>
+      <div class="eyebrow">DELIVERY CENTER</div>
+      <h1>車輛巡檢</h1>
+    </div>
+    <div class="brand">KFC</div>
+  </header>
+
+  <main>
+
+    <div class="intro">
+      <div class="intro-title">每日安全確認</div>
+      <div class="intro-sub">
+        輸入車牌與里程，快速完成六項檢查。
+      </div>
+    </div>
+
+    <div class="card">
+
+      <div class="section">01 · 車輛</div>
+
+      <label>車牌數字四碼</label>
+
+      <div class="plate-row">
+        <input
+          id="plate"
+          type="text"
+          maxlength="4"
+          inputmode="numeric"
+          placeholder="1234"
+        >
+
+        <button class="read-btn" onclick="loadVehicle()">
+          讀取
+        </button>
+      </div>
+
+      <div id="vehicle" class="vehicle"></div>
+
+      <div id="previous" class="previous hidden"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="section">02 · 里程</div>
+
+      <label>目前里程</label>
+
+      <input
+        id="mileage"
+        type="number"
+        inputmode="numeric"
+        placeholder="請輸入目前里程"
+      >
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="section">03 · CHECK</div>
+
+      <div id="checks"></div>
+
+    </div>
+
+
+    <button
+      class="submit"
+      onclick="saveRecord()">
+      確認並儲存
+    </button>
+
+    <div id="message" class="message"></div>
+
+    <div class="footer">
+      KFC DELIVERY CENTER · VEHICLE CHECK
+    </div>
+
+  </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+/* =========================
+   Supabase 設定
+========================= */
+
+const SUPABASE_URL =
+"https://nurnboqwhctyswcufkyk.supabase.co";
+
+const SUPABASE_KEY =
+"EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibnVybmJvcXd oY3R5c3djdWZreWt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8"
+  .replace(" ","");
+
+const db =
+supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   六項檢查
+========================= */
+
+const items = [
+  ["oil_light","機油燈"],
+  ["front_tire","前輪"],
+  ["rear_tire","後輪"],
+  ["brake","煞車"],
+  ["headlight","大燈"],
+  ["brake_light","煞車燈"]
+];
+
+const checks =
+document.getElementById("checks");
+
+items.forEach(item => {
+
+  const key = item[0];
+  const name = item[1];
+
+  checks.innerHTML += `
+
+    <div class="check">
+
+      <div class="check-name">
+        ${name}
+      </div>
+
+      <div class="options">
+
+        <label class="ok">
+          <input
+            type="radio"
+            name="${key}"
+            value="正常"
+            checked>
+          正常
+        </label>
+
+        <label>
+          <input
+            type="radio"
+            name="${key}"
+            value="異常">
+          異常
+        </label>
+
+      </div>
+
+    </div>
+
+  `;
+});
+
+
+/* =========================
+   取得檢查結果
+========================= */
+
+function getChecks(){
+
+  const result = {};
+
+  items.forEach(item => {
+
+    const key = item[0];
+
+    result[key] =
+      document.querySelector(
+        `input[name="${key}"]:checked`
+      ).value;
+
+  });
+
+  return result;
+}
+
+
+/* =========================
+   讀取車輛
+========================= */
+
+async function loadVehicle(){
+
+  const plate =
+    document.getElementById("plate").value.trim();
+
+  if(!/^\d{4}$/.test(plate)){
+
+    showMessage(
+      "請輸入車牌數字四碼",
+      "error"
+    );
+
+    return;
+  }
+
+  try{
+
+    showMessage("讀取中...");
+
+    const {data:vehicle,error} =
+      await db
+      .from("vehicles")
+      .select("*")
+      .eq("plate4",plate)
+      .eq("active",true)
+      .maybeSingle();
+
+    if(error) throw error;
+
+    if(!vehicle){
+
+      document.getElementById("vehicle")
+        .textContent =
+        "查無此車輛";
+
+      return;
+    }
+
+    document.getElementById("vehicle")
+      .textContent =
+      `${vehicle.full_plate || plate}｜${vehicle.center || ""}`;
+
+
+    const {data:records,error:recordError} =
+      await db
+      .from("inspection_reports")
+      .select("*")
+      .eq("vehicle_id",vehicle.id)
+      .order("reported_at",{ascending:false})
+      .limit(1);
+
+    if(recordError) throw recordError;
+
+
+    const previous =
+      records && records.length
+      ? records[0]
+      : null;
+
+
+    const previousBox =
+      document.getElementById("previous");
+
+    previousBox.classList.remove("hidden");
+
+
+    if(previous){
+
+      previousBox.innerHTML = `
+        <strong>上次紀錄</strong><br>
+        日期：
+        ${new Date(
+          previous.reported_at
+        ).toLocaleString("zh-TW")}<br>
+        里程：
+        ${Number(
+          previous.mileage
+        ).toLocaleString()} km<br>
+        判定：
+        ${
+          previous.overall_status === "normal"
+          ? "正常"
+          : previous.overall_status === "warning"
+          ? "接近保養"
+          : "需處理"
+        }
+      `;
+
+    }else{
+
+      previousBox.innerHTML =
+        "<strong>上次紀錄</strong><br>目前沒有紀錄";
+
+    }
+
+    window.currentVehicle = vehicle;
+    window.currentPrevious = previous;
+
+    showMessage(
+      "已讀取最新紀錄",
+      "success"
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "讀取失敗",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   儲存資料
+========================= */
+
+async function saveRecord(){
+
+  const plate =
+    document.getElementById("plate").value.trim();
+
+  const mileage =
+    Number(
+      document.getElementById("mileage").value
+    );
+
+  if(!/^\d{4}$/.test(plate)){
+
+    showMessage(
+      "請輸入車牌數字四碼",
+      "error"
+    );
+
+    return;
+  }
+
+  if(!mileage){
+
+    showMessage(
+      "請輸入目前里程",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    showMessage("儲存中...");
+
+
+    if(
+      !window.currentVehicle ||
+      window.currentVehicle.plate4 !== plate
+    ){
+
+      const {data,error} =
+        await db
+        .from("vehicles")
+        .select("*")
+        .eq("plate4",plate)
+        .eq("active",true)
+        .maybeSingle();
+
+      if(error) throw error;
+
+      if(!data){
+
+        showMessage(
+          "查無此車輛",
+          "error"
+        );
+
+        return;
+      }
+
+      window.currentVehicle = data;
+
+    }
+
+
+    const checks =
+      getChecks();
+
+
+    const abnormal =
+      Object.values(checks)
+      .some(value => value === "異常");
+
+
+    let status =
+      abnormal
+      ? "abnormal"
+      : "normal";
+
+
+    if(
+      !abnormal &&
+      window.currentPrevious &&
+      mileage -
+      Number(window.currentPrevious.mileage)
+      >= 1500
+    ){
+
+      status = "warning";
+
+    }
+
+
+    const abnormalItems =
+      items
+      .filter(item =>
+        checks[item[0]] === "異常"
+      )
+      .map(item => item[1]);
+
+
+    const {error} =
+      await db
+      .from("inspection_reports")
+      .insert({
+
+        vehicle_id:
+          window.currentVehicle.id,
+
+        mileage:mileage,
+
+        oil_light:
+          checks.oil_light,
+
+        front_tire:
+          checks.front_tire,
+
+        rear_tire:
+          checks.rear_tire,
+
+        brake:
+          checks.brake,
+
+        headlight:
+          checks.headlight,
+
+        brake_light:
+          checks.brake_light,
+
+        overall_status:
+          status,
+
+        abnormal_items:
+          abnormalItems
+
+      });
+
+
+    if(error) throw error;
+
+
+    showMessage(
+      "✓ 已成功儲存到雲端",
+      "success"
+    );
+
+
+    document.getElementById("mileage")
+      .value = "";
+
+
+    await loadVehicle();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    showMessage(
+      "儲存失敗：" +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================
+   訊息
+========================= */
+
+function showMessage(text,type=""){
+
+  const box =
+    document.getElementById("message");
+
+  box.textContent = text;
+
+  box.className =
+    "message " + type;
+
+}
+
+
+/* =========================
+   車牌輸入四碼自動讀取
+========================= */
+
+document
+.getElementById("plate")
+.addEventListener(
+  "input",
+  function(){
+
+    this.value =
+      this.value
+      .replace(/\D/g,"")
+      .slice(0,4);
+
+    if(this.value.length === 4){
+
+      loadVehicle();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
