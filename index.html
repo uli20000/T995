@@ -3,766 +3,1228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f0e8">
+
   <title>KFC｜車輛巡檢</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    :root{
-      --red:#c8102e;
-      --black:#242424;
-      --gray:#77736d;
-      --linen:#f4f0e8;
-      --paper:#fbfaf7;
-      --line:#ddd8ce;
-      --green:#356b4b;
-      --danger:#b42318;
+    :root {
+      --red: #c8102e;
+      --black: #242424;
+      --gray: #77736d;
+      --light-gray: #aaa69f;
+      --linen: #f4f0e8;
+      --paper: #ffffff;
+      --line: #ddd8ce;
+      --green: #356b4b;
+      --green-bg: #eef5f0;
+      --danger: #b42318;
+      --danger-bg: #fff0ee;
+      --yellow: #9a6b00;
+      --yellow-bg: #fff8df;
     }
 
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      background:var(--linen);
-      color:var(--black);
-      font-family:-apple-system,BlinkMacSystemFont,
-        "Noto Sans TC","Helvetica Neue",sans-serif;
+    * {
+      box-sizing: border-box;
     }
 
-    .app{
-      max-width:560px;
-      min-height:100vh;
-      margin:auto;
-      background:var(--paper);
+    html {
+      scroll-behavior: smooth;
     }
 
-    header{
-      padding:24px 22px 20px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+    body {
+      margin: 0;
+      background: var(--linen);
+      color: var(--black);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Noto Sans TC",
+        "PingFang TC",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+      text-align: center;
     }
 
-    .eyebrow{
-      font-size:10px;
-      letter-spacing:.2em;
-      color:var(--gray);
-      margin-bottom:4px;
+    button,
+    input,
+    textarea {
+      font-family: inherit;
     }
 
-    h1{
-      margin:0;
-      font-size:26px;
-      letter-spacing:.08em;
+    .page {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding-bottom: 50px;
     }
 
-    .brand{
-      color:var(--red);
-      font-weight:800;
-      font-size:18px;
+    /* Header */
+    .header {
+      background: var(--paper);
+      padding: 42px 24px 36px;
+      border-bottom: 1px solid var(--line);
     }
 
-    main{
-      padding:18px 16px 32px;
+    .eyebrow {
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: var(--gray);
+      margin-bottom: 10px;
     }
 
-    .intro{
-      padding:6px 6px 20px;
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
     }
 
-    .intro-title{
-      font-size:18px;
-      font-weight:600;
+    .title {
+      margin: 0;
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: 2px;
     }
 
-    .intro-sub{
-      margin-top:5px;
-      font-size:13px;
-      color:var(--gray);
+    .kfc {
+      color: var(--red);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -1px;
     }
 
-    .card{
-      background:white;
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:18px;
-      margin-bottom:12px;
+    .intro {
+      padding: 34px 24px 18px;
     }
 
-    .section{
-      color:var(--red);
-      font-size:11px;
-      letter-spacing:.12em;
-      font-weight:700;
-      margin-bottom:14px;
+    .intro h2 {
+      margin: 0 0 10px;
+      font-size: 27px;
     }
 
-    label{
-      display:block;
-      font-size:13px;
-      font-weight:600;
-      margin-bottom:8px;
+    .intro p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 16px;
     }
 
-    input[type="text"],
-    input[type="number"]{
-      width:100%;
-      padding:13px 14px;
-      border:1px solid #cbc6bc;
-      border-radius:10px;
-      background:white;
-      font-size:17px;
-      outline:none;
+    /* Card */
+    .card {
+      margin: 14px 18px;
+      padding: 26px 20px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
     }
 
-    #plate{
-      font-size:23px;
-      letter-spacing:.18em;
-      font-weight:600;
+    .section-number {
+      color: var(--red);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
     }
 
-    .plate-row{
-      display:grid;
-      grid-template-columns:1fr 76px;
-      gap:8px;
+    .label {
+      display: block;
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 13px;
     }
 
-    button{
-      font-family:inherit;
+    .vehicle-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
     }
 
-    .read-btn{
-      border:1px solid var(--black);
-      background:white;
-      border-radius:10px;
-      font-size:13px;
-      font-weight:600;
+    .vehicle-input {
+      flex: 1;
+      min-width: 0;
     }
 
-    .vehicle{
-      margin-top:10px;
-      font-size:12px;
-      color:var(--gray);
+    input,
+    textarea {
+      width: 100%;
+      border: 2px solid #d8d3ca;
+      border-radius: 15px;
+      background: #fff;
+      color: var(--black);
+      font-size: 20px;
+      outline: none;
+      text-align: center;
+      transition: .2s;
     }
 
-    .previous{
-      margin-top:14px;
-      padding:13px;
-      background:#f7f4ed;
-      border-radius:10px;
-      border-left:3px solid var(--red);
-      font-size:12px;
-      line-height:1.8;
+    input {
+      height: 64px;
+      padding: 0 16px;
     }
 
-    .check{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 0;
-      border-bottom:1px solid #eeeae2;
+    textarea {
+      min-height: 90px;
+      padding: 15px;
+      resize: vertical;
+      font-size: 17px;
+      text-align: left;
     }
 
-    .check:last-child{
-      border-bottom:0;
+    input:focus,
+    textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(200,16,46,.08);
     }
 
-    .check-name{
-      font-size:14px;
+    input::placeholder,
+    textarea::placeholder {
+      color: #aaa;
     }
 
-    .options{
-      display:flex;
-      gap:6px;
+    .read-btn {
+      min-width: 116px;
+      border: 2px solid var(--black);
+      border-radius: 15px;
+      background: #fff;
+      color: #1683df;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
     }
 
-    .options label{
-      margin:0;
-      padding:7px 10px;
-      border:1px solid #d8d3ca;
-      border-radius:20px;
-      font-size:12px;
-      font-weight:500;
-      color:#68635c;
+    .read-btn:active {
+      transform: scale(.98);
     }
 
-    .options input{
-      display:none;
+    .read-btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
     }
 
-    .ok{
-      background:#eef5ef !important;
-      border-color:#a9c0ad !important;
-      color:var(--green) !important;
+    .vehicle-success {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 12px;
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 16px;
+      font-weight: 700;
     }
 
-    .bad{
-      background:#fff0ee !important;
-      border-color:#e1a8a0 !important;
-      color:var(--danger) !important;
+    .vehicle-success.show {
+      display: block;
     }
 
-    .submit{
-      width:100%;
-      border:0;
-      border-radius:12px;
-      background:var(--red);
-      color:white;
-      padding:15px;
-      font-size:16px;
-      font-weight:700;
-      letter-spacing:.08em;
+    /* Previous record */
+    .previous {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      background: #f8f6f1;
+      border-radius: 15px;
+      border: 1px solid var(--line);
     }
 
-    .message{
-      text-align:center;
-      font-size:12px;
-      margin:12px 0;
-      min-height:18px;
+    .previous.show {
+      display: block;
     }
 
-    .success{color:var(--green)}
-    .error{color:var(--danger)}
-
-    .hidden{
-      display:none;
+    .previous-title {
+      color: var(--gray);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .footer{
-      text-align:center;
-      color:#aaa59c;
-      font-size:9px;
-      letter-spacing:.18em;
-      margin-top:28px;
+    .previous-main {
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .previous-detail {
+      margin-top: 6px;
+      color: var(--gray);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Mileage */
+    .mileage-card {
+      margin-top: 20px;
+    }
+
+    /* Checks */
+    .checks {
+      text-align: left;
+    }
+
+    .check-item {
+      padding: 18px 0;
+      border-bottom: 1px solid #ebe7df;
+    }
+
+    .check-item:last-child {
+      border-bottom: 0;
+    }
+
+    .check-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .check-name {
+      font-size: 19px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .options {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .option {
+      min-width: 70px;
+      height: 46px;
+      padding: 0 12px;
+      border: 2px solid #ddd8ce;
+      border-radius: 24px;
+      background: #fff;
+      color: var(--gray);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .option.normal.selected {
+      border-color: #a7c4b0;
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .option.abnormal.selected {
+      border-color: #e4aaa4;
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .abnormal-box {
+      display: none;
+      margin-top: 13px;
+    }
+
+    .abnormal-box.show {
+      display: block;
+    }
+
+    .abnormal-box textarea {
+      border-color: #e4aaa4;
+      background: #fffafa;
+    }
+
+    .required {
+      color: var(--red);
+      font-size: 13px;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* Status */
+    .status-card {
+      display: none;
+      padding: 18px;
+      border-radius: 15px;
+      margin-top: 20px;
+      font-weight: 800;
+    }
+
+    .status-card.show {
+      display: block;
+    }
+
+    .status-normal {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .status-abnormal {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    /* Save */
+    .save-btn {
+      width: calc(100% - 36px);
+      margin: 20px 18px 0;
+      height: 64px;
+      border: 0;
+      border-radius: 18px;
+      background: var(--red);
+      color: white;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 7px 18px rgba(200,16,46,.18);
+    }
+
+    .save-btn:active {
+      transform: scale(.99);
+    }
+
+    .save-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .hint {
+      color: var(--gray);
+      font-size: 13px;
+      line-height: 1.7;
+      padding: 18px 30px 0;
+    }
+
+    /* Mobile */
+    @media (max-width: 500px) {
+      .header {
+        padding-top: 35px;
+      }
+
+      .title {
+        font-size: 38px;
+      }
+
+      .kfc {
+        font-size: 30px;
+      }
+
+      .vehicle-row {
+        flex-direction: column;
+      }
+
+      .read-btn {
+        height: 56px;
+      }
+
+      .check-top {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .check-name {
+        margin-bottom: 4px;
+      }
+
+      .options {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .option {
+        flex: 1;
+        max-width: 120px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="app">
+<div class="page">
 
-  <header>
-    <div>
-      <div class="eyebrow">DELIVERY CENTER</div>
-      <h1>車輛巡檢</h1>
+  <header class="header">
+    <div class="eyebrow">DELIVERY CENTER</div>
+
+    <div class="header-row">
+      <h1 class="title">車輛巡檢</h1>
+      <div class="kfc">KFC</div>
     </div>
-    <div class="brand">KFC</div>
   </header>
 
-  <main>
+  <section class="intro">
+    <h2>每日安全確認</h2>
+    <p>輸入車牌與里程，快速完成七項檢查。</p>
+  </section>
 
-    <div class="intro">
-      <div class="intro-title">每日安全確認</div>
-      <div class="intro-sub">
-        輸入車牌與里程，快速完成六項檢查。
-      </div>
-    </div>
+  <!-- 車輛 -->
+  <section class="card">
 
-    <div class="card">
+    <div class="section-number">01・車輛</div>
 
-      <div class="section">01 · 車輛</div>
+    <label class="label" for="plate">車牌</label>
 
-      <label>車牌數字四碼</label>
+    <div class="vehicle-row">
 
-      <div class="plate-row">
+      <div class="vehicle-input">
         <input
           id="plate"
           type="text"
-          maxlength="4"
           inputmode="numeric"
-          placeholder="1234"
+          maxlength="8"
+          placeholder="輸入車牌四碼"
+          autocomplete="off"
         >
-
-        <button class="read-btn" onclick="loadVehicle()">
-          讀取
-        </button>
       </div>
 
-      <div id="vehicle" class="vehicle"></div>
-
-      <div id="previous" class="previous hidden"></div>
-
-    </div>
-
-
-    <div class="card">
-
-      <div class="section">02 · 里程</div>
-
-      <label>目前里程</label>
-
-      <input
-        id="mileage"
-        type="number"
-        inputmode="numeric"
-        placeholder="請輸入目前里程"
+      <button
+        id="readBtn"
+        class="read-btn"
+        type="button"
       >
+        讀取
+      </button>
 
     </div>
 
+    <div id="vehicleSuccess" class="vehicle-success"></div>
 
-    <div class="card">
-
-      <div class="section">03 · CHECK</div>
-
-      <div id="checks"></div>
-
+    <div id="previousRecord" class="previous">
+      <div class="previous-title">最近一次巡檢</div>
+      <div id="previousMain" class="previous-main"></div>
+      <div id="previousDetail" class="previous-detail"></div>
     </div>
 
+  </section>
 
-    <button
-      class="submit"
-      onclick="saveRecord()">
-      確認並儲存
-    </button>
 
-    <div id="message" class="message"></div>
+  <!-- 里程 -->
+  <section class="card mileage-card">
 
-    <div class="footer">
-      KFC DELIVERY CENTER · VEHICLE CHECK
-    </div>
+    <div class="section-number">02・里程</div>
 
-  </main>
+    <label class="label" for="mileage">目前里程</label>
+
+    <input
+      id="mileage"
+      type="number"
+      inputmode="numeric"
+      min="0"
+      placeholder="請輸入目前里程"
+    >
+
+  </section>
+
+
+  <!-- 檢查 -->
+  <section class="card">
+
+    <div class="section-number">03・CHECK</div>
+
+    <div id="checks"></div>
+
+    <div id="statusCard" class="status-card"></div>
+
+  </section>
+
+
+  <button
+    id="saveBtn"
+    class="save-btn"
+    type="button"
+  >
+    儲存巡檢紀錄
+  </button>
+
+  <div class="hint">
+    每次巡檢都會新增一筆紀錄，不會覆蓋過去資料。
+  </div>
 
 </div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
 
-/* =========================
-   Supabase 設定
-========================= */
+  /* ==========================================
+     SUPABASE 設定
+     ========================================== */
 
-const SUPABASE_URL =
-"https://nurnboqwhctyswcufkyk.supabase.co";
+  const SUPABASE_URL =
+    "https://nurnboqwhctyswcufkyk.supabase.co";
 
-const SUPABASE_KEY =
-"EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibnVybmJvcXd oY3R5c3djdWZreWt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8"
-  .replace(" ","");
+  const SUPABASE_KEY =
+    "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibnVybmJvcXd1Y3R5c3djdWZreWt5IiwiaWF0IjoxNzg5OTIxOTIzLCJleHAiOjIxMDU0OTc5MjN9.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
 
-const db =
-supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+  const db = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-/* =========================
-   六項檢查
-========================= */
+  /* ==========================================
+     檢查項目
+     ========================================== */
 
-const items = [
-  ["oil_light","機油燈"],
-  ["front_tire","前輪"],
-  ["rear_tire","後輪"],
-  ["brake","煞車"],
-  ["headlight","大燈"],
-  ["brake_light","煞車燈"]
-];
-
-const checks =
-document.getElementById("checks");
-
-items.forEach(item => {
-
-  const key = item[0];
-  const name = item[1];
-
-  checks.innerHTML += `
-
-    <div class="check">
-
-      <div class="check-name">
-        ${name}
-      </div>
-
-      <div class="options">
-
-        <label class="ok">
-          <input
-            type="radio"
-            name="${key}"
-            value="正常"
-            checked>
-          正常
-        </label>
-
-        <label>
-          <input
-            type="radio"
-            name="${key}"
-            value="異常">
-          異常
-        </label>
-
-      </div>
-
-    </div>
-
-  `;
-});
+  const checkItems = [
+    {
+      key: "oil_light",
+      name: "機油燈"
+    },
+    {
+      key: "front_tire",
+      name: "前輪"
+    },
+    {
+      key: "rear_tire",
+      name: "後輪"
+    },
+    {
+      key: "brake",
+      name: "煞車"
+    },
+    {
+      key: "headlight",
+      name: "大燈"
+    },
+    {
+      key: "brake_light",
+      name: "煞車燈"
+    },
+    {
+      key: "other",
+      name: "其他"
+    }
+  ];
 
 
-/* =========================
-   取得檢查結果
-========================= */
+  const checkState = {};
 
-function getChecks(){
-
-  const result = {};
-
-  items.forEach(item => {
-
-    const key = item[0];
-
-    result[key] =
-      document.querySelector(
-        `input[name="${key}"]:checked`
-      ).value;
-
+  checkItems.forEach(item => {
+    checkState[item.key] = {
+      status: null,
+      note: ""
+    };
   });
 
-  return result;
-}
+
+  /* ==========================================
+     DOM
+     ========================================== */
+
+  const plateInput = document.getElementById("plate");
+  const readBtn = document.getElementById("readBtn");
+  const mileageInput = document.getElementById("mileage");
+
+  const vehicleSuccess =
+    document.getElementById("vehicleSuccess");
+
+  const previousRecord =
+    document.getElementById("previousRecord");
+
+  const previousMain =
+    document.getElementById("previousMain");
+
+  const previousDetail =
+    document.getElementById("previousDetail");
+
+  const checksContainer =
+    document.getElementById("checks");
+
+  const statusCard =
+    document.getElementById("statusCard");
+
+  const saveBtn =
+    document.getElementById("saveBtn");
 
 
-/* =========================
-   讀取車輛
-========================= */
+  let currentVehicle = null;
 
-async function loadVehicle(){
 
-  const plate =
-    document.getElementById("plate").value.trim();
+  /* ==========================================
+     建立檢查項目
+     ========================================== */
 
-  if(!/^\d{4}$/.test(plate)){
+  function renderChecks() {
 
-    showMessage(
-      "請輸入車牌數字四碼",
-      "error"
-    );
+    checksContainer.innerHTML = "";
 
-    return;
+    checkItems.forEach(item => {
+
+      const wrapper = document.createElement("div");
+
+      wrapper.className = "check-item";
+
+      wrapper.innerHTML = `
+        <div class="check-top">
+
+          <div class="check-name">
+            ${item.name}
+          </div>
+
+          <div class="options">
+
+            <button
+              type="button"
+              class="option normal"
+              data-key="${item.key}"
+              data-status="normal"
+            >
+              正常
+            </button>
+
+            <button
+              type="button"
+              class="option abnormal"
+              data-key="${item.key}"
+              data-status="abnormal"
+            >
+              異常
+            </button>
+
+          </div>
+
+        </div>
+
+        <div
+          class="abnormal-box"
+          id="note-${item.key}"
+        >
+
+          <textarea
+            placeholder="請輸入 ${item.name} 異常狀況"
+          ></textarea>
+
+          <div class="required">
+            異常時請填寫說明
+          </div>
+
+        </div>
+      `;
+
+      checksContainer.appendChild(wrapper);
+    });
+
+
+    document
+      .querySelectorAll(".option")
+      .forEach(button => {
+
+        button.addEventListener("click", () => {
+
+          const key =
+            button.dataset.key;
+
+          const status =
+            button.dataset.status;
+
+          checkState[key].status = status;
+
+          const parent =
+            button.closest(".check-item");
+
+          parent
+            .querySelectorAll(".option")
+            .forEach(btn => {
+              btn.classList.remove("selected");
+            });
+
+          button.classList.add("selected");
+
+
+          const noteBox =
+            document.getElementById(`note-${key}`);
+
+          if (status === "abnormal") {
+
+            noteBox.classList.add("show");
+
+          } else {
+
+            noteBox.classList.remove("show");
+
+            const textarea =
+              noteBox.querySelector("textarea");
+
+            textarea.value = "";
+
+            checkState[key].note = "";
+          }
+
+          updateStatus();
+        });
+      });
+
+
+    document
+      .querySelectorAll(".abnormal-box textarea")
+      .forEach(textarea => {
+
+        textarea.addEventListener("input", event => {
+
+          const key =
+            event.target
+              .closest(".abnormal-box")
+              .id
+              .replace("note-", "");
+
+          checkState[key].note =
+            event.target.value;
+        });
+
+      });
   }
 
-  try{
 
-    showMessage("讀取中...");
+  renderChecks();
 
-    const {data:vehicle,error} =
-      await db
-      .from("vehicles")
-      .select("*")
-      .eq("plate4",plate)
-      .eq("active",true)
-      .maybeSingle();
 
-    if(error) throw error;
+  /* ==========================================
+     車牌格式
+     ========================================== */
 
-    if(!vehicle){
+  function getPlate4() {
 
-      document.getElementById("vehicle")
-        .textContent =
-        "查無此車輛";
+    let value =
+      plateInput.value
+        .trim()
+        .toUpperCase();
+
+    /*
+      如果目前顯示完整車牌，例如 ABC-1234，
+      自動取最後四碼。
+    */
+
+    const numbers =
+      value.replace(/\D/g, "");
+
+    if (numbers.length >= 4) {
+      return numbers.slice(-4);
+    }
+
+    return "";
+  }
+
+
+  /* ==========================================
+     讀取車輛
+     ========================================== */
+
+  async function loadVehicle() {
+
+    const plate4 = getPlate4();
+
+    if (plate4.length !== 4) {
+
+      alert("請輸入正確的車牌四碼。");
+
+      plateInput.focus();
 
       return;
     }
 
-    document.getElementById("vehicle")
-      .textContent =
-      `${vehicle.full_plate || plate}｜${vehicle.center || ""}`;
+
+    readBtn.disabled = true;
+    readBtn.textContent = "讀取中…";
+
+    vehicleSuccess.classList.remove("show");
+    previousRecord.classList.remove("show");
 
 
-    const {data:records,error:recordError} =
-      await db
-      .from("inspection_reports")
-      .select("*")
-      .eq("vehicle_id",vehicle.id)
-      .order("reported_at",{ascending:false})
-      .limit(1);
+    try {
 
-    if(recordError) throw recordError;
-
-
-    const previous =
-      records && records.length
-      ? records[0]
-      : null;
-
-
-    const previousBox =
-      document.getElementById("previous");
-
-    previousBox.classList.remove("hidden");
-
-
-    if(previous){
-
-      previousBox.innerHTML = `
-        <strong>上次紀錄</strong><br>
-        日期：
-        ${new Date(
-          previous.reported_at
-        ).toLocaleString("zh-TW")}<br>
-        里程：
-        ${Number(
-          previous.mileage
-        ).toLocaleString()} km<br>
-        判定：
-        ${
-          previous.overall_status === "normal"
-          ? "正常"
-          : previous.overall_status === "warning"
-          ? "接近保養"
-          : "需處理"
-        }
-      `;
-
-    }else{
-
-      previousBox.innerHTML =
-        "<strong>上次紀錄</strong><br>目前沒有紀錄";
-
-    }
-
-    window.currentVehicle = vehicle;
-    window.currentPrevious = previous;
-
-    showMessage(
-      "已讀取最新紀錄",
-      "success"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    showMessage(
-      "讀取失敗",
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================
-   儲存資料
-========================= */
-
-async function saveRecord(){
-
-  const plate =
-    document.getElementById("plate").value.trim();
-
-  const mileage =
-    Number(
-      document.getElementById("mileage").value
-    );
-
-  if(!/^\d{4}$/.test(plate)){
-
-    showMessage(
-      "請輸入車牌數字四碼",
-      "error"
-    );
-
-    return;
-  }
-
-  if(!mileage){
-
-    showMessage(
-      "請輸入目前里程",
-      "error"
-    );
-
-    return;
-  }
-
-
-  try{
-
-    showMessage("儲存中...");
-
-
-    if(
-      !window.currentVehicle ||
-      window.currentVehicle.plate4 !== plate
-    ){
-
-      const {data,error} =
-        await db
+      const {
+        data: vehicle,
+        error
+      } = await db
         .from("vehicles")
         .select("*")
-        .eq("plate4",plate)
-        .eq("active",true)
+        .eq("plate4", plate4)
+        .eq("active", true)
         .maybeSingle();
 
-      if(error) throw error;
 
-      if(!data){
+      if (error) {
+        throw error;
+      }
 
-        showMessage(
-          "查無此車輛",
-          "error"
+
+      if (!vehicle) {
+
+        currentVehicle = null;
+
+        alert(
+          `讀取失敗：查無車牌 ${plate4}，請確認車牌四碼。`
         );
 
         return;
       }
 
-      window.currentVehicle = data;
 
+      currentVehicle = vehicle;
+
+
+      /*
+        成功後直接在車牌欄位顯示完整車牌
+      */
+
+      plateInput.value =
+        vehicle.full_plate || plate4;
+
+      plateInput.dataset.plate4 =
+        plate4;
+
+
+      vehicleSuccess.textContent =
+        "✓ 車輛讀取成功";
+
+      vehicleSuccess.classList.add("show");
+
+
+      /*
+        讀取最近一次巡檢
+      */
+
+      const {
+        data: records,
+        error: reportError
+      } = await db
+        .from("inspection_reports")
+        .select("*")
+        .eq("vehicle_id", vehicle.id)
+        .order("reported_at", {
+          ascending: false
+        })
+        .limit(1);
+
+
+      if (reportError) {
+        throw reportError;
+      }
+
+
+      if (records && records.length > 0) {
+
+        const last = records[0];
+
+        const date =
+          new Date(last.reported_at)
+            .toLocaleString("zh-TW", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit"
+            });
+
+
+        previousMain.textContent =
+          `里程 ${Number(last.mileage).toLocaleString()} km`;
+
+
+        let abnormalText =
+          "上次檢查：全部正常";
+
+        if (
+          last.abnormal_items &&
+          last.abnormal_items.length > 0
+        ) {
+
+          abnormalText =
+            "上次異常：" +
+            last.abnormal_items.join("、");
+        }
+
+
+        previousDetail.innerHTML =
+          `${date}<br>${abnormalText}`;
+
+        previousRecord.classList.add("show");
+
+      } else {
+
+        previousMain.textContent =
+          "目前沒有巡檢紀錄";
+
+        previousDetail.textContent =
+          "這是第一次巡檢";
+
+        previousRecord.classList.add("show");
+      }
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      currentVehicle = null;
+
+      alert(
+        "讀取失敗：目前無法連線雲端資料庫，請稍後再試。"
+      );
+
+    } finally {
+
+      readBtn.disabled = false;
+      readBtn.textContent = "重新讀取";
+    }
+  }
+
+
+  readBtn.addEventListener(
+    "click",
+    loadVehicle
+  );
+
+
+  /* ==========================================
+     狀態判斷
+     ========================================== */
+
+  function updateStatus() {
+
+    const abnormalItems =
+      checkItems
+        .filter(item =>
+          checkState[item.key].status === "abnormal"
+        )
+        .map(item => item.name);
+
+
+    if (abnormalItems.length === 0) {
+
+      statusCard.className =
+        "status-card";
+
+      statusCard.textContent = "";
+
+      return;
     }
 
 
-    const checks =
-      getChecks();
+    statusCard.className =
+      "status-card show status-abnormal";
+
+    statusCard.textContent =
+      `⚠ 目前有 ${abnormalItems.length} 項異常：${abnormalItems.join("、")}`;
+  }
 
 
-    const abnormal =
-      Object.values(checks)
-      .some(value => value === "異常");
+  /* ==========================================
+     儲存前檢查
+     ========================================== */
 
+  function validateForm() {
 
-    let status =
-      abnormal
-      ? "abnormal"
-      : "normal";
+    if (!currentVehicle) {
 
+      alert("請先輸入車牌並按「讀取」。");
 
-    if(
-      !abnormal &&
-      window.currentPrevious &&
-      mileage -
-      Number(window.currentPrevious.mileage)
-      >= 1500
-    ){
-
-      status = "warning";
-
+      return false;
     }
+
+
+    const mileage =
+      Number(mileageInput.value);
+
+    if (
+      !mileageInput.value ||
+      !Number.isFinite(mileage) ||
+      mileage < 0
+    ) {
+
+      alert("請輸入目前里程。");
+
+      mileageInput.focus();
+
+      return false;
+    }
+
+
+    for (const item of checkItems) {
+
+      const state =
+        checkState[item.key];
+
+
+      if (!state.status) {
+
+        alert(
+          `請完成「${item.name}」檢查。`
+        );
+
+        return false;
+      }
+
+
+      if (
+        state.status === "abnormal" &&
+        !state.note.trim()
+      ) {
+
+        alert(
+          `「${item.name}」選擇異常，請填寫異常說明。`
+        );
+
+        const noteBox =
+          document.querySelector(
+            `#note-${item.key} textarea`
+          );
+
+        noteBox.focus();
+
+        return false;
+      }
+    }
+
+
+    return true;
+  }
+
+
+  /* ==========================================
+     儲存
+     ========================================== */
+
+  async function saveRecord() {
+
+    if (!validateForm()) {
+      return;
+    }
+
+
+    const mileage =
+      Number(mileageInput.value);
 
 
     const abnormalItems =
-      items
-      .filter(item =>
-        checks[item[0]] === "異常"
-      )
-      .map(item => item[1]);
+      checkItems
+        .filter(item =>
+          checkState[item.key].status === "abnormal"
+        )
+        .map(item => item.name);
 
 
-    const {error} =
-      await db
-      .from("inspection_reports")
-      .insert({
+    const overallStatus =
+      abnormalItems.length > 0
+        ? "abnormal"
+        : "normal";
 
-        vehicle_id:
-          window.currentVehicle.id,
 
-        mileage:mileage,
+    const record = {
 
-        oil_light:
-          checks.oil_light,
+      vehicle_id:
+        currentVehicle.id,
 
-        front_tire:
-          checks.front_tire,
+      mileage,
 
-        rear_tire:
-          checks.rear_tire,
+      oil_light:
+        checkState.oil_light.status,
 
-        brake:
-          checks.brake,
+      front_tire:
+        checkState.front_tire.status,
 
-        headlight:
-          checks.headlight,
+      rear_tire:
+        checkState.rear_tire.status,
 
-        brake_light:
-          checks.brake_light,
+      brake:
+        checkState.brake.status,
 
-        overall_status:
-          status,
+      headlight:
+        checkState.headlight.status,
 
-        abnormal_items:
-          abnormalItems
+      brake_light:
+        checkState.brake_light.status,
+
+      overall_status:
+        overallStatus,
+
+      abnormal_items:
+        abnormalItems
+
+    };
+
+
+    /*
+      其他項目的說明，
+      先併入 abnormal_items，
+      保留目前資料庫結構相容性。
+    */
+
+    if (
+      checkState.other.status === "abnormal"
+    ) {
+
+      record.abnormal_items = [
+        ...record.abnormal_items,
+        `其他：${checkState.other.note.trim()}`
+      ];
+    }
+
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = "儲存中…";
+
+
+    try {
+
+      const {
+        error
+      } = await db
+        .from("inspection_reports")
+        .insert(record);
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      alert("✓ 巡檢紀錄已成功儲存到雲端。");
+
+
+      /*
+        清除本次檢查狀態
+      */
+
+      mileageInput.value = "";
+
+      checkItems.forEach(item => {
+
+        checkState[item.key].status = null;
+        checkState[item.key].note = "";
 
       });
 
 
-    if(error) throw error;
+      renderChecks();
+
+      updateStatus();
 
 
-    showMessage(
-      "✓ 已成功儲存到雲端",
-      "success"
-    );
+      /*
+        重新讀取最新紀錄
+      */
+
+      await loadVehicle();
 
 
-    document.getElementById("mileage")
-      .value = "";
+    } catch (error) {
 
+      console.error(error);
 
-    await loadVehicle();
+      alert(
+        "儲存失敗：請確認網路連線後再試一次。"
+      );
 
+    } finally {
 
-  }catch(error){
-
-    console.error(error);
-
-    showMessage(
-      "儲存失敗：" +
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================
-   訊息
-========================= */
-
-function showMessage(text,type=""){
-
-  const box =
-    document.getElementById("message");
-
-  box.textContent = text;
-
-  box.className =
-    "message " + type;
-
-}
-
-
-/* =========================
-   車牌輸入四碼自動讀取
-========================= */
-
-document
-.getElementById("plate")
-.addEventListener(
-  "input",
-  function(){
-
-    this.value =
-      this.value
-      .replace(/\D/g,"")
-      .slice(0,4);
-
-    if(this.value.length === 4){
-
-      loadVehicle();
-
+      saveBtn.disabled = false;
+      saveBtn.textContent = "儲存巡檢紀錄";
     }
-
   }
-);
+
+
+  saveBtn.addEventListener(
+    "click",
+    saveRecord
+  );
 
 </script>
 
