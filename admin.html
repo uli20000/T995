@@ -769,8 +769,9 @@ button{cursor:pointer}
 const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
 
+/* 3.0：修正為 Supabase 後台目前的 Publishable Key */
 const SUPABASE_KEY =
-  "sb_publishable_YieSq1hZxX8wIvQiO9B_wg_ZbDkne7G";
+  "sb_publishable_YieSqh1zX8wIvQiO9B_wg_ZbDkne7G";
 
 const db =
   supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1787,6 +1788,7 @@ async function renderOilHistory(v){
 
     oilHistory.innerHTML =
       `
+
       <div class="health-panel">
 
         <div class="health-title">
