@@ -56,10 +56,6 @@
       padding-bottom: 50px;
     }
 
-    /* =========================
-       Header
-    ========================= */
-
     .header {
       background: var(--paper);
       padding: 40px 20px 34px;
@@ -108,9 +104,44 @@
       font-size: 16px;
     }
 
-    /* =========================
-       Card
-    ========================= */
+    .mode-menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 10px 16px 0;
+    }
+
+    .mode-btn {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--paper);
+      min-height: 150px;
+      cursor: pointer;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    }
+
+    .mode-btn .icon {
+      display: block;
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .mode-btn .main {
+      display: block;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .mode-btn .sub {
+      display: block;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    .mode-page {
+      display: none;
+    }
 
     .card {
       margin: 14px 16px;
@@ -148,7 +179,8 @@
       transition: .2s;
     }
 
-    input {
+    input,
+    select {
       height: 62px;
       padding: 0 15px;
       font-size: 20px;
@@ -167,17 +199,13 @@
     textarea:focus,
     select:focus {
       border-color: var(--red);
-      box-shadow: 0 0 0 3px rgba(200, 16, 46, .08);
+      box-shadow: 0 0 0 3px rgba(200,16,46,.08);
     }
 
     input::placeholder,
     textarea::placeholder {
       color: #aaa;
     }
-
-    /* =========================
-       Vehicle
-    ========================= */
 
     .vehicle-row {
       display: flex;
@@ -220,10 +248,6 @@
       display: block;
     }
 
-    /* =========================
-       Previous record
-    ========================= */
-
     .previous {
       display: none;
       margin-top: 16px;
@@ -256,9 +280,58 @@
       line-height: 1.7;
     }
 
-    /* =========================
-       Checks
-    ========================= */
+    .claim-vehicle-info {
+      margin-top: 12px;
+      color: var(--green);
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .last-claim {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #f8f6f1;
+      border: 1px solid var(--line);
+      line-height: 1.7;
+    }
+
+    .last-claim.show {
+      display: block;
+    }
+
+    .claim-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .claim-option {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .claim-option input {
+      display: none;
+    }
+
+    .claim-option label {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #ddd8ce;
+      border-radius: 15px;
+      background: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .claim-option input:checked + label {
+      border-color: var(--red);
+      color: var(--red);
+      background: var(--danger-bg);
+    }
 
     .checks {
       text-align: center;
@@ -324,10 +397,6 @@
       font-size: 13px;
     }
 
-    /* =========================
-       Status
-    ========================= */
-
     .status-card {
       display: none;
       margin-top: 18px;
@@ -346,10 +415,6 @@
       color: var(--danger);
     }
 
-    /* =========================
-       Save
-    ========================= */
-
     .save-btn {
       width: calc(100% - 32px);
       margin: 20px 16px 0;
@@ -362,11 +427,29 @@
       font-weight: 800;
       letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 7px 18px rgba(200, 16, 46, .18);
+      box-shadow: 0 7px 18px rgba(200,16,46,.18);
     }
 
     .save-btn:disabled {
       opacity: .5;
+    }
+
+    .back-home-btn {
+      width: calc(100% - 32px);
+      margin: 12px 16px 0;
+      height: 56px;
+      border: 2px solid #d8d3ca;
+      border-radius: 18px;
+      background: #fff;
+      color: var(--black);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .back-home-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
     }
 
     .hint {
@@ -376,142 +459,14 @@
       line-height: 1.7;
     }
 
-    /* =========================
-       Mode Menu
-    ========================= */
-
-    .mode-menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin: 18px 16px 22px;
-    }
-
-    .mode-btn {
-      min-height: 118px;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      background: var(--paper);
-      color: var(--black);
-      box-shadow: 0 3px 12px rgba(0, 0, 0, .035);
-      cursor: pointer;
-      padding: 18px;
-    }
-
-    .mode-btn .mode-icon {
-      display: block;
-      font-size: 34px;
-      margin-bottom: 8px;
-    }
-
-    .mode-btn .mode-name {
-      display: block;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
-
-    .mode-btn .mode-sub {
-      display: block;
-      margin-top: 5px;
-      color: var(--gray);
-      font-size: 13px;
-    }
-
-    .mode-page {
-      display: none;
-    }
-
-    /* =========================
-       Claim
-    ========================= */
-
-    .select-wrap select {
-      height: 62px;
-      padding: 0 15px;
-      font-size: 18px;
-      text-align: center;
-    }
-
-    .claim-options {
-      display: grid;
-      gap: 10px;
-    }
-
-    .claim-option {
-      position: relative;
-    }
-
-    .claim-option input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .claim-option label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 54px;
-      padding: 10px 14px;
-      border: 2px solid #ddd8ce;
-      border-radius: 15px;
-      background: #fff;
-      color: var(--gray);
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .claim-option input:checked + label {
-      border-color: var(--red);
-      background: var(--danger-bg);
-      color: var(--red);
-    }
-
-    .claim-vehicle-info {
-      display: none;
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 15px;
-      background: var(--green-bg);
-      color: var(--green);
-      font-weight: 700;
-      line-height: 1.7;
-    }
-
-    .claim-vehicle-info.show {
-      display: block;
-    }
-
-    .last-claim {
-      display: none;
-      margin-top: 10px;
-      padding: 11px 13px;
-      border-radius: 12px;
-      background: #f8f6f1;
-      color: var(--gray);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .last-claim.show {
-      display: block;
-    }
-
-    /* =========================
-       Success
-    ========================= */
-
     .success-panel {
       display: none;
-      margin: 18px 16px 0;
-      padding: 28px 20px;
+      margin: 20px 16px;
+      padding: 30px 20px;
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: 22px;
-      box-shadow: 0 3px 12px rgba(0, 0, 0, .035);
-      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
     }
 
     .success-panel.show {
@@ -519,65 +474,59 @@
     }
 
     .success-icon {
-      font-size: 42px;
-      margin-bottom: 8px;
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: var(--green-bg);
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: 800;
     }
 
     .success-title {
-      font-size: 27px;
+      font-size: 30px;
       font-weight: 800;
       margin-bottom: 18px;
     }
 
     .success-data {
-      text-align: left;
-      padding: 16px;
-      border-radius: 15px;
+      padding: 18px;
       background: #f8f6f1;
+      border-radius: 15px;
       line-height: 2;
-      font-size: 16px;
+      text-align: left;
     }
 
     .success-greeting {
-      margin-top: 18px;
-      font-size: 17px;
+      margin-top: 20px;
+      font-size: 18px;
       font-weight: 700;
-      line-height: 1.8;
+      line-height: 1.7;
     }
 
     .success-greeting .small {
       display: block;
-      margin-top: 5px;
+      margin-top: 6px;
       color: var(--gray);
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 400;
     }
-
-    .back-home-btn {
-      width: calc(100% - 32px);
-      margin: 14px 16px 0;
-      height: 52px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: #fff;
-      color: var(--black);
-      font-size: 17px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    /* =========================
-       Mobile
-    ========================= */
 
     @media (max-width: 500px) {
-
       .title {
         font-size: 36px;
       }
 
       .kfc {
         font-size: 29px;
+      }
+
+      .mode-menu {
+        grid-template-columns: 1fr;
       }
 
       .vehicle-row {
@@ -587,11 +536,6 @@
       .read-btn {
         height: 56px;
       }
-
-      .mode-menu {
-        grid-template-columns: 1fr;
-      }
-
     }
   </style>
 </head>
@@ -600,99 +544,53 @@
 
 <div class="page">
 
-  <!-- =========================
-       HEADER
-  ========================= -->
-
   <header class="header">
-
-    <div class="eyebrow">
-      DELIVERY CENTER
-    </div>
+    <div class="eyebrow">DELIVERY CENTER</div>
 
     <div class="header-row">
-
-      <h1 class="title" id="pageTitle">
-        車輛管理
-      </h1>
-
-      <div class="kfc">
-        KFC
-      </div>
-
+      <h1 id="pageTitle" class="title">車輛管理</h1>
+      <div class="kfc">KFC</div>
     </div>
-
   </header>
 
-
-  <!-- =========================
-       INTRO
-  ========================= -->
-
   <section class="intro">
-
-    <h2 id="introTitle">
-      上班領車・下班還車
-    </h2>
-
-    <p id="introText">
-      上班先領車，下班完成還車巡檢。
-    </p>
-
+    <h2 id="introTitle">上班領車・下班還車</h2>
+    <p id="introText">上班先領車，下班完成還車巡檢。</p>
   </section>
 
-
   <!-- =========================
-       MODE MENU
+       首頁
   ========================= -->
 
   <div id="modeMenu" class="mode-menu">
 
-    <button
-      id="claimModeBtn"
-      class="mode-btn"
-      type="button"
-    >
-      <span class="mode-icon">🚗</span>
-      <span class="mode-name">領車</span>
-      <span class="mode-sub">開始上班</span>
+    <button id="claimModeBtn" class="mode-btn" type="button">
+      <span class="icon">🚗</span>
+      <span class="main">領車</span>
+      <span class="sub">開始上班</span>
     </button>
 
-    <button
-      id="returnModeBtn"
-      class="mode-btn"
-      type="button"
-    >
-      <span class="mode-icon">🏠</span>
-      <span class="mode-name">還車</span>
-      <span class="mode-sub">完成下班巡檢</span>
+    <button id="returnModeBtn" class="mode-btn" type="button">
+      <span class="icon">🏠</span>
+      <span class="main">還車</span>
+      <span class="sub">下班前完成巡檢</span>
     </button>
 
   </div>
 
 
   <!-- =========================
-       CLAIM PAGE
+       領車
   ========================= -->
 
-  <section
-    id="claimPage"
-    class="mode-page"
-  >
+  <section id="claimPage" class="mode-page">
 
     <div id="claimForm">
 
-      <!-- 領車人 -->
-
       <section class="card">
+        <div class="section-number">01・領車人</div>
 
-        <div class="section-number">
-          01・領車人
-        </div>
-
-        <label class="label">
-          領車人
-        </label>
+        <label class="label">領車人</label>
 
         <input
           id="claimantName"
@@ -702,36 +600,20 @@
           autocomplete="name"
         >
 
-        <div
-          class="hint"
-          style="padding:10px 0 0;"
-        >
+        <div class="hint" style="padding:10px 0 0;">
           限填 3 個中文字
         </div>
-
       </section>
 
 
-      <!-- 領車點 -->
-
       <section class="card">
+        <div class="section-number">02・領車點</div>
 
-        <div class="section-number">
-          02・領車點
-        </div>
+        <label class="label">領車點</label>
 
-        <label class="label">
-          領車點
-        </label>
-
-        <div class="select-wrap">
-
+        <div>
           <select id="claimPoint">
-
-            <option value="">
-              請選擇領車點
-            </option>
-
+            <option value="">請選擇領車點</option>
             <option>新竹中正</option>
             <option>新竹民生</option>
             <option>新竹光復</option>
@@ -748,30 +630,19 @@
             <option>南崁中正</option>
             <option>中壢中正</option>
             <option>中壢環中東</option>
-
           </select>
-
         </div>
-
       </section>
 
 
-      <!-- 車輛 -->
-
       <section class="card">
+        <div class="section-number">03・車輛</div>
 
-        <div class="section-number">
-          03・車輛
-        </div>
-
-        <label class="label">
-          車牌
-        </label>
+        <label class="label">車牌</label>
 
         <div class="vehicle-row">
 
           <div class="vehicle-input">
-
             <input
               id="claimPlate"
               type="text"
@@ -780,7 +651,6 @@
               placeholder="輸入車牌四碼"
               autocomplete="off"
             >
-
           </div>
 
           <button
@@ -793,26 +663,15 @@
 
         </div>
 
-        <div
-          id="claimVehicleInfo"
-          class="claim-vehicle-info"
-        ></div>
+        <div id="claimVehicleInfo" class="claim-vehicle-info"></div>
 
-        <div
-          id="lastClaim"
-          class="last-claim"
-        ></div>
+        <div id="lastClaim" class="last-claim"></div>
 
       </section>
 
 
-      <!-- 行車紀錄器 -->
-
       <section class="card">
-
-        <div class="section-number">
-          04・行車紀錄器
-        </div>
+        <div class="section-number">04・行車紀錄器</div>
 
         <label class="label">
           行車紀錄器號碼
@@ -826,23 +685,14 @@
           autocomplete="off"
         >
 
-        <div
-          class="hint"
-          style="padding:10px 0 0;"
-        >
+        <div class="hint" style="padding:10px 0 0;">
           數字、英文、英數混合或自備皆可
         </div>
-
       </section>
 
 
-      <!-- 油卡 -->
-
       <section class="card">
-
-        <div class="section-number">
-          05・油卡
-        </div>
+        <div class="section-number">05・油卡</div>
 
         <label class="label">
           油卡確認
@@ -851,65 +701,52 @@
         <div class="claim-options">
 
           <div class="claim-option">
-
             <input
               id="oilCardReceived"
               type="radio"
               name="oilCardStatus"
               value="已領油卡"
             >
-
             <label for="oilCardReceived">
               已領油卡
             </label>
-
           </div>
 
-
           <div class="claim-option">
-
             <input
               id="oilCardLost"
               type="radio"
               name="oilCardStatus"
               value="油卡遺失"
             >
-
             <label for="oilCardLost">
               油卡遺失
             </label>
-
           </div>
 
-
           <div class="claim-option">
-
             <input
               id="oilCardElectric"
               type="radio"
               name="oilCardStatus"
               value="電車無油卡"
             >
-
             <label for="oilCardElectric">
               電車無油卡
             </label>
-
           </div>
 
         </div>
-
       </section>
 
 
       <button
         id="claimSaveBtn"
-        class="save-btn"
+        class="save-btn claim-submit"
         type="button"
       >
         送出領車紀錄
       </button>
-
 
       <button
         id="claimBackBtn"
@@ -922,16 +759,9 @@
     </div>
 
 
-    <!-- 領車成功 -->
+    <div id="claimSuccess" class="success-panel">
 
-    <div
-      id="claimSuccess"
-      class="success-panel"
-    >
-
-      <div class="success-icon">
-        ✓
-      </div>
+      <div class="success-icon">✓</div>
 
       <div class="success-title">
         領車成功
@@ -943,13 +773,10 @@
       ></div>
 
       <div class="success-greeting">
-
         準備出發！今天也請安全騎車，順利完成每一趟配送 💪
-
         <span class="small">
           確認車況後再出發，祝你一路平安。
         </span>
-
       </div>
 
       <button
@@ -966,16 +793,12 @@
 
 
   <!-- =========================
-       INSPECTION / RETURN PAGE
+       還車
   ========================= -->
 
-  <section
-    id="inspectionPage"
-    class="mode-page"
-  >
+  <section id="inspectionPage" class="mode-page">
 
     <div id="inspectionForm">
-
 
       <!-- =========================
            01 車輛
@@ -1073,45 +896,13 @@
 
 
       <!-- =========================
-           03 填表人
+           03 CHECK
       ========================= -->
 
       <section class="card">
 
         <div class="section-number">
-          03・填表人
-        </div>
-
-        <label class="label">
-          填表人
-        </label>
-
-        <input
-          id="reporterName"
-          type="text"
-          maxlength="3"
-          placeholder="請輸入姓名"
-          autocomplete="name"
-        >
-
-        <div
-          class="hint"
-          style="padding:10px 0 0;"
-        >
-          限填 3 個中文字
-        </div>
-
-      </section>
-
-
-      <!-- =========================
-           04 CHECK
-      ========================= -->
-
-      <section class="card">
-
-        <div class="section-number">
-          04・CHECK
+          03・CHECK
         </div>
 
         <div
@@ -1129,6 +920,35 @@
 
 
       <!-- =========================
+           04 填寫人
+      ========================= -->
+
+      <section class="card">
+
+        <div class="section-number">
+          04・填寫人
+        </div>
+
+        <label class="label">
+          巡檢人
+        </label>
+
+        <input
+          id="reporterName"
+          type="text"
+          maxlength="3"
+          placeholder="請輸入姓名"
+          autocomplete="name"
+        >
+
+        <div class="hint" style="padding:10px 0 0;">
+          限填 3 個中文字
+        </div>
+
+      </section>
+
+
+      <!-- =========================
            SAVE
       ========================= -->
 
@@ -1141,14 +961,23 @@
       </button>
 
 
+      <!-- 新增：還車頁返回首頁 -->
+
+      <button
+        id="inspectionBackBtn"
+        class="back-home-btn"
+        type="button"
+      >
+        返回首頁
+      </button>
+
+
       <div class="hint">
         每次巡檢都會新增一筆紀錄，不會覆蓋過去資料。
       </div>
 
     </div>
 
-
-    <!-- 還車成功 -->
 
     <div
       id="inspectionSuccess"
@@ -1169,13 +998,10 @@
       ></div>
 
       <div class="success-greeting">
-
         今天辛苦了，安全回家 ❤️
-
         <span class="small">
           謝謝你完成今日巡檢，辛苦了！
         </span>
-
       </div>
 
       <button
@@ -1276,944 +1102,10 @@ checkItems.forEach(item => {
 
 
 let currentVehicle = null;
-let currentClaimVehicle = null;
 
 
 /* =====================================================
-   MODE / CLAIM DOM
-   ===================================================== */
-
-const modeMenu =
-  document.getElementById("modeMenu");
-
-const claimPage =
-  document.getElementById("claimPage");
-
-const inspectionPage =
-  document.getElementById("inspectionPage");
-
-const claimForm =
-  document.getElementById("claimForm");
-
-const claimSuccess =
-  document.getElementById("claimSuccess");
-
-const inspectionForm =
-  document.getElementById("inspectionForm");
-
-const inspectionSuccess =
-  document.getElementById("inspectionSuccess");
-
-const pageTitle =
-  document.getElementById("pageTitle");
-
-const introTitle =
-  document.getElementById("introTitle");
-
-const introText =
-  document.getElementById("introText");
-
-const claimantNameInput =
-  document.getElementById("claimantName");
-
-const claimPointInput =
-  document.getElementById("claimPoint");
-
-const claimPlateInput =
-  document.getElementById("claimPlate");
-
-const claimReadBtn =
-  document.getElementById("claimReadBtn");
-
-const claimVehicleInfo =
-  document.getElementById("claimVehicleInfo");
-
-const lastClaim =
-  document.getElementById("lastClaim");
-
-const recorderNumberInput =
-  document.getElementById("recorderNumber");
-
-const claimSaveBtn =
-  document.getElementById("claimSaveBtn");
-
-const claimSuccessData =
-  document.getElementById("claimSuccessData");
-
-
-/* =====================================================
-   RESET CLAIM FORM
-   ===================================================== */
-
-function resetClaimForm() {
-
-  claimantNameInput.value = "";
-
-  claimPointInput.value = "";
-
-  claimPlateInput.value = "";
-
-  claimPlateInput.dataset.plate4 = "";
-
-  recorderNumberInput.value = "";
-
-  document
-    .querySelectorAll(
-      'input[name="oilCardStatus"]'
-    )
-    .forEach(input => {
-
-      input.checked = false;
-
-    });
-
-  claimVehicleInfo
-    .classList
-    .remove("show");
-
-  claimVehicleInfo.textContent = "";
-
-  lastClaim
-    .classList
-    .remove("show");
-
-  lastClaim.textContent = "";
-
-  currentClaimVehicle = null;
-
-}
-
-
-/* =====================================================
-   MODE
-   ===================================================== */
-
-function showMode(mode) {
-
-  modeMenu.style.display = "none";
-
-  claimPage.style.display =
-    mode === "claim"
-      ? "block"
-      : "none";
-
-  inspectionPage.style.display =
-    mode === "inspection"
-      ? "block"
-      : "none";
-
-
-  if (mode === "claim") {
-
-    pageTitle.textContent =
-      "領車";
-
-    introTitle.textContent =
-      "開始上班";
-
-    introText.textContent =
-      "完成領車確認，準備安全出勤。";
-
-    claimForm.style.display =
-      "block";
-
-    claimSuccess
-      .classList
-      .remove("show");
-
-  } else {
-
-    pageTitle.textContent =
-      "還車";
-
-    introTitle.textContent =
-      "下班前完成巡檢";
-
-    introText.textContent =
-      "確認車況與里程，完成今日還車。";
-
-    inspectionForm.style.display =
-      "block";
-
-    inspectionSuccess
-      .classList
-      .remove("show");
-
-  }
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-}
-
-
-/* =====================================================
-   HOME
-   ===================================================== */
-
-function showHome() {
-
-  modeMenu.style.display =
-    "grid";
-
-  claimPage.style.display =
-    "none";
-
-  inspectionPage.style.display =
-    "none";
-
-  claimForm.style.display =
-    "block";
-
-  claimSuccess
-    .classList
-    .remove("show");
-
-  inspectionForm.style.display =
-    "block";
-
-  inspectionSuccess
-    .classList
-    .remove("show");
-
-  pageTitle.textContent =
-    "車輛管理";
-
-  introTitle.textContent =
-    "上班領車・下班還車";
-
-  introText.textContent =
-    "上班先領車，下班完成還車巡檢。";
-
-  resetClaimForm();
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-}
-
-
-document
-  .getElementById("claimModeBtn")
-  .addEventListener(
-    "click",
-    () => showMode("claim")
-  );
-
-
-document
-  .getElementById("returnModeBtn")
-  .addEventListener(
-    "click",
-    () => showMode("inspection")
-  );
-
-
-document
-  .getElementById("claimBackBtn")
-  .addEventListener(
-    "click",
-    showHome
-  );
-
-
-document
-  .getElementById("claimSuccessHomeBtn")
-  .addEventListener(
-    "click",
-    showHome
-  );
-
-
-document
-  .getElementById("inspectionSuccessHomeBtn")
-  .addEventListener(
-    "click",
-    showHome
-  );
-
-
-/* =====================================================
-   CLAIM - GET PLATE
-   ===================================================== */
-
-function getClaimPlate4() {
-
-  const value =
-    claimPlateInput.value
-      .trim()
-      .toUpperCase();
-
-  const numbers =
-    value.replace(
-      /\D/g,
-      ""
-    );
-
-
-  if (
-    numbers.length >= 4
-  ) {
-
-    return numbers.slice(-4);
-
-  }
-
-
-  return "";
-
-}
-
-
-/* =====================================================
-   TODAY RANGE
-   ===================================================== */
-
-function getTodayRange() {
-
-  const now =
-    new Date();
-
-  const start =
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-      0,
-      0,
-      0,
-      0
-    );
-
-  const end =
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() + 1,
-      0,
-      0,
-      0,
-      0
-    );
-
-
-  return {
-
-    start:
-      start.toISOString(),
-
-    end:
-      end.toISOString()
-
-  };
-
-}
-
-
-/* =====================================================
-   CLAIM - READ VEHICLE
-   ===================================================== */
-
-async function loadClaimVehicle() {
-
-  const plate4 =
-    getClaimPlate4();
-
-
-  if (
-    plate4.length !== 4
-  ) {
-
-    alert(
-      "請輸入正確的車牌四碼。"
-    );
-
-    claimPlateInput.focus();
-
-    return;
-
-  }
-
-
-  claimReadBtn.disabled =
-    true;
-
-  claimReadBtn.textContent =
-    "讀取中…";
-
-
-  claimVehicleInfo
-    .classList
-    .remove("show");
-
-  lastClaim
-    .classList
-    .remove("show");
-
-  currentClaimVehicle = null;
-
-
-  try {
-
-    const result =
-      await db
-        .from("vehicles")
-        .select("*")
-        .eq(
-          "plate4",
-          plate4
-        )
-        .eq(
-          "active",
-          true
-        )
-        .maybeSingle();
-
-
-    if (result.error) {
-
-      console.error(
-        "CLAIM VEHICLE ERROR:",
-        result.error
-      );
-
-      alert(
-        "讀取失敗\n\n" +
-        "錯誤代碼：" +
-        (result.error.code || "無") +
-        "\n\n" +
-        "錯誤訊息：" +
-        (result.error.message || "無")
-      );
-
-      return;
-
-    }
-
-
-    const vehicle =
-      result.data;
-
-
-    if (!vehicle) {
-
-      alert(
-        `讀取失敗\n\n查無車牌 ${plate4}\n\n請確認這台車是否在系統內。`
-      );
-
-      return;
-
-    }
-
-
-    currentClaimVehicle =
-      vehicle;
-
-
-    claimPlateInput.value =
-      vehicle.full_plate ||
-      plate4;
-
-
-    claimPlateInput.dataset.plate4 =
-      plate4;
-
-
-    claimVehicleInfo.innerHTML =
-      `✓ 車輛讀取成功<br>` +
-      `車牌：${escapeHtml(
-        vehicle.full_plate || plate4
-      )}` +
-      (
-        vehicle.center
-          ? `<br>CENTER：${escapeHtml(
-              vehicle.center
-            )}`
-          : ""
-      );
-
-
-    claimVehicleInfo
-      .classList
-      .add("show");
-
-
-    /* 查詢今天最後一筆領車 */
-
-    const range =
-      getTodayRange();
-
-
-    const claimResult =
-      await db
-        .from("claim_records")
-        .select(
-          "claimant_name, claimed_at"
-        )
-        .eq(
-          "vehicle_id",
-          vehicle.id
-        )
-        .gte(
-          "claimed_at",
-          range.start
-        )
-        .lt(
-          "claimed_at",
-          range.end
-        )
-        .order(
-          "claimed_at",
-          {
-            ascending: false
-          }
-        )
-        .limit(1);
-
-
-    if (claimResult.error) {
-
-      console.error(
-        "CLAIM HISTORY ERROR:",
-        claimResult.error
-      );
-
-      alert(
-        "車輛讀取成功，但今日領車紀錄讀取失敗。\n\n" +
-        "錯誤訊息：" +
-        (
-          claimResult.error.message ||
-          "無"
-        )
-      );
-
-      return;
-
-    }
-
-
-    if (
-      claimResult.data &&
-      claimResult.data.length > 0
-    ) {
-
-      const last =
-        claimResult.data[0];
-
-
-      const time =
-        new Date(
-          last.claimed_at
-        )
-        .toLocaleTimeString(
-          "zh-TW",
-          {
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
-
-
-      lastClaim.textContent =
-        `上次領車：${last.claimant_name}｜${time}`;
-
-
-      lastClaim
-        .classList
-        .add("show");
-
-    }
-
-  } catch (error) {
-
-    console.error(
-      "CLAIM VEHICLE UNEXPECTED ERROR:",
-      error
-    );
-
-    alert(
-      "讀取失敗\n\n" +
-      "錯誤：" +
-      (error.message || error)
-    );
-
-  } finally {
-
-    claimReadBtn.disabled =
-      false;
-
-    claimReadBtn.textContent =
-      "重新讀取";
-
-  }
-
-}
-
-
-/* =====================================================
-   CLAIM - OIL CARD
-   ===================================================== */
-
-function getSelectedOilCardStatus() {
-
-  const selected =
-    document.querySelector(
-      'input[name="oilCardStatus"]:checked'
-    );
-
-
-  return selected
-    ? selected.value
-    : "";
-
-}
-
-
-/* =====================================================
-   CLAIM - VALIDATE
-   ===================================================== */
-
-function validateClaimForm() {
-
-  const claimantName =
-    claimantNameInput.value.trim();
-
-
-  if (
-    !/^[\u4e00-\u9fff]{3}$/.test(
-      claimantName
-    )
-  ) {
-
-    alert(
-      "請輸入正確的領車人姓名。\n\n" +
-      "限 3 個中文字，例如：王小明"
-    );
-
-    claimantNameInput.focus();
-
-    return false;
-
-  }
-
-
-  if (
-    !claimPointInput.value
-  ) {
-
-    alert(
-      "請選擇領車點。"
-    );
-
-    claimPointInput.focus();
-
-    return false;
-
-  }
-
-
-  if (
-    !currentClaimVehicle
-  ) {
-
-    alert(
-      "請先輸入車牌並按「讀取」。"
-    );
-
-    claimPlateInput.focus();
-
-    return false;
-
-  }
-
-
-  if (
-    !recorderNumberInput.value.trim()
-  ) {
-
-    alert(
-      "請輸入行車紀錄器號碼。"
-    );
-
-    recorderNumberInput.focus();
-
-    return false;
-
-  }
-
-
-  if (
-    !getSelectedOilCardStatus()
-  ) {
-
-    alert(
-      "請確認油卡狀態。"
-    );
-
-    return false;
-
-  }
-
-
-  return true;
-
-}
-
-
-/* =====================================================
-   ESCAPE HTML
-   ===================================================== */
-
-function escapeHtml(value) {
-
-  return String(
-    value ?? ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
-}
-
-
-/* =====================================================
-   CLAIM - SAVE
-   ===================================================== */
-
-async function saveClaimRecord() {
-
-  if (
-    !validateClaimForm()
-  ) {
-
-    return;
-
-  }
-
-
-  const claimantName =
-    claimantNameInput.value.trim();
-
-  const claimPoint =
-    claimPointInput.value;
-
-  const recorderNumber =
-    recorderNumberInput.value.trim();
-
-  const oilCardStatus =
-    getSelectedOilCardStatus();
-
-  const claimedAt =
-    new Date();
-
-
-  const record = {
-
-    vehicle_id:
-      currentClaimVehicle.id,
-
-    claimed_at:
-      claimedAt.toISOString(),
-
-    claimant_name:
-      claimantName,
-
-    claim_point:
-      claimPoint,
-
-    recorder_number:
-      recorderNumber,
-
-    oil_card_status:
-      oilCardStatus
-
-  };
-
-
-  claimSaveBtn.disabled =
-    true;
-
-  claimSaveBtn.textContent =
-    "儲存中…";
-
-
-  try {
-
-    const result =
-      await db
-        .from("claim_records")
-        .insert(
-          record
-        );
-
-
-    if (result.error) {
-
-      console.error(
-        "CLAIM SAVE ERROR:",
-        result.error
-      );
-
-      alert(
-        "儲存失敗\n\n" +
-        "錯誤代碼：" +
-        (result.error.code || "無") +
-        "\n\n" +
-        "錯誤訊息：" +
-        (result.error.message || "無") +
-        "\n\n" +
-        "詳細：" +
-        (result.error.details || "無")
-      );
-
-      return;
-
-    }
-
-
-    const fullPlate =
-      currentClaimVehicle.full_plate ||
-      claimPlateInput.dataset.plate4 ||
-      claimPlateInput.value;
-
-
-    const center =
-      currentClaimVehicle.center ||
-      "";
-
-
-    const time =
-      claimedAt.toLocaleString(
-        "zh-TW",
-        {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit"
-        }
-      );
-
-
-    claimSuccessData.innerHTML =
-
-      `<strong>領車人：</strong>` +
-      `${escapeHtml(
-        claimantName
-      )}<br>` +
-
-      `<strong>領車點：</strong>` +
-      `${escapeHtml(
-        claimPoint
-      )}<br>` +
-
-      `<strong>車牌：</strong>` +
-      `${escapeHtml(
-        fullPlate
-      )}<br>` +
-
-      (
-        center
-          ? `<strong>CENTER：</strong>` +
-            `${escapeHtml(
-              center
-            )}<br>`
-          : ""
-      ) +
-
-      `<strong>行車紀錄器：</strong>` +
-      `${escapeHtml(
-        recorderNumber
-      )}<br>` +
-
-      `<strong>油卡狀態：</strong>` +
-      `${escapeHtml(
-        oilCardStatus
-      )}<br>` +
-
-      `<strong>領車時間：</strong>` +
-      `${escapeHtml(
-        time
-      )}`;
-
-
-    claimForm.style.display =
-      "none";
-
-
-    claimSuccess
-      .classList
-      .add("show");
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-
-  } catch (error) {
-
-    console.error(
-      "CLAIM SAVE UNEXPECTED ERROR:",
-      error
-    );
-
-    alert(
-      "儲存失敗\n\n" +
-      "錯誤：" +
-      (error.message || error)
-    );
-
-  } finally {
-
-    claimSaveBtn.disabled =
-      false;
-
-    claimSaveBtn.textContent =
-      "送出領車紀錄";
-
-  }
-
-}
-
-
-claimReadBtn.addEventListener(
-  "click",
-  loadClaimVehicle
-);
-
-
-claimSaveBtn.addEventListener(
-  "click",
-  saveClaimRecord
-);
-
-
-/* =====================================================
-   INSPECTION DOM
+   DOM
    ===================================================== */
 
 const plateInput =
@@ -2249,11 +1141,6 @@ const statusCard =
 const saveBtn =
   document.getElementById("saveBtn");
 
-const inspectionSuccessData =
-  document.getElementById(
-    "inspectionSuccessData"
-  );
-
 
 /* =====================================================
    RENDER CHECKS
@@ -2267,10 +1154,7 @@ function renderChecks() {
   checkItems.forEach(item => {
 
     const wrapper =
-      document.createElement(
-        "div"
-      );
-
+      document.createElement("div");
 
     wrapper.className =
       "check-item";
@@ -2323,10 +1207,7 @@ function renderChecks() {
     `;
 
 
-    checksContainer
-      .appendChild(
-        wrapper
-      );
+    checksContainer.appendChild(wrapper);
 
   });
 
@@ -2351,15 +1232,11 @@ function renderChecks() {
 
 
           const parent =
-            this.closest(
-              ".check-item"
-            );
+            this.closest(".check-item");
 
 
           parent
-            .querySelectorAll(
-              ".option"
-            )
+            .querySelectorAll(".option")
             .forEach(btn => {
 
               btn.classList.remove(
@@ -2380,26 +1257,23 @@ function renderChecks() {
             );
 
 
-          if (
-            status === "abnormal"
-          ) {
+          if (status === "abnormal") {
 
-            noteBox
-              .classList
-              .add("show");
+            noteBox.classList.add(
+              "show"
+            );
 
           } else {
 
-            noteBox
-              .classList
-              .remove("show");
+            noteBox.classList.remove(
+              "show"
+            );
 
 
             const textarea =
               noteBox.querySelector(
                 "textarea"
               );
-
 
             textarea.value = "";
 
@@ -2453,7 +1327,7 @@ renderChecks();
 
 
 /* =====================================================
-   INSPECTION - GET PLATE
+   GET PLATE
    ===================================================== */
 
 function getPlate4() {
@@ -2486,7 +1360,7 @@ function getPlate4() {
 
 
 /* =====================================================
-   INSPECTION - READ VEHICLE
+   READ VEHICLE
    ===================================================== */
 
 async function loadVehicle() {
@@ -2510,8 +1384,7 @@ async function loadVehicle() {
   }
 
 
-  readBtn.disabled =
-    true;
+  readBtn.disabled = true;
 
   readBtn.textContent =
     "讀取中…";
@@ -2521,9 +1394,11 @@ async function loadVehicle() {
     .classList
     .remove("show");
 
+
   previousRecord
     .classList
     .remove("show");
+
 
   currentVehicle = null;
 
@@ -2554,27 +1429,11 @@ async function loadVehicle() {
 
     if (error) {
 
-      console.error(
-        "SUPABASE VEHICLE ERROR:",
-        error
-      );
-
+      console.error(error);
 
       alert(
-        "讀取失敗\n\n" +
-        "錯誤代碼：" +
-        (error.code || "無") +
-        "\n\n" +
-        "錯誤訊息：" +
-        (error.message || "無") +
-        "\n\n" +
-        "詳細：" +
-        (error.details || "無") +
-        "\n\n" +
-        "提示：" +
-        (error.hint || "無")
+        "讀取車輛資料失敗，請稍後再試。"
       );
-
 
       return;
 
@@ -2584,9 +1443,8 @@ async function loadVehicle() {
     if (!vehicle) {
 
       alert(
-        `讀取失敗\n\n查無車牌 ${plate4}\n\n請確認 Supabase「vehicles」資料表是否有這台車。`
+        "查無此車牌，請確認輸入是否正確。"
       );
-
 
       return;
 
@@ -2602,20 +1460,15 @@ async function loadVehicle() {
       plate4;
 
 
-    plateInput.dataset.plate4 =
-      plate4;
-
-
-    vehicleSuccess.textContent =
-      "✓ 車輛讀取成功";
-
+    vehicleSuccess.innerHTML =
+      `車牌確認成功：${vehicle.full_plate || plate4}`;
 
     vehicleSuccess
       .classList
       .add("show");
 
 
-    const reportResult =
+    const previous =
       await db
         .from("inspection_reports")
         .select("*")
@@ -2629,110 +1482,35 @@ async function loadVehicle() {
             ascending: false
           }
         )
-        .limit(1);
+        .limit(1)
+        .maybeSingle();
 
 
     if (
-      reportResult.error
+      previous.error
     ) {
 
       console.error(
-        "SUPABASE REPORT ERROR:",
-        reportResult.error
+        previous.error
       );
-
-
-      alert(
-        "車輛讀取成功，但巡檢紀錄讀取失敗\n\n" +
-        "錯誤代碼：" +
-        (
-          reportResult.error.code ||
-          "無"
-        ) +
-        "\n\n" +
-        "錯誤訊息：" +
-        (
-          reportResult.error.message ||
-          "無"
-        )
-      );
-
-
-      return;
 
     }
-
-
-    const records =
-      reportResult.data;
 
 
     if (
-      records &&
-      records.length > 0
+      previous.data
     ) {
 
-      const last =
-        records[0];
-
-
-      const date =
-        new Date(
-          last.reported_at
-        )
-        .toLocaleString(
-          "zh-TW",
-          {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
+      const record =
+        previous.data;
 
 
       previousMain.textContent =
-        `上次里程 ${Number(
-          last.mileage
-        ).toLocaleString()} km`;
-
-
-      let abnormalText =
-        "上次檢查：全部正常";
-
-
-      if (
-        last.abnormal_items &&
-        last.abnormal_items.length > 0
-      ) {
-
-        abnormalText =
-          "上次異常：" +
-          last.abnormal_items.join(
-            "、"
-          );
-
-      }
-
-
-      previousDetail.innerHTML =
-        `${date}<br>${abnormalText}`;
-
-
-      previousRecord
-        .classList
-        .add("show");
-
-
-    } else {
-
-      previousMain.textContent =
-        "目前沒有巡檢紀錄";
+        `${record.mileage || 0} km・${record.overall_status === "normal" ? "正常" : "異常"}`;
 
 
       previousDetail.textContent =
-        "這是第一次巡檢";
+        `巡檢時間：${formatDateTime(record.reported_at)}`;
 
 
       previousRecord
@@ -2741,38 +1519,25 @@ async function loadVehicle() {
 
     }
 
-
   } catch (error) {
 
-    console.error(
-      "UNEXPECTED ERROR:",
-      error
-    );
-
+    console.error(error);
 
     alert(
-      "讀取失敗\n\n" +
-      "錯誤：" +
-      (error.message || error)
+      "系統發生錯誤，請稍後再試。"
     );
-
 
   } finally {
 
-    readBtn.disabled =
-      false;
+    readBtn.disabled = false;
 
     readBtn.textContent =
-      "重新讀取";
+      "讀取";
 
   }
 
 }
 
-
-/* =====================================================
-   READ BUTTON
-   ===================================================== */
 
 readBtn.addEventListener(
   "click",
@@ -2787,38 +1552,113 @@ readBtn.addEventListener(
 function updateStatus() {
 
   const abnormalItems =
-    checkItems
-      .filter(item =>
-        checkState[
-          item.key
-        ].status === "abnormal"
-      )
-      .map(item =>
-        item.name
-      );
+    checkItems.filter(
+      item =>
+        checkState[item.key].status ===
+        "abnormal"
+    );
 
 
   if (
     abnormalItems.length === 0
   ) {
 
-    statusCard.className =
-      "status-card";
+    statusCard
+      .classList
+      .remove("show");
 
-    statusCard.textContent =
-      "";
+    statusCard.textContent = "";
 
     return;
 
   }
 
 
+  statusCard.innerHTML =
+    `目前有 ${abnormalItems.length} 項異常，請確認異常說明。`;
+
   statusCard.className =
     "status-card show status-abnormal";
 
+}
 
-  statusCard.textContent =
-    `⚠ ${abnormalItems.length} 項異常：${abnormalItems.join("、")}`;
+
+/* =====================================================
+   DATE
+   ===================================================== */
+
+function formatDateTime(value) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  const date =
+    new Date(value);
+
+
+  return date.toLocaleString(
+    "zh-TW",
+    {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+/* =====================================================
+   RESET INSPECTION
+   ===================================================== */
+
+function resetInspectionForm() {
+
+  currentVehicle = null;
+
+  plateInput.value = "";
+
+  mileageInput.value = "";
+
+  reporterNameInput.value = "";
+
+  vehicleSuccess
+    .classList
+    .remove("show");
+
+  previousRecord
+    .classList
+    .remove("show");
+
+  previousMain.textContent = "";
+
+  previousDetail.textContent = "";
+
+  statusCard
+    .classList
+    .remove("show");
+
+  statusCard.textContent = "";
+
+
+  checkItems.forEach(item => {
+
+    checkState[item.key] = {
+
+      status: null,
+
+      note: ""
+
+    };
+
+  });
+
+
+  renderChecks();
 
 }
 
@@ -2827,7 +1667,7 @@ function updateStatus() {
    VALIDATE INSPECTION
    ===================================================== */
 
-function validateForm() {
+function validateInspection() {
 
   if (!currentVehicle) {
 
@@ -2848,7 +1688,7 @@ function validateForm() {
 
   if (
     !mileageInput.value ||
-    !Number.isFinite(mileage) ||
+    Number.isNaN(mileage) ||
     mileage < 0
   ) {
 
@@ -2863,19 +1703,18 @@ function validateForm() {
   }
 
 
-  const reporterName =
+  const reporter =
     reporterNameInput.value.trim();
 
 
   if (
     !/^[\u4e00-\u9fff]{3}$/.test(
-      reporterName
+      reporter
     )
   ) {
 
     alert(
-      "請輸入正確的填表人姓名。\n\n" +
-      "限 3 個中文字，例如：王小明"
+      "巡檢人請填寫 3 個中文字。"
     );
 
     reporterNameInput.focus();
@@ -2890,9 +1729,7 @@ function validateForm() {
   ) {
 
     const state =
-      checkState[
-        item.key
-      ];
+      checkState[item.key];
 
 
     if (!state.status) {
@@ -2907,27 +1744,28 @@ function validateForm() {
 
 
     if (
-      state.status === "abnormal" &&
+      state.status ===
+      "abnormal" &&
       !state.note.trim()
     ) {
 
       alert(
-        `「${item.name}」選擇異常，請填寫異常說明。`
+        `「${item.name}」異常時，請填寫異常說明。`
       );
 
-
-      const textarea =
-        document.querySelector(
-          `#note-${item.key} textarea`
+      const note =
+        document.getElementById(
+          `note-${item.key}`
         );
 
 
-      if (textarea) {
+      const textarea =
+        note.querySelector(
+          "textarea"
+        );
 
-        textarea.focus();
 
-      }
-
+      textarea.focus();
 
       return false;
 
@@ -2945,10 +1783,10 @@ function validateForm() {
    SAVE INSPECTION
    ===================================================== */
 
-async function saveRecord() {
+async function saveInspection() {
 
   if (
-    !validateForm()
+    !validateInspection()
   ) {
 
     return;
@@ -2956,89 +1794,7 @@ async function saveRecord() {
   }
 
 
-  const mileage =
-    Number(
-      mileageInput.value
-    );
-
-
-  const abnormalItems =
-    checkItems
-      .filter(item =>
-        checkState[
-          item.key
-        ].status === "abnormal"
-      )
-      .map(item => {
-
-        if (
-          checkState[
-            item.key
-          ].note.trim()
-        ) {
-
-          return (
-            `${item.name}：` +
-            `${checkState[item.key].note.trim()}`
-          );
-
-        }
-
-
-        return item.name;
-
-      });
-
-
-  const overallStatus =
-    abnormalItems.length > 0
-      ? "abnormal"
-      : "normal";
-
-
-  const record = {
-
-    vehicle_id:
-      currentVehicle.id,
-
-    mileage:
-      mileage,
-
-    reporter_name:
-      reporterNameInput.value.trim(),
-
-    oil_light:
-      checkState.oil_light.status,
-
-    front_tire:
-      checkState.front_tire.status,
-
-    rear_tire:
-      checkState.rear_tire.status,
-
-    brake:
-      checkState.brake.status,
-
-    headlight:
-      checkState.headlight.status,
-
-    brake_light:
-      checkState.brake_light.status,
-
-    other:
-      checkState.other.status,
-
-    overall_status:
-      overallStatus,
-
-    abnormal_items:
-      abnormalItems
-
-  };
-
-
-  saveBtn.disabled =
-    true;
+  saveBtn.disabled = true;
 
   saveBtn.textContent =
     "儲存中…";
@@ -3046,139 +1802,192 @@ async function saveRecord() {
 
   try {
 
+    const mileage =
+      Number(
+        mileageInput.value
+      );
+
+
+    const abnormalItems =
+      checkItems
+        .filter(
+          item =>
+            checkState[item.key].status ===
+            "abnormal"
+        )
+        .map(
+          item => {
+
+            const note =
+              checkState[item.key].note
+                .trim();
+
+
+            return note
+              ? `${item.name}：${note}`
+              : item.name;
+
+          }
+        );
+
+
+    const overallStatus =
+      abnormalItems.length > 0
+        ? "abnormal"
+        : "normal";
+
+
+    const record = {
+
+      vehicle_id:
+        currentVehicle.id,
+
+      mileage,
+
+      oil_light:
+        checkState.oil_light.status,
+
+      front_tire:
+        checkState.front_tire.status,
+
+      rear_tire:
+        checkState.rear_tire.status,
+
+      brake:
+        checkState.brake.status,
+
+      headlight:
+        checkState.headlight.status,
+
+      brake_light:
+        checkState.brake_light.status,
+
+      other:
+        checkState.other.status,
+
+      overall_status:
+        overallStatus,
+
+      abnormal_items:
+        abnormalItems,
+
+      reporter_name:
+        reporterNameInput.value.trim(),
+
+      resolution_status:
+        overallStatus === "abnormal"
+          ? "pending"
+          : null
+
+    };
+
+
     const result =
       await db
         .from(
           "inspection_reports"
         )
-        .insert(
-          record
-        );
+        .insert(record)
+        .select()
+        .single();
 
 
-    if (
-      result.error
-    ) {
+    if (result.error) {
 
       console.error(
-        "SAVE ERROR:",
         result.error
       );
 
-
       alert(
-        "儲存失敗\n\n" +
-        "錯誤代碼：" +
-        (
-          result.error.code ||
-          "無"
-        ) +
-        "\n\n" +
-        "錯誤訊息：" +
-        (
-          result.error.message ||
-          "無"
-        ) +
-        "\n\n" +
-        "詳細：" +
-        (
-          result.error.details ||
-          "無"
-        )
+        "巡檢紀錄儲存失敗，請確認資料庫欄位是否完整。"
       );
-
 
       return;
 
     }
 
 
-    /* =========================
-       還車成功
-    ========================= */
-
-    const fullPlate =
-      currentVehicle.full_plate ||
-      plateInput.dataset.plate4 ||
-      plateInput.value;
+    const saved =
+      result.data;
 
 
-    const time =
-      new Date()
-        .toLocaleString(
-          "zh-TW",
-          {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit"
-          }
-        );
+    const successData =
+      document.getElementById(
+        "inspectionSuccessData"
+      );
 
 
-    inspectionSuccessData.innerHTML =
+    successData.innerHTML = `
 
-      `<strong>車牌：</strong>` +
-      `${escapeHtml(
-        fullPlate
-      )}<br>` +
+      <div>
+        <strong>車牌：</strong>
+        ${currentVehicle.full_plate || ""}
+      </div>
 
-      `<strong>里程：</strong>` +
-      `${mileage.toLocaleString()} km<br>` +
+      <div>
+        <strong>CENTER：</strong>
+        ${currentVehicle.center || ""}
+      </div>
 
-      `<strong>填表人：</strong>` +
-      `${escapeHtml(
-        reporterNameInput.value.trim()
-      )}<br>` +
+      <div>
+        <strong>里程：</strong>
+        ${mileage} km
+      </div>
 
-      `<strong>整體狀態：</strong>` +
-      `${
-        overallStatus === "abnormal"
-          ? "異常"
-          : "正常"
-      }<br>` +
+      <div>
+        <strong>巡檢人：</strong>
+        ${reporterNameInput.value.trim()}
+      </div>
 
-      `<strong>完成時間：</strong>` +
-      `${escapeHtml(
-        time
-      )}`;
+      <div>
+        <strong>結果：</strong>
+        ${
+          overallStatus === "normal"
+            ? "正常"
+            : "異常"
+        }
+      </div>
+
+      ${
+        abnormalItems.length
+          ? `
+            <div>
+              <strong>異常項目：</strong>
+              ${abnormalItems.join("<br>")}
+            </div>
+          `
+          : ""
+      }
+
+    `;
 
 
-    inspectionForm.style.display =
-      "none";
+    document
+      .getElementById(
+        "inspectionForm"
+      )
+      .style.display = "none";
 
 
-    inspectionSuccess
+    document
+      .getElementById(
+        "inspectionSuccess"
+      )
       .classList
       .add("show");
 
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-
   } catch (error) {
 
-    console.error(
-      "SAVE UNEXPECTED ERROR:",
-      error
-    );
-
+    console.error(error);
 
     alert(
-      "儲存失敗\n\n" +
-      "錯誤：" +
-      (error.message || error)
+      "系統發生錯誤，請稍後再試。"
     );
-
 
   } finally {
 
-    saveBtn.disabled =
-      false;
+    saveBtn.disabled = false;
 
     saveBtn.textContent =
       "儲存巡檢紀錄";
@@ -3188,14 +1997,845 @@ async function saveRecord() {
 }
 
 
-/* =====================================================
-   SAVE BUTTON
-   ===================================================== */
-
 saveBtn.addEventListener(
   "click",
-  saveRecord
+  saveInspection
 );
+
+
+/* =====================================================
+   CLAIM
+   ===================================================== */
+
+const modeMenu =
+  document.getElementById(
+    "modeMenu"
+  );
+
+const claimPage =
+  document.getElementById(
+    "claimPage"
+  );
+
+const inspectionPage =
+  document.getElementById(
+    "inspectionPage"
+  );
+
+const claimForm =
+  document.getElementById(
+    "claimForm"
+  );
+
+const claimSuccess =
+  document.getElementById(
+    "claimSuccess"
+  );
+
+const inspectionForm =
+  document.getElementById(
+    "inspectionForm"
+  );
+
+const inspectionSuccess =
+  document.getElementById(
+    "inspectionSuccess"
+  );
+
+
+const pageTitle =
+  document.getElementById(
+    "pageTitle"
+  );
+
+const introTitle =
+  document.getElementById(
+    "introTitle"
+  );
+
+const introText =
+  document.getElementById(
+    "introText"
+  );
+
+
+const claimantName =
+  document.getElementById(
+    "claimantName"
+  );
+
+const claimPoint =
+  document.getElementById(
+    "claimPoint"
+  );
+
+const claimPlate =
+  document.getElementById(
+    "claimPlate"
+  );
+
+const claimReadBtn =
+  document.getElementById(
+    "claimReadBtn"
+  );
+
+const claimVehicleInfo =
+  document.getElementById(
+    "claimVehicleInfo"
+  );
+
+const lastClaim =
+  document.getElementById(
+    "lastClaim"
+  );
+
+const recorderNumber =
+  document.getElementById(
+    "recorderNumber"
+  );
+
+const claimSaveBtn =
+  document.getElementById(
+    "claimSaveBtn"
+  );
+
+
+let claimVehicle =
+  null;
+
+
+/* =====================================================
+   CLAIM PLATE
+   ===================================================== */
+
+function getClaimPlate4() {
+
+  const value =
+    claimPlate.value
+      .trim()
+      .toUpperCase();
+
+
+  const numbers =
+    value.replace(
+      /\D/g,
+      ""
+    );
+
+
+  if (
+    numbers.length >= 4
+  ) {
+
+    return numbers.slice(-4);
+
+  }
+
+
+  return "";
+
+}
+
+
+/* =====================================================
+   READ CLAIM VEHICLE
+   ===================================================== */
+
+async function loadClaimVehicle() {
+
+  const plate4 =
+    getClaimPlate4();
+
+
+  if (
+    plate4.length !== 4
+  ) {
+
+    alert(
+      "請輸入正確的車牌四碼。"
+    );
+
+    claimPlate.focus();
+
+    return;
+
+  }
+
+
+  claimReadBtn.disabled = true;
+
+  claimReadBtn.textContent =
+    "讀取中…";
+
+
+  claimVehicle = null;
+
+  claimVehicleInfo.textContent =
+    "";
+
+  lastClaim
+    .classList
+    .remove("show");
+
+
+  try {
+
+    const result =
+      await db
+        .from("vehicles")
+        .select("*")
+        .eq(
+          "plate4",
+          plate4
+        )
+        .eq(
+          "active",
+          true
+        )
+        .maybeSingle();
+
+
+    if (result.error) {
+
+      console.error(
+        result.error
+      );
+
+      alert(
+        "讀取車輛資料失敗，請稍後再試。"
+      );
+
+      return;
+
+    }
+
+
+    if (!result.data) {
+
+      alert(
+        "查無此車牌，請確認輸入是否正確。"
+      );
+
+      return;
+
+    }
+
+
+    claimVehicle =
+      result.data;
+
+
+    claimPlate.value =
+      claimVehicle.full_plate ||
+      plate4;
+
+
+    claimVehicleInfo.innerHTML =
+      `車牌確認成功：${claimVehicle.full_plate || plate4}`;
+
+
+    const latest =
+      await db
+        .from("claim_records")
+        .select("*")
+        .eq(
+          "vehicle_id",
+          claimVehicle.id
+        )
+        .order(
+          "claimed_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    if (
+      latest.data
+    ) {
+
+      lastClaim.innerHTML = `
+
+        <div style="font-weight:700;">
+          上次領車人：${latest.data.claimant_name || ""}
+        </div>
+
+        <div style="color:#77736d;margin-top:4px;">
+          領車時間：
+          ${formatDateTime(latest.data.claimed_at)}
+        </div>
+
+      `;
+
+      lastClaim
+        .classList
+        .add("show");
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "系統發生錯誤，請稍後再試。"
+    );
+
+  } finally {
+
+    claimReadBtn.disabled = false;
+
+    claimReadBtn.textContent =
+      "讀取";
+
+  }
+
+}
+
+
+claimReadBtn.addEventListener(
+  "click",
+  loadClaimVehicle
+);
+
+
+/* =====================================================
+   RESET CLAIM
+   ===================================================== */
+
+function resetClaimForm() {
+
+  claimVehicle = null;
+
+  claimantName.value = "";
+
+  claimPoint.value = "";
+
+  claimPlate.value = "";
+
+  recorderNumber.value = "";
+
+  claimVehicleInfo.textContent =
+    "";
+
+  lastClaim
+    .classList
+    .remove("show");
+
+
+  document
+    .querySelectorAll(
+      'input[name="oilCardStatus"]'
+    )
+    .forEach(
+      radio =>
+        radio.checked = false
+    );
+
+}
+
+
+/* =====================================================
+   SAVE CLAIM
+   ===================================================== */
+
+async function saveClaim() {
+
+  const name =
+    claimantName.value.trim();
+
+
+  if (
+    !/^[\u4e00-\u9fff]{3}$/.test(
+      name
+    )
+  ) {
+
+    alert(
+      "領車人請填寫 3 個中文字。"
+    );
+
+    claimantName.focus();
+
+    return;
+
+  }
+
+
+  if (
+    !claimPoint.value
+  ) {
+
+    alert(
+      "請選擇領車點。"
+    );
+
+    claimPoint.focus();
+
+    return;
+
+  }
+
+
+  if (!claimVehicle) {
+
+    alert(
+      "請先輸入車牌並按「讀取」。"
+    );
+
+    claimPlate.focus();
+
+    return;
+
+  }
+
+
+  const recorder =
+    recorderNumber.value.trim();
+
+
+  if (!recorder) {
+
+    alert(
+      "請輸入行車紀錄器號碼。"
+    );
+
+    recorderNumber.focus();
+
+    return;
+
+  }
+
+
+  const oilCard =
+    document.querySelector(
+      'input[name="oilCardStatus"]:checked'
+    );
+
+
+  if (!oilCard) {
+
+    alert(
+      "請選擇油卡狀態。"
+    );
+
+    return;
+
+  }
+
+
+  claimSaveBtn.disabled = true;
+
+  claimSaveBtn.textContent =
+    "儲存中…";
+
+
+  try {
+
+    const result =
+      await db
+        .from("claim_records")
+        .insert({
+
+          vehicle_id:
+            claimVehicle.id,
+
+          claimant_name:
+            name,
+
+          claim_point:
+            claimPoint.value,
+
+          recorder_number:
+            recorder,
+
+          oil_card_status:
+            oilCard.value
+
+        })
+        .select()
+        .single();
+
+
+    if (result.error) {
+
+      console.error(
+        result.error
+      );
+
+      alert(
+        "領車紀錄儲存失敗，請稍後再試。"
+      );
+
+      return;
+
+    }
+
+
+    const saved =
+      result.data;
+
+
+    document
+      .getElementById(
+        "claimSuccessData"
+      )
+      .innerHTML = `
+
+        <div>
+          <strong>領車人：</strong>
+          ${name}
+        </div>
+
+        <div>
+          <strong>領車點：</strong>
+          ${claimPoint.value}
+        </div>
+
+        <div>
+          <strong>車牌：</strong>
+          ${claimVehicle.full_plate || ""}
+        </div>
+
+        ${
+          claimVehicle.center
+            ? `
+              <div>
+                <strong>CENTER：</strong>
+                ${claimVehicle.center}
+              </div>
+            `
+            : ""
+        }
+
+        <div>
+          <strong>行車紀錄器：</strong>
+          ${recorder}
+        </div>
+
+        <div>
+          <strong>油卡狀態：</strong>
+          ${oilCard.value}
+        </div>
+
+        <div>
+          <strong>領車時間：</strong>
+          ${formatDateTime(
+            saved.claimed_at
+          )}
+        </div>
+
+      `;
+
+
+    claimForm.style.display =
+      "none";
+
+
+    claimSuccess
+      .classList
+      .add("show");
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "系統發生錯誤，請稍後再試。"
+    );
+
+  } finally {
+
+    claimSaveBtn.disabled = false;
+
+    claimSaveBtn.textContent =
+      "送出領車紀錄";
+
+  }
+
+}
+
+
+claimSaveBtn.addEventListener(
+  "click",
+  saveClaim
+);
+
+
+/* =====================================================
+   MODE
+   ===================================================== */
+
+function showMode(mode) {
+
+  modeMenu.style.display =
+    "none";
+
+  claimPage.style.display =
+    mode === "claim"
+      ? "block"
+      : "none";
+
+  inspectionPage.style.display =
+    mode === "inspection"
+      ? "block"
+      : "none";
+
+
+  if (
+    mode === "claim"
+  ) {
+
+    pageTitle.textContent =
+      "領車";
+
+    introTitle.textContent =
+      "開始上班";
+
+    introText.textContent =
+      "完成領車確認，準備安全出勤。";
+
+    claimForm.style.display =
+      "block";
+
+    claimSuccess
+      .classList
+      .remove("show");
+
+  } else {
+
+    pageTitle.textContent =
+      "還車";
+
+    introTitle.textContent =
+      "下班前完成巡檢";
+
+    introText.textContent =
+      "確認車況與里程，完成今日還車。";
+
+    inspectionForm.style.display =
+      "block";
+
+    inspectionSuccess
+      .classList
+      .remove("show");
+
+  }
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+function showHome() {
+
+  modeMenu.style.display =
+    "grid";
+
+  claimPage.style.display =
+    "none";
+
+  inspectionPage.style.display =
+    "none";
+
+
+  claimForm.style.display =
+    "block";
+
+  claimSuccess
+    .classList
+    .remove("show");
+
+
+  inspectionForm.style.display =
+    "block";
+
+  inspectionSuccess
+    .classList
+    .remove("show");
+
+
+  pageTitle.textContent =
+    "車輛管理";
+
+  introTitle.textContent =
+    "上班領車・下班還車";
+
+  introText.textContent =
+    "上班先領車，下班完成還車巡檢。";
+
+
+  resetClaimForm();
+
+  resetInspectionForm();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* =====================================================
+   BUTTON EVENTS
+   ===================================================== */
+
+document
+  .getElementById(
+    "claimModeBtn"
+  )
+  .addEventListener(
+    "click",
+    () =>
+      showMode("claim")
+  );
+
+
+document
+  .getElementById(
+    "returnModeBtn"
+  )
+  .addEventListener(
+    "click",
+    () =>
+      showMode("inspection")
+  );
+
+
+document
+  .getElementById(
+    "claimBackBtn"
+  )
+  .addEventListener(
+    "click",
+    showHome
+  );
+
+
+document
+  .getElementById(
+    "claimSuccessHomeBtn"
+  )
+  .addEventListener(
+    "click",
+    showHome
+  );
+
+
+/* =====================================================
+   新增：還車頁返回首頁
+   ===================================================== */
+
+document
+  .getElementById(
+    "inspectionBackBtn"
+  )
+  .addEventListener(
+    "click",
+    showHome
+  );
+
+
+document
+  .getElementById(
+    "inspectionSuccessHomeBtn"
+  )
+  .addEventListener(
+    "click",
+    showHome
+  );
+
+
+/* =====================================================
+   CLEANUP OLD INSPECTION REPORTS
+   ===================================================== */
+
+async function cleanupOldInspectionReports() {
+
+  try {
+
+    const result =
+      await db.rpc(
+        "cleanup_old_inspection_reports"
+      );
+
+
+    if (result.error) {
+
+      console.error(
+        "巡檢紀錄清理失敗：",
+        result.error
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "巡檢紀錄清理錯誤：",
+      error
+    );
+
+  }
+
+}
+
+
+cleanupOldInspectionReports();
+
+
+/* =====================================================
+   CLAIM RECORD CLEANUP
+   ===================================================== */
+
+async function cleanupOldClaimRecords() {
+
+  try {
+
+    const result =
+      await db.rpc(
+        "cleanup_old_claim_records"
+      );
+
+
+    if (result.error) {
+
+      console.error(
+        "領車紀錄清理失敗：",
+        result.error
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "領車紀錄清理錯誤：",
+      error
+    );
+
+  }
+
+}
+
+
+cleanupOldClaimRecords();
+
+
+/* =====================================================
+   INITIAL
+   ===================================================== */
+
+showHome();
 
 </script>
 
