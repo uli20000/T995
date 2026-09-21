@@ -539,57 +539,6 @@ button{cursor:pointer}
   line-height:1.8
 }
 
-.claim-panel{
-  margin-top:18px;
-  padding:18px;
-  border-radius:18px;
-  background:#faf9f6;
-  border:1px solid var(--line)
-}
-
-.claim-panel-title{
-  font-size:17px;
-  font-weight:800;
-  margin-bottom:10px
-}
-
-.claim-summary{
-  color:var(--gray);
-  font-size:14px;
-  line-height:1.7;
-  margin-bottom:12px
-}
-
-.claim-card{
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:14px;
-  background:#fff;
-  margin-top:10px
-}
-
-.claim-card:first-child{
-  margin-top:0
-}
-
-.claim-time{
-  font-size:13px;
-  color:var(--gray);
-  margin-bottom:7px
-}
-
-.claim-person{
-  font-size:17px;
-  font-weight:800
-}
-
-.claim-detail{
-  margin-top:8px;
-  color:var(--gray);
-  font-size:14px;
-  line-height:1.8
-}
-
 @media(max-width:700px){
   .summary{
     grid-template-columns:repeat(2,1fr)
@@ -710,9 +659,7 @@ button{cursor:pointer}
   <div class="section-title">月份資料匯出</div>
   <div class="search-box">
     <input id="exportMonth" class="search-input" type="month">
-    <button id="exportExcelBtn" class="action-btn" style="width:100%;margin-top:12px">
-      📊 匯出 Excel
-    </button>
+    <button id="exportExcelBtn" class="action-btn" style="width:100%;margin-top:12px">📊 匯出 Excel</button>
   </div>
 </section>
 
@@ -752,8 +699,6 @@ button{cursor:pointer}
 
     <div id="oilHistory"></div>
 
-    <div id="claimHistory"></div>
-
     <div id="history" class="history"></div>
 
     <button id="closeModal" class="close-btn">
@@ -769,9 +714,8 @@ button{cursor:pointer}
 const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
 
-/* 3.0：修正為 Supabase 後台目前的 Publishable Key */
 const SUPABASE_KEY =
-  "sb_publishable_YieSqh1zX8wIvQiO9B_wg_ZbDkne7G";
+  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
 
 const db =
   supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -847,9 +791,6 @@ const oilPanel =
 
 const oilHistory =
   $("oilHistory");
-
-const claimHistory =
-  $("claimHistory");
 
 const historyContainer =
   $("history");
@@ -1763,193 +1704,41 @@ async function renderOilHistory(v){
     '<div class="loading">讀取換油紀錄中…</div>';
 
   try{
-
-    const r =
-      await db
-        .from("oil_change_records")
-        .select("*")
-        .eq("vehicle_id",v.id)
-        .order("changed_at",{ascending:false});
+    const r = await db
+      .from("oil_change_records")
+      .select("*")
+      .eq("vehicle_id",v.id)
+      .order("changed_at",{ascending:false});
 
     if(r.error)
       throw r.error;
 
-    const rows =
-      r.data || [];
+    const rows = r.data || [];
 
     if(!rows.length){
-
       oilHistory.innerHTML =
         '<div class="empty" style="margin-top:18px">尚無換油紀錄</div>';
-
       return;
-
     }
 
-    oilHistory.innerHTML =
-      `
-
+    oilHistory.innerHTML = `
       <div class="health-panel">
-
-        <div class="health-title">
-          🔧 換油紀錄
-        </div>
-
+        <div class="health-title">🔧 換油紀錄</div>
         <div class="history">
-
           ${rows.map(x => `
-
             <div class="history-card">
-
-              <div class="history-date">
-                ${esc(fmt(x.changed_at))}
-              </div>
-
-              <div class="history-mileage">
-                換油里程：
-                ${Number(x.mileage || 0).toLocaleString()} km
-              </div>
-
-              ${
-                x.note
-                  ? `
-                    <div class="quick-detail">
-                      ${esc(x.note)}
-                    </div>
-                  `
-                  : ""
-              }
-
+              <div class="history-date">${esc(fmt(x.changed_at))}</div>
+              <div class="history-mileage">換油里程：${Number(x.mileage || 0).toLocaleString()} km</div>
+              ${x.note ? `<div class="quick-detail">${esc(x.note)}</div>` : ""}
             </div>
-
           `).join("")}
-
         </div>
-
-      </div>
-      `;
-
+      </div>`;
   }
   catch(e){
-
     oilHistory.innerHTML =
-      `
-      <div class="empty" style="margin-top:18px">
-        換油紀錄讀取失敗：
-        ${esc(e.message || "未知錯誤")}
-      </div>
-      `;
-
+      `<div class="empty" style="margin-top:18px">換油紀錄讀取失敗：${esc(e.message || "未知錯誤")}</div>`;
   }
-
-}
-
-/* =========================
-   領車歷史
-========================= */
-
-async function renderClaimHistory(v){
-
-  claimHistory.innerHTML =
-    '<div class="loading">讀取領車紀錄中…</div>';
-
-  try{
-
-    const r =
-      await db
-        .from("claim_records")
-        .select("*")
-        .eq("vehicle_id",v.id)
-        .order("claimed_at",{ascending:false});
-
-    if(r.error)
-      throw r.error;
-
-    const rows =
-      r.data || [];
-
-    if(!rows.length){
-
-      claimHistory.innerHTML =
-        `
-        <div class="claim-panel">
-
-          <div class="claim-panel-title">
-            🚗 領車紀錄
-          </div>
-
-          <div class="empty">
-            尚無領車紀錄
-          </div>
-
-        </div>
-        `;
-
-      return;
-
-    }
-
-    claimHistory.innerHTML =
-      `
-      <div class="claim-panel">
-
-        <div class="claim-panel-title">
-          🚗 領車紀錄
-        </div>
-
-        <div class="claim-summary">
-          共 ${rows.length} 筆｜同一天同一台車多人領車會全部保留
-        </div>
-
-        ${rows.map(x => `
-
-          <div class="claim-card">
-
-            <div class="claim-time">
-              ${esc(fmt(x.claimed_at))}
-            </div>
-
-            <div class="claim-person">
-              ${esc(x.claimant_name || "未填寫")}
-            </div>
-
-            <div class="claim-detail">
-
-              領車點：
-              ${esc(x.claim_point || "未填寫")}
-
-              <br>
-
-              記錄器號碼：
-              ${esc(x.recorder_number || "未填寫")}
-
-              <br>
-
-              油卡狀態：
-              ${esc(x.oil_card_status || "未填寫")}
-
-            </div>
-
-          </div>
-
-        `).join("")}
-
-      </div>
-      `;
-
-  }
-  catch(e){
-
-    claimHistory.innerHTML =
-      `
-      <div class="empty" style="margin-top:18px">
-        領車紀錄讀取失敗：
-        ${esc(e.message || "未知錯誤")}
-      </div>
-      `;
-
-  }
-
 }
 
 /* =========================
@@ -1967,16 +1756,10 @@ async function openHistory(v){
     `CENTER｜${v.center || "未設定"}`;
 
   renderOilPanel(v);
-
   renderOilHistory(v);
-
-  renderClaimHistory(v);
 
   healthPanel.innerHTML =
     '<div class="loading">讀取車輛健康資料中…</div>';
-
-  claimHistory.innerHTML =
-    '<div class="loading">讀取領車紀錄中…</div>';
 
   historyContainer.innerHTML =
     '<div class="loading">讀取歷史紀錄中…</div>';
@@ -2009,70 +1792,69 @@ async function openHistory(v){
       historyContainer.innerHTML =
         '<div class="empty">目前沒有巡檢紀錄</div>';
 
+      return;
+
     }
-    else{
 
-      reports.forEach(report => {
+    reports.forEach(report => {
 
-        const card =
-          document.createElement("div");
+      const card =
+        document.createElement("div");
 
-        const bad =
-          report.overall_status === "abnormal";
+      const bad =
+        report.overall_status === "abnormal";
 
-        card.className =
-          "history-card";
+      card.className =
+        "history-card";
 
-        card.innerHTML =
-          `
+      card.innerHTML =
+        `
 
-          <div class="history-top">
+        <div class="history-top">
 
-            <div class="history-date">
-              ${esc(fmt(report.reported_at))}
-            </div>
-
-            <div class="status ${
-              bad
-                ? "status-abnormal"
-                : "status-normal"
-            }">
-
-              ${
-                bad
-                  ? "異常"
-                  : "正常"
-              }
-
-            </div>
-
+          <div class="history-date">
+            ${esc(fmt(report.reported_at))}
           </div>
 
-          <div class="history-mileage">
-
-            里程：
-            ${Number(report.mileage || 0).toLocaleString()}
-            km
-
-          </div>
-
-          ${
+          <div class="status ${
             bad
-              ? renderAbnormal(report)
-              : `
-                <div class="history-normal">
-                  本次巡檢全部正常
-                </div>
-              `
-          }
+              ? "status-abnormal"
+              : "status-normal"
+          }">
 
-          `;
+            ${
+              bad
+                ? "異常"
+                : "正常"
+            }
 
-        historyContainer.appendChild(card);
+          </div>
 
-      });
+        </div>
 
-    }
+        <div class="history-mileage">
+
+          里程：
+          ${Number(report.mileage || 0).toLocaleString()}
+          km
+
+        </div>
+
+        ${
+          bad
+            ? renderAbnormal(report)
+            : `
+              <div class="history-normal">
+                本次巡檢全部正常
+              </div>
+            `
+        }
+
+        `;
+
+      historyContainer.appendChild(card);
+
+    });
 
   }
   catch(e){
@@ -2403,9 +2185,7 @@ ${m.toLocaleString()} km
       m;
 
     renderOilPanel(v);
-
     await renderOilHistory(v);
-
     renderVehicles();
 
     alert(
@@ -2548,437 +2328,112 @@ ${cutoff.toLocaleDateString("zh-TW")} 以前
 
 async function exportMonthlyExcel(){
 
-  const month =
-    exportMonth.value;
+  const month = exportMonth.value;
 
   if(!month){
-
-    alert(
-      "請先選擇月份。"
-    );
-
+    alert("請先選擇月份。");
     return;
-
   }
 
-  const [year,monthNo] =
-    month
-      .split("-")
-      .map(Number);
+  const [year,monthNo] = month.split("-").map(Number);
+  const start = new Date(year,monthNo-1,1);
+  const end = new Date(year,monthNo,1);
 
-  const start =
-    new Date(
-      year,
-      monthNo-1,
-      1
-    );
-
-  const end =
-    new Date(
-      year,
-      monthNo,
-      1
-    );
-
-  exportExcelBtn.disabled =
-    true;
-
-  exportExcelBtn.textContent =
-    "📊 匯出中…";
+  exportExcelBtn.disabled = true;
+  exportExcelBtn.textContent = "📊 匯出中…";
 
   try{
-
-    const vr =
-      await db
-        .from("vehicles")
-        .select(
-          "id,plate4,full_plate,center"
-        );
+    const vr = await db
+      .from("vehicles")
+      .select("id,plate4,full_plate,center");
 
     if(vr.error)
       throw vr.error;
 
-    const vehicleMap =
-      new Map(
-        (vr.data || [])
-          .map(
-            v => [v.id,v]
-          )
-      );
+    const vehicleMap = new Map(
+      (vr.data || []).map(v => [v.id,v])
+    );
 
-    const rr =
-      await db
-        .from("inspection_reports")
-        .select("*")
-        .gte(
-          "reported_at",
-          start.toISOString()
-        )
-        .lt(
-          "reported_at",
-          end.toISOString()
-        )
-        .order(
-          "reported_at",
-          {
-            ascending:true
-          }
-        )
-        .range(
-          0,
-          9999
-        );
+    const rr = await db
+      .from("inspection_reports")
+      .select("*")
+      .gte("reported_at",start.toISOString())
+      .lt("reported_at",end.toISOString())
+      .order("reported_at",{ascending:true})
+      .range(0,9999);
 
     if(rr.error)
       throw rr.error;
 
-    const or =
-      await db
-        .from("oil_change_records")
-        .select("*")
-        .gte(
-          "changed_at",
-          start.toISOString()
-        )
-        .lt(
-          "changed_at",
-          end.toISOString()
-        )
-        .order(
-          "changed_at",
-          {
-            ascending:true
-          }
-        )
-        .range(
-          0,
-          9999
-        );
+    const or = await db
+      .from("oil_change_records")
+      .select("*")
+      .gte("changed_at",start.toISOString())
+      .lt("changed_at",end.toISOString())
+      .order("changed_at",{ascending:true})
+      .range(0,9999);
 
     if(or.error)
       throw or.error;
 
-    const cr =
-      await db
-        .from("claim_records")
-        .select("*")
-        .gte(
-          "claimed_at",
-          start.toISOString()
-        )
-        .lt(
-          "claimed_at",
-          end.toISOString()
-        )
-        .order(
-          "claimed_at",
-          {
-            ascending:true
-          }
-        )
-        .range(
-          0,
-          9999
-        );
+    const reportRows = (rr.data || []).map(r => {
+      const v = vehicleMap.get(r.vehicle_id) || {};
+      return {
+        "日期":r.reported_at ? new Date(r.reported_at).toLocaleDateString("zh-TW") : "",
+        "時間":r.reported_at ? new Date(r.reported_at).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"}) : "",
+        "車牌":v.full_plate || v.plate4 || "",
+        "CENTER":v.center || "",
+        "里程":r.mileage ?? "",
+        "機油燈":r.oil_light || "",
+        "前輪":r.front_tire || "",
+        "後輪":r.rear_tire || "",
+        "煞車":r.brake || "",
+        "大燈":r.headlight || "",
+        "煞車燈":r.brake_light || "",
+        "其他":r.other || "",
+        "整體狀態":r.overall_status === "abnormal" ? "異常" : "正常",
+        "異常項目":Array.isArray(r.abnormal_items) ? r.abnormal_items.join("、") : (r.abnormal_items || ""),
+        "處理狀態":r.resolution_status === "resolved" ? "已處理" : (r.overall_status === "abnormal" ? "待處理" : "-"),
+        "處理時間":r.resolved_at ? fmt(r.resolved_at) : "",
+        "處理備註":r.resolution_note || ""
+      };
+    });
 
-    if(cr.error)
-      throw cr.error;
+    const oilRows = (or.data || []).map(r => {
+      const v = vehicleMap.get(r.vehicle_id) || {};
+      return {
+        "日期":r.changed_at ? new Date(r.changed_at).toLocaleDateString("zh-TW") : "",
+        "時間":r.changed_at ? new Date(r.changed_at).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"}) : "",
+        "車牌":v.full_plate || v.plate4 || "",
+        "CENTER":v.center || "",
+        "換油里程":r.mileage ?? "",
+        "備註":r.note || ""
+      };
+    });
 
-    const reportRows =
-      (rr.data || [])
-        .map(r => {
-
-          const v =
-            vehicleMap.get(
-              r.vehicle_id
-            ) || {};
-
-          return {
-
-            "日期":
-              r.reported_at
-                ? new Date(
-                    r.reported_at
-                  ).toLocaleDateString(
-                    "zh-TW"
-                  )
-                : "",
-
-            "時間":
-              r.reported_at
-                ? new Date(
-                    r.reported_at
-                  ).toLocaleTimeString(
-                    "zh-TW",
-                    {
-                      hour:"2-digit",
-                      minute:"2-digit"
-                    }
-                  )
-                : "",
-
-            "車牌":
-              v.full_plate ||
-              v.plate4 ||
-              "",
-
-            "CENTER":
-              v.center ||
-              "",
-
-            "里程":
-              r.mileage ??
-              "",
-
-            "機油燈":
-              r.oil_light ||
-              "",
-
-            "前輪":
-              r.front_tire ||
-              "",
-
-            "後輪":
-              r.rear_tire ||
-              "",
-
-            "煞車":
-              r.brake ||
-              "",
-
-            "大燈":
-              r.headlight ||
-              "",
-
-            "煞車燈":
-              r.brake_light ||
-              "",
-
-            "其他":
-              r.other ||
-              "",
-
-            "整體狀態":
-              r.overall_status === "abnormal"
-                ? "異常"
-                : "正常",
-
-            "異常項目":
-              Array.isArray(
-                r.abnormal_items
-              )
-                ? r.abnormal_items.join("、")
-                : (
-                    r.abnormal_items ||
-                    ""
-                  ),
-
-            "處理狀態":
-              r.resolution_status === "resolved"
-                ? "已處理"
-                : (
-                    r.overall_status === "abnormal"
-                      ? "待處理"
-                      : "-"
-                  ),
-
-            "處理時間":
-              r.resolved_at
-                ? fmt(r.resolved_at)
-                : "",
-
-            "處理備註":
-              r.resolution_note ||
-              ""
-
-          };
-
-        });
-
-    const oilRows =
-      (or.data || [])
-        .map(r => {
-
-          const v =
-            vehicleMap.get(
-              r.vehicle_id
-            ) || {};
-
-          return {
-
-            "日期":
-              r.changed_at
-                ? new Date(
-                    r.changed_at
-                  ).toLocaleDateString(
-                    "zh-TW"
-                  )
-                : "",
-
-            "時間":
-              r.changed_at
-                ? new Date(
-                    r.changed_at
-                  ).toLocaleTimeString(
-                    "zh-TW",
-                    {
-                      hour:"2-digit",
-                      minute:"2-digit"
-                    }
-                  )
-                : "",
-
-            "車牌":
-              v.full_plate ||
-              v.plate4 ||
-              "",
-
-            "CENTER":
-              v.center ||
-              "",
-
-            "換油里程":
-              r.mileage ??
-              "",
-
-            "備註":
-              r.note ||
-              ""
-
-          };
-
-        });
-
-    const claimRows =
-      (cr.data || [])
-        .map(r => {
-
-          const v =
-            vehicleMap.get(
-              r.vehicle_id
-            ) || {};
-
-          return {
-
-            "日期":
-              r.claimed_at
-                ? new Date(
-                    r.claimed_at
-                  ).toLocaleDateString(
-                    "zh-TW"
-                  )
-                : "",
-
-            "時間":
-              r.claimed_at
-                ? new Date(
-                    r.claimed_at
-                  ).toLocaleTimeString(
-                    "zh-TW",
-                    {
-                      hour:"2-digit",
-                      minute:"2-digit"
-                    }
-                  )
-                : "",
-
-            "車牌":
-              v.full_plate ||
-              v.plate4 ||
-              "",
-
-            "CENTER":
-              v.center ||
-              "",
-
-            "領車人":
-              r.claimant_name ||
-              "",
-
-            "領車點":
-              r.claim_point ||
-              "",
-
-            "記錄器號碼":
-              r.recorder_number ||
-              "",
-
-            "油卡狀態":
-              r.oil_card_status ||
-              ""
-
-          };
-
-        });
-
-    const wb =
-      XLSX.utils.book_new();
-
-    const ws1 =
-      XLSX.utils.json_to_sheet(
-        reportRows
-      );
-
-    const ws2 =
-      XLSX.utils.json_to_sheet(
-        oilRows
-      );
-
-    const ws3 =
-      XLSX.utils.json_to_sheet(
-        claimRows
-      );
-
-    XLSX.utils.book_append_sheet(
-      wb,
-      ws1,
-      "巡檢紀錄"
-    );
-
-    XLSX.utils.book_append_sheet(
-      wb,
-      ws2,
-      "換油紀錄"
-    );
-
-    XLSX.utils.book_append_sheet(
-      wb,
-      ws3,
-      "領車紀錄"
-    );
+    const wb = XLSX.utils.book_new();
+    const ws1 = XLSX.utils.json_to_sheet(reportRows);
+    const ws2 = XLSX.utils.json_to_sheet(oilRows);
+    XLSX.utils.book_append_sheet(wb,ws1,"巡檢紀錄");
+    XLSX.utils.book_append_sheet(wb,ws2,"換油紀錄");
 
     XLSX.writeFile(
       wb,
       `KFC車輛巡檢_${month}.xlsx`
     );
 
-    alert(
-      `✅ 匯出完成！
-
-巡檢紀錄：${reportRows.length} 筆
-換油紀錄：${oilRows.length} 筆
-領車紀錄：${claimRows.length} 筆`
-    );
-
+    alert(`✅ 匯出完成！\n\n巡檢紀錄：${reportRows.length} 筆\n換油紀錄：${oilRows.length} 筆`);
   }
   catch(e){
-
     alert(
       "匯出失敗：\n" +
       (e.message || "未知錯誤")
     );
-
   }
   finally{
-
-    exportExcelBtn.disabled =
-      false;
-
-    exportExcelBtn.textContent =
-      "📊 匯出 Excel";
-
+    exportExcelBtn.disabled = false;
+    exportExcelBtn.textContent = "📊 匯出 Excel";
   }
-
 }
 
 /* =========================
@@ -2989,30 +2444,22 @@ searchInput.oninput =
   renderVehicles;
 
 pendingCard.onclick =
-  () =>
-    openQuickList(
-      "pending"
-    );
+  () => openQuickList("pending");
 
 unresolvedCard.onclick =
-  () =>
-    openQuickList(
-      "unresolved"
-    );
+  () => openQuickList("unresolved");
 
 refreshBtn.onclick =
   async () => {
 
-    refreshBtn.disabled =
-      true;
+    refreshBtn.disabled = true;
 
     refreshBtn.textContent =
       "↻ 更新中…";
 
     await loadData();
 
-    refreshBtn.disabled =
-      false;
+    refreshBtn.disabled = false;
 
     refreshBtn.textContent =
       "↻ 重新整理資料";
@@ -3027,37 +2474,25 @@ exportExcelBtn.onclick =
 
 closeQuickModal.onclick =
   () =>
-    quickModal.classList.remove(
-      "show"
-    );
+    quickModal.classList.remove("show");
 
 quickModal.onclick =
   e => {
 
-    if(
-      e.target === quickModal
-    )
-      quickModal.classList.remove(
-        "show"
-      );
+    if(e.target === quickModal)
+      quickModal.classList.remove("show");
 
   };
 
 closeModal.onclick =
   () =>
-    modal.classList.remove(
-      "show"
-    );
+    modal.classList.remove("show");
 
 modal.onclick =
   e => {
 
-    if(
-      e.target === modal
-    )
-      modal.classList.remove(
-        "show"
-      );
+    if(e.target === modal)
+      modal.classList.remove("show");
 
   };
 
@@ -3072,13 +2507,9 @@ todayDate.textContent =
     }
   );
 
-const now =
-  new Date();
-
+const now = new Date();
 exportMonth.value =
-  `${now.getFullYear()}-${String(
-    now.getMonth()+1
-  ).padStart(2,"0")}`;
+  `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
 
 loadData();
 
@@ -3086,3 +2517,4 @@ loadData();
 
 </body>
 </html>
+這是原始CODE
