@@ -14,7 +14,6 @@
       --red: #c8102e;
       --black: #242424;
       --gray: #77736d;
-      --light-gray: #aaa69f;
       --linen: #f4f0e8;
       --paper: #ffffff;
       --line: #ddd8ce;
@@ -56,10 +55,6 @@
       padding-bottom: 50px;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     .header {
       background: var(--paper);
       padding: 30px 20px 26px;
@@ -99,10 +94,6 @@
       font-size: 14px;
     }
 
-    /* =========================
-       SECTION
-    ========================= */
-
     .section {
       padding: 22px 16px 0;
     }
@@ -112,10 +103,6 @@
       font-size: 20px;
       font-weight: 800;
     }
-
-    /* =========================
-       SUMMARY
-    ========================= */
 
     .summary {
       display: grid;
@@ -142,17 +129,13 @@
       font-weight: 800;
     }
 
-    .summary-card.abnormal .summary-number {
-      color: var(--danger);
-    }
-
     .summary-card.done .summary-number {
       color: var(--green);
     }
 
-    /* =========================
-       SEARCH
-    ========================= */
+    .summary-card.abnormal .summary-number {
+      color: var(--danger);
+    }
 
     .search-box {
       background: var(--paper);
@@ -176,10 +159,6 @@
       border-color: var(--red);
     }
 
-    /* =========================
-       VEHICLE LIST
-    ========================= */
-
     .vehicle-list {
       display: flex;
       flex-direction: column;
@@ -192,7 +171,6 @@
       border-radius: 18px;
       padding: 17px;
       cursor: pointer;
-      transition: .15s;
     }
 
     .vehicle-card:active {
@@ -248,11 +226,8 @@
       font-size: 15px;
     }
 
-    /* =========================
-       EMPTY
-    ========================= */
-
-    .empty {
+    .empty,
+    .loading {
       padding: 40px 20px;
       background: var(--paper);
       border: 1px solid var(--line);
@@ -261,24 +236,10 @@
       text-align: center;
     }
 
-    /* =========================
-       LOADING
-    ========================= */
-
-    .loading {
-      padding: 35px;
-      text-align: center;
-      color: var(--gray);
-    }
-
-    /* =========================
-       MODAL
-    ========================= */
-
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.45);
+      background: rgba(0, 0, 0, .45);
       display: none;
       justify-content: center;
       align-items: flex-end;
@@ -314,22 +275,6 @@
       margin-top: 5px;
       font-size: 14px;
     }
-
-    .close-btn {
-      width: 100%;
-      height: 52px;
-      margin-top: 20px;
-      border: 0;
-      border-radius: 15px;
-      background: var(--black);
-      color: white;
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    /* =========================
-       HISTORY
-    ========================= */
 
     .history {
       display: flex;
@@ -370,6 +315,7 @@
       color: var(--danger);
       font-size: 14px;
       line-height: 1.6;
+      white-space: pre-wrap;
     }
 
     .history-normal {
@@ -382,18 +328,33 @@
       font-weight: 700;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
+    .close-btn {
+      width: 100%;
+      height: 52px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 15px;
+      background: var(--black);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+    }
 
     @media (max-width: 600px) {
-
       .summary {
         grid-template-columns: repeat(2, 1fr);
       }
 
       .summary-number {
         font-size: 27px;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .kfc {
+        font-size: 24px;
       }
 
       .vehicle-top {
@@ -403,7 +364,6 @@
       .plate {
         font-size: 19px;
       }
-
     }
   </style>
 </head>
@@ -412,16 +372,12 @@
 
 <div class="page">
 
-  <!-- HEADER -->
-
   <header class="header">
-
     <div class="eyebrow">
       KFC DELIVERY CENTER
     </div>
 
     <div class="title-row">
-
       <h1 class="title">
         車輛巡檢後台
       </h1>
@@ -429,18 +385,11 @@
       <div class="kfc">
         KFC
       </div>
-
     </div>
 
-    <div
-      id="todayDate"
-      class="date"
-    ></div>
-
+    <div id="todayDate" class="date"></div>
   </header>
 
-
-  <!-- SUMMARY -->
 
   <section class="section">
 
@@ -451,74 +400,51 @@
     <div class="summary">
 
       <div class="summary-card">
-
         <div class="summary-label">
           車輛總數
         </div>
 
-        <div
-          id="totalCount"
-          class="summary-number"
-        >
+        <div id="totalCount" class="summary-number">
           —
         </div>
-
       </div>
 
 
       <div class="summary-card done">
-
         <div class="summary-label">
           已巡檢
         </div>
 
-        <div
-          id="doneCount"
-          class="summary-number"
-        >
+        <div id="doneCount" class="summary-number">
           —
         </div>
-
       </div>
 
 
       <div class="summary-card">
-
         <div class="summary-label">
           未巡檢
         </div>
 
-        <div
-          id="pendingCount"
-          class="summary-number"
-        >
+        <div id="pendingCount" class="summary-number">
           —
         </div>
-
       </div>
 
 
       <div class="summary-card abnormal">
-
         <div class="summary-label">
           今日異常
         </div>
 
-        <div
-          id="abnormalCount"
-          class="summary-number"
-        >
+        <div id="abnormalCount" class="summary-number">
           —
         </div>
-
       </div>
 
     </div>
-
   </section>
 
-
-  <!-- SEARCH -->
 
   <section class="section">
 
@@ -542,18 +468,13 @@
   </section>
 
 
-  <!-- LIST -->
-
   <section class="section">
 
     <div class="section-title">
       車輛列表
     </div>
 
-    <div
-      id="vehicleList"
-      class="vehicle-list"
-    >
+    <div id="vehicleList" class="vehicle-list">
 
       <div class="loading">
         載入車輛資料中…
@@ -566,42 +487,23 @@
 </div>
 
 
-<!-- =========================
-     HISTORY MODAL
-========================= -->
-
-<div
-  id="modal"
-  class="modal"
->
+<div id="modal" class="modal">
 
   <div class="modal-content">
 
     <div class="modal-header">
 
-      <div
-        id="modalTitle"
-        class="modal-title"
-      ></div>
+      <div id="modalTitle" class="modal-title"></div>
 
-      <div
-        id="modalSubtitle"
-        class="modal-subtitle"
-      ></div>
+      <div id="modalSubtitle" class="modal-subtitle"></div>
 
     </div>
 
 
-    <div
-      id="history"
-      class="history"
-    ></div>
+    <div id="history" class="history"></div>
 
 
-    <button
-      id="closeModal"
-      class="close-btn"
-    >
+    <button id="closeModal" class="close-btn">
       關閉
     </button>
 
@@ -620,7 +522,7 @@ const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
 
 const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm5ib3F3Y3Vma3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
+  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
 
 const db =
   supabase.createClient(
@@ -634,67 +536,44 @@ const db =
 ===================================================== */
 
 const vehicleList =
-  document.getElementById(
-    "vehicleList"
-  );
+  document.getElementById("vehicleList");
 
 const searchInput =
-  document.getElementById(
-    "searchInput"
-  );
+  document.getElementById("searchInput");
 
 const totalCount =
-  document.getElementById(
-    "totalCount"
-  );
+  document.getElementById("totalCount");
 
 const doneCount =
-  document.getElementById(
-    "doneCount"
-  );
+  document.getElementById("doneCount");
 
 const pendingCount =
-  document.getElementById(
-    "pendingCount"
-  );
+  document.getElementById("pendingCount");
 
 const abnormalCount =
-  document.getElementById(
-    "abnormalCount"
-  );
+  document.getElementById("abnormalCount");
 
 const todayDate =
-  document.getElementById(
-    "todayDate"
-  );
+  document.getElementById("todayDate");
 
 const modal =
-  document.getElementById(
-    "modal"
-  );
+  document.getElementById("modal");
 
 const modalTitle =
-  document.getElementById(
-    "modalTitle"
-  );
+  document.getElementById("modalTitle");
 
 const modalSubtitle =
-  document.getElementById(
-    "modalSubtitle"
-  );
+  document.getElementById("modalSubtitle");
 
 const historyContainer =
-  document.getElementById(
-    "history"
-  );
+  document.getElementById("history");
 
 const closeModal =
-  document.getElementById(
-    "closeModal"
-  );
+  document.getElementById("closeModal");
 
 
 let vehicles = [];
+let todayReports = [];
 let latestReports = [];
 
 
@@ -702,32 +581,31 @@ let latestReports = [];
    TODAY
 ===================================================== */
 
-const today =
-  new Date();
+const now = new Date();
 
 const todayStart =
   new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
     0,
     0,
     0
   );
 
-const todayEnd =
+const tomorrowStart =
   new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate(),
-    23,
-    59,
-    59
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+    0,
+    0,
+    0
   );
 
 
 todayDate.textContent =
-  today.toLocaleDateString(
+  now.toLocaleDateString(
     "zh-TW",
     {
       year: "numeric",
@@ -739,39 +617,29 @@ todayDate.textContent =
 
 
 /* =====================================================
-   LOAD VEHICLES
+   LOAD DATA
 ===================================================== */
 
-async function loadVehicles() {
+async function loadData() {
 
-  vehicleList.innerHTML =
-    `
-      <div class="loading">
-        載入資料中…
-      </div>
-    `;
-
+  vehicleList.innerHTML = `
+    <div class="loading">
+      載入資料中…
+    </div>
+  `;
 
   try {
 
-    /*
-      取得所有啟用車輛
-    */
+    /* 取得啟用車輛 */
 
     const vehicleResult =
       await db
         .from("vehicles")
         .select("*")
-        .eq(
-          "active",
-          true
-        )
-        .order(
-          "plate4",
-          {
-            ascending: true
-          }
-        );
+        .eq("active", true)
+        .order("plate4", {
+          ascending: true
+        });
 
 
     if (vehicleResult.error) {
@@ -783,23 +651,19 @@ async function loadVehicles() {
       vehicleResult.data || [];
 
 
-    /*
-      取得今日巡檢
-    */
+    /* 取得今日巡檢 */
 
-    const reportResult =
+    const todayResult =
       await db
-        .from(
-          "inspection_reports"
-        )
+        .from("inspection_reports")
         .select("*")
         .gte(
           "reported_at",
           todayStart.toISOString()
         )
-        .lte(
+        .lt(
           "reported_at",
-          todayEnd.toISOString()
+          tomorrowStart.toISOString()
         )
         .order(
           "reported_at",
@@ -809,117 +673,67 @@ async function loadVehicles() {
         );
 
 
-    if (reportResult.error) {
-      throw reportResult.error;
+    if (todayResult.error) {
+      throw todayResult.error;
     }
 
 
-    const todayReports =
-      reportResult.data || [];
+    todayReports =
+      todayResult.data || [];
 
 
-    /*
-      建立每台車今日最新紀錄
-    */
-
-    const todayMap =
-      new Map();
-
-
-    todayReports.forEach(
-      report => {
-
-        if (
-          !todayMap.has(
-            report.vehicle_id
-          )
-        ) {
-
-          todayMap.set(
-            report.vehicle_id,
-            report
-          );
-
-        }
-
-      }
-    );
-
-
-    /*
-      再取得所有車輛最近一次紀錄
-    */
+    /* 取得所有車輛最近紀錄 */
 
     latestReports = [];
 
 
-    for (
-      const vehicle of vehicles
-    ) {
+    const latestResults =
+      await Promise.all(
+        vehicles.map(
+          async vehicle => {
 
-      const result =
-        await db
-          .from(
-            "inspection_reports"
-          )
-          .select("*")
-          .eq(
-            "vehicle_id",
-            vehicle.id
-          )
-          .order(
-            "reported_at",
-            {
-              ascending: false
+            const result =
+              await db
+                .from("inspection_reports")
+                .select("*")
+                .eq(
+                  "vehicle_id",
+                  vehicle.id
+                )
+                .order(
+                  "reported_at",
+                  {
+                    ascending: false
+                  }
+                )
+                .limit(1);
+
+
+            if (
+              result.error ||
+              !result.data ||
+              result.data.length === 0
+            ) {
+              return null;
             }
-          )
-          .limit(1);
 
 
-      if (
-        result.error
-      ) {
+            return result.data[0];
 
-        console.error(
-          result.error
-        );
-
-        continue;
-
-      }
+          }
+        )
+      );
 
 
-      if (
-        result.data &&
-        result.data.length
-      ) {
-
-        latestReports.push(
-          result.data[0]
-        );
-
-      }
-
-    }
+    latestReports =
+      latestResults.filter(
+        item => item !== null
+      );
 
 
-    /*
-      顯示統計
-    */
+    updateSummary();
 
-    updateSummary(
-      todayMap
-    );
-
-
-    /*
-      顯示列表
-    */
-
-    renderVehicles(
-      todayMap
-    );
-
+    renderVehicles();
 
   } catch (error) {
 
@@ -930,7 +744,6 @@ async function loadVehicles() {
 
 
     vehicleList.innerHTML = `
-
       <div class="empty">
 
         <strong>
@@ -945,7 +758,6 @@ async function loadVehicles() {
         )}
 
       </div>
-
     `;
 
   }
@@ -957,12 +769,34 @@ async function loadVehicles() {
    SUMMARY
 ===================================================== */
 
-function updateSummary(
-  todayMap
-) {
+function updateSummary() {
 
   const total =
     vehicles.length;
+
+
+  const todayMap =
+    new Map();
+
+
+  todayReports.forEach(
+    report => {
+
+      if (
+        !todayMap.has(
+          report.vehicle_id
+        )
+      ) {
+
+        todayMap.set(
+          report.vehicle_id,
+          report
+        );
+
+      }
+
+    }
+  );
 
 
   const done =
@@ -976,8 +810,7 @@ function updateSummary(
     );
 
 
-  let abnormal =
-    0;
+  let abnormal = 0;
 
 
   todayMap.forEach(
@@ -1015,14 +848,36 @@ function updateSummary(
    RENDER VEHICLES
 ===================================================== */
 
-function renderVehicles(
-  todayMap
-) {
+function renderVehicles() {
 
   const keyword =
     searchInput.value
       .trim()
       .toUpperCase();
+
+
+  const todayMap =
+    new Map();
+
+
+  todayReports.forEach(
+    report => {
+
+      if (
+        !todayMap.has(
+          report.vehicle_id
+        )
+      ) {
+
+        todayMap.set(
+          report.vehicle_id,
+          report
+        );
+
+      }
+
+    }
+  );
 
 
   const filtered =
@@ -1036,22 +891,18 @@ function renderVehicles(
 
         return (
           String(
-            vehicle.plate4 ||
-            ""
+            vehicle.plate4 || ""
           )
           .toUpperCase()
-          .includes(
-            keyword
-          )
+          .includes(keyword)
+
           ||
+
           String(
-            vehicle.full_plate ||
-            ""
+            vehicle.full_plate || ""
           )
           .toUpperCase()
-          .includes(
-            keyword
-          )
+          .includes(keyword)
         );
 
       }
@@ -1063,11 +914,9 @@ function renderVehicles(
   ) {
 
     vehicleList.innerHTML = `
-
       <div class="empty">
         找不到符合的車輛
       </div>
-
     `;
 
     return;
@@ -1081,19 +930,11 @@ function renderVehicles(
   filtered.forEach(
     vehicle => {
 
-      /*
-        今天紀錄
-      */
-
       const todayReport =
         todayMap.get(
           vehicle.id
         );
 
-
-      /*
-        所有歷史最新紀錄
-      */
 
       const latest =
         latestReports.find(
@@ -1110,9 +951,7 @@ function renderVehicles(
         "今日未巡檢";
 
 
-      if (
-        todayReport
-      ) {
+      if (todayReport) {
 
         if (
           todayReport.overall_status ===
@@ -1123,7 +962,7 @@ function renderVehicles(
             "status-abnormal";
 
           statusText =
-            "⚠ 異常";
+            "今日異常";
 
         } else {
 
@@ -1131,7 +970,7 @@ function renderVehicles(
             "status-normal";
 
           statusText =
-            "✓ 正常";
+            "今日正常";
 
         }
 
@@ -1140,15 +979,13 @@ function renderVehicles(
 
       const mileage =
         latest
-          ? Number(
-              latest.mileage
-            ).toLocaleString()
-          : "—";
+          ? `${Number(latest.mileage).toLocaleString()} km`
+          : "尚無資料";
 
 
-      const lastDate =
+      const lastTime =
         latest
-          ? formatDate(
+          ? formatDateTime(
               latest.reported_at
             )
           : "尚無紀錄";
@@ -1171,13 +1008,12 @@ function renderVehicles(
           <div class="plate">
             ${escapeHtml(
               vehicle.full_plate ||
-              vehicle.plate4
+              vehicle.plate4 ||
+              ""
             )}
           </div>
 
-          <div
-            class="status ${statusClass}"
-          >
+          <div class="status ${statusClass}">
             ${statusText}
           </div>
 
@@ -1189,14 +1025,14 @@ function renderVehicles(
           <div>
             最新里程<br>
             <strong>
-              ${mileage} km
+              ${mileage}
             </strong>
           </div>
 
           <div>
-            最後巡檢<br>
+            最近巡檢<br>
             <strong>
-              ${lastDate}
+              ${lastTime}
             </strong>
           </div>
 
@@ -1208,11 +1044,7 @@ function renderVehicles(
       card.addEventListener(
         "click",
         () => {
-
-          openHistory(
-            vehicle
-          );
-
+          openHistory(vehicle);
         }
       );
 
@@ -1228,96 +1060,7 @@ function renderVehicles(
 
 
 /* =====================================================
-   SEARCH
-===================================================== */
-
-searchInput.addEventListener(
-  "input",
-  () => {
-
-    /*
-      重新計算今天的資料
-    */
-
-    rebuildTodayMap();
-
-  }
-);
-
-
-/* =====================================================
-   REBUILD TODAY MAP
-===================================================== */
-
-async function rebuildTodayMap() {
-
-  const result =
-    await db
-      .from(
-        "inspection_reports"
-      )
-      .select("*")
-      .gte(
-        "reported_at",
-        todayStart.toISOString()
-      )
-      .lte(
-        "reported_at",
-        todayEnd.toISOString()
-      )
-      .order(
-        "reported_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (result.error) {
-
-    console.error(
-      result.error
-    );
-
-    return;
-
-  }
-
-
-  const map =
-    new Map();
-
-
-  (result.data || [])
-    .forEach(
-      report => {
-
-        if (
-          !map.has(
-            report.vehicle_id
-          )
-        ) {
-
-          map.set(
-            report.vehicle_id,
-            report
-          );
-
-        }
-
-      }
-    );
-
-
-  renderVehicles(
-    map
-  );
-
-}
-
-
-/* =====================================================
-   OPEN HISTORY
+   HISTORY
 ===================================================== */
 
 async function openHistory(
@@ -1326,19 +1069,19 @@ async function openHistory(
 
   modalTitle.textContent =
     vehicle.full_plate ||
-    vehicle.plate4;
+    vehicle.plate4 ||
+    "";
 
 
   modalSubtitle.textContent =
     "巡檢歷史紀錄";
 
 
-  historyContainer.innerHTML =
-    `
-      <div class="loading">
-        讀取歷史紀錄中…
-      </div>
-    `;
+  historyContainer.innerHTML = `
+    <div class="loading">
+      載入歷史紀錄中…
+    </div>
+  `;
 
 
   modal.classList.add(
@@ -1350,9 +1093,7 @@ async function openHistory(
 
     const result =
       await db
-        .from(
-          "inspection_reports"
-        )
+        .from("inspection_reports")
         .select("*")
         .eq(
           "vehicle_id",
@@ -1371,20 +1112,18 @@ async function openHistory(
     }
 
 
-    const records =
+    const reports =
       result.data || [];
 
 
     if (
-      records.length === 0
+      reports.length === 0
     ) {
 
       historyContainer.innerHTML = `
-
         <div class="empty">
-          目前沒有巡檢紀錄
+          尚無巡檢紀錄
         </div>
-
       `;
 
       return;
@@ -1392,12 +1131,11 @@ async function openHistory(
     }
 
 
-    historyContainer.innerHTML =
-      "";
+    historyContainer.innerHTML = "";
 
 
-    records.forEach(
-      record => {
+    reports.forEach(
+      report => {
 
         const card =
           document.createElement(
@@ -1410,35 +1148,38 @@ async function openHistory(
 
 
         const isAbnormal =
-          record.overall_status ===
+          report.overall_status ===
           "abnormal";
 
 
-        const statusHtml =
-          isAbnormal
+        let abnormalText = "";
 
-            ? `
-              <div
-                class="history-abnormal"
-              >
-                ⚠ ${
-                  record.abnormal_items &&
-                  record.abnormal_items.length
-                    ? record.abnormal_items.join(
-                        "<br>"
-                      )
-                    : "有異常項目"
-                }
-              </div>
-            `
 
-            : `
-              <div
-                class="history-normal"
-              >
-                ✓ 全部正常
-              </div>
-            `;
+        if (
+          report.abnormal_items
+        ) {
+
+          if (
+            Array.isArray(
+              report.abnormal_items
+            )
+          ) {
+
+            abnormalText =
+              report.abnormal_items.join(
+                "\n"
+              );
+
+          } else {
+
+            abnormalText =
+              String(
+                report.abnormal_items
+              );
+
+          }
+
+        }
 
 
         card.innerHTML = `
@@ -1446,38 +1187,67 @@ async function openHistory(
           <div class="history-top">
 
             <div class="history-date">
-              ${formatDate(
-                record.reported_at
+              ${formatDateTime(
+                report.reported_at
               )}
             </div>
 
-            <div
-              class="status ${
-                isAbnormal
-                  ? "status-abnormal"
-                  : "status-normal"
-              }"
-            >
+            <div class="status ${
+              isAbnormal
+                ? "status-abnormal"
+                : "status-normal"
+            }">
+
               ${
                 isAbnormal
                   ? "異常"
                   : "正常"
               }
+
             </div>
 
           </div>
 
 
           <div class="history-mileage">
-            里程
+            里程：
             ${Number(
-              record.mileage
+              report.mileage || 0
             ).toLocaleString()}
             km
           </div>
 
 
-          ${statusHtml}
+          ${
+            isAbnormal
+
+              ? `
+
+                <div class="history-abnormal">
+
+                  <strong>
+                    異常項目
+                  </strong>
+
+                  <br>
+
+                  ${escapeHtml(
+                    abnormalText ||
+                    "未填寫異常說明"
+                  )}
+
+                </div>
+
+              `
+
+              : `
+
+                <div class="history-normal">
+                  本次巡檢全部正常
+                </div>
+
+              `
+          }
 
         `;
 
@@ -1493,20 +1263,14 @@ async function openHistory(
   } catch (error) {
 
     historyContainer.innerHTML = `
-
       <div class="empty">
-
         歷史紀錄讀取失敗
-
         <br><br>
-
         ${escapeHtml(
           error.message ||
           "未知錯誤"
         )}
-
       </div>
-
     `;
 
   }
@@ -1515,57 +1279,37 @@ async function openHistory(
 
 
 /* =====================================================
-   CLOSE MODAL
+   UTILITIES
 ===================================================== */
 
-closeModal.addEventListener(
-  "click",
-  () => {
-
-    modal.classList.remove(
-      "show"
-    );
-
-  }
-);
-
-
-modal.addEventListener(
-  "click",
-  event => {
-
-    if (
-      event.target === modal
-    ) {
-
-      modal.classList.remove(
-        "show"
-      );
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   FORMAT DATE
-===================================================== */
-
-function formatDate(
+function formatDateTime(
   value
 ) {
 
   if (!value) {
-    return "—";
+    return "尚無紀錄";
   }
 
 
-  return new Date(
-    value
-  ).toLocaleString(
+  const date =
+    new Date(value);
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+
+    return "日期錯誤";
+
+  }
+
+
+  return date.toLocaleString(
     "zh-TW",
     {
+      year: "numeric",
       month: "2-digit",
       day: "2-digit",
       hour: "2-digit",
@@ -1576,17 +1320,11 @@ function formatDate(
 }
 
 
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
 function escapeHtml(
   value
 ) {
 
-  return String(
-    value
-  )
+  return String(value)
     .replace(
       /&/g,
       "&amp;"
@@ -1612,10 +1350,49 @@ function escapeHtml(
 
 
 /* =====================================================
+   EVENTS
+===================================================== */
+
+searchInput.addEventListener(
+  "input",
+  renderVehicles
+);
+
+
+closeModal.addEventListener(
+  "click",
+  () => {
+    modal.classList.remove(
+      "show"
+    );
+  }
+);
+
+
+modal.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target ===
+      modal
+    ) {
+
+      modal.classList.remove(
+        "show"
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
    START
 ===================================================== */
 
-loadVehicles();
+loadData();
 
 </script>
 
