@@ -435,10 +435,61 @@ button{cursor:pointer}
   line-height:1.8
 }
 
-.oil-panel-status{
+'.oil-panel-status{
   margin-top:10px;
   font-size:17px;
   font-weight:800
+}
+
+.claim-panel{
+  margin-top:18px;
+  padding:18px;
+  border-radius:18px;
+  background:#faf9f6;
+  border:1px solid var(--line)
+}
+
+.claim-panel-title{
+  font-size:17px;
+  font-weight:800;
+  margin-bottom:10px
+}
+
+.claim-summary{
+  color:var(--gray);
+  font-size:14px;
+  line-height:1.7;
+  margin-bottom:12px
+}
+
+.claim-card{
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  background:#fff;
+  margin-top:10px
+}
+
+.claim-card:first-child{
+  margin-top:0
+}
+
+.claim-time{
+  font-size:13px;
+  color:var(--gray);
+  margin-bottom:7px
+}
+
+.claim-person{
+  font-size:17px;
+  font-weight:800
+}
+
+.claim-detail{
+  margin-top:8px;
+  color:var(--gray);
+  font-size:14px;
+  line-height:1.8
 }
 
 .oil-action,
@@ -699,6 +750,8 @@ button{cursor:pointer}
 
     <div id="oilHistory"></div>
 
+    <div id="claimHistory"></div>
+
     <div id="history" class="history"></div>
 
     <button id="closeModal" class="close-btn">
@@ -791,6 +844,9 @@ const oilPanel =
 
 const oilHistory =
   $("oilHistory");
+
+const claimHistory =
+  $("claimHistory");
 
 const historyContainer =
   $("history");
@@ -1742,6 +1798,80 @@ async function renderOilHistory(v){
 }
 
 /* =========================
+   領車歷史
+========================= */
+
+async function renderClaimHistory(v){
+
+  claimHistory.innerHTML =
+    '<div class="loading">讀取領車紀錄中…</div>';
+
+  try{
+
+    const r =
+      await db
+        .from("claim_records")
+        .select("*")
+        .eq("vehicle_id",v.id)
+        .order("claimed_at",{ascending:false});
+
+    if(r.error)
+      throw r.error;
+
+    const rows =
+      r.data || [];
+
+    if(!rows.length){
+
+      claimHistory.innerHTML =
+        `
+        <div class="claim-panel">
+          <div class="claim-panel-title">🚗 領車紀錄</div>
+          <div class="empty">尚無領車紀錄</div>
+        </div>
+        `;
+
+      return;
+
+    }
+
+    claimHistory.innerHTML =
+      `
+      <div class="claim-panel">
+        <div class="claim-panel-title">🚗 領車紀錄</div>
+        <div class="claim-summary">
+          共 ${rows.length} 筆｜同一天同一台車多人領車會全部保留
+        </div>
+
+        ${rows.map(x => `
+          <div class="claim-card">
+            <div class="claim-time">${esc(fmt(x.claimed_at))}</div>
+            <div class="claim-person">${esc(x.claimant_name || "未填寫")}</div>
+            <div class="claim-detail">
+              領車點：${esc(x.claim_point || "未填寫")}<br>
+              記錄器號碼：${esc(x.recorder_number || "未填寫")}<br>
+              油卡狀態：${esc(x.oil_card_status || "未填寫")}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+      `;
+
+  }
+  catch(e){
+
+    claimHistory.innerHTML =
+      `
+      <div class="empty" style="margin-top:18px">
+        領車紀錄讀取失敗：${esc(e.message || "未知錯誤")}
+      </div>
+      `;
+
+  }
+
+}
+
+/* =========================
    車輛歷史
 ========================= */
 
@@ -1757,6 +1887,7 @@ async function openHistory(v){
 
   renderOilPanel(v);
   renderOilHistory(v);
+  renderClaimHistory(v);
 
   healthPanel.innerHTML =
     '<div class="loading">讀取車輛健康資料中…</div>';
@@ -2376,6 +2507,18 @@ async function exportMonthlyExcel(){
     if(or.error)
       throw or.error;
 
+    const cr =
+      await db
+        .from("claim_records")
+        .select("*")
+        .gte("claimed_at",start.toISOString())
+        .lt("claimed_at",end.toISOString())
+        .order("claimed_at",{ascending:true})
+        .range(0,9999);
+
+    if(cr.error)
+      throw cr.error;
+
     const reportRows = (rr.data || []).map(r => {
       const v = vehicleMap.get(r.vehicle_id) || {};
       return {
@@ -2411,18 +2554,39 @@ async function exportMonthlyExcel(){
       };
     });
 
+    const claimRows =
+      (cr.data || []).map(r => {
+
+        const v =
+          vehicleMap.get(r.vehicle_id) || {};
+
+        return {
+          "日期":r.claimed_at ? new Date(r.claimed_at).toLocaleDateString("zh-TW") : "",
+          "時間":r.claimed_at ? new Date(r.claimed_at).toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"}) : "",
+          "車牌":v.full_plate || v.plate4 || "",
+          "CENTER":v.center || "",
+          "領車人":r.claimant_name || "",
+          "領車點":r.claim_point || "",
+          "記錄器號碼":r.recorder_number || "",
+          "油卡狀態":r.oil_card_status || ""
+        };
+
+      });
+
     const wb = XLSX.utils.book_new();
     const ws1 = XLSX.utils.json_to_sheet(reportRows);
     const ws2 = XLSX.utils.json_to_sheet(oilRows);
+    const ws3 = XLSX.utils.json_to_sheet(claimRows);
     XLSX.utils.book_append_sheet(wb,ws1,"巡檢紀錄");
     XLSX.utils.book_append_sheet(wb,ws2,"換油紀錄");
+    XLSX.utils.book_append_sheet(wb,ws3,"領車紀錄");
 
     XLSX.writeFile(
       wb,
       `KFC車輛巡檢_${month}.xlsx`
     );
 
-    alert(`✅ 匯出完成！\n\n巡檢紀錄：${reportRows.length} 筆\n換油紀錄：${oilRows.length} 筆`);
+    alert(`✅ 匯出完成！\n\n巡檢紀錄：${reportRows.length} 筆\n換油紀錄：${oilRows.length} 筆\n領車紀錄：${claimRows.length} 筆`);
   }
   catch(e){
     alert(
