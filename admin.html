@@ -11,32 +11,31 @@
 
   <style>
     :root {
-      --red: #c8102e;
-      --black: #242424;
-      --gray: #77736d;
-      --linen: #f4f0e8;
-      --paper: #ffffff;
-      --line: #ddd8ce;
+      --red:#c8102e;
+      --black:#242424;
+      --gray:#77736d;
+      --linen:#f4f0e8;
+      --paper:#fff;
+      --line:#ddd8ce;
 
-      --green: #356b4b;
-      --green-bg: #eef5f0;
+      --green:#356b4b;
+      --green-bg:#eef5f0;
 
-      --danger: #b42318;
-      --danger-bg: #fff0ee;
+      --danger:#b42318;
+      --danger-bg:#fff0ee;
 
-      --yellow: #9a6b00;
-      --yellow-bg: #fff8df;
+      --yellow:#9a6b00;
+      --yellow-bg:#fff8df;
     }
 
     * {
-      box-sizing: border-box;
+      box-sizing:border-box;
     }
 
     body {
-      margin: 0;
-      background: var(--linen);
-      color: var(--black);
-
+      margin:0;
+      background:var(--linen);
+      color:var(--black);
       font-family:
         -apple-system,
         BlinkMacSystemFont,
@@ -45,477 +44,446 @@
         "Helvetica Neue",
         Arial,
         sans-serif;
-
-      text-align: center;
+      text-align:center;
     }
 
-    button,
-    input {
-      font-family: inherit;
+    button,input {
+      font-family:inherit;
     }
 
     .page {
-      width: 100%;
-      max-width: 900px;
-      margin: auto;
-      padding-bottom: 50px;
+      width:100%;
+      max-width:900px;
+      margin:auto;
+      padding-bottom:50px;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     .header {
-      background: var(--paper);
-      padding: 30px 20px 26px;
-      border-bottom: 1px solid var(--line);
-      text-align: center;
+      background:var(--paper);
+      padding:30px 20px 26px;
+      border-bottom:1px solid var(--line);
+      text-align:center;
     }
 
     .eyebrow {
-      color: var(--gray);
-      font-size: 12px;
-      letter-spacing: 4px;
-      margin-bottom: 8px;
+      color:var(--gray);
+      font-size:12px;
+      letter-spacing:4px;
+      margin-bottom:8px;
     }
 
     .title-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:15px;
     }
 
     .title {
-      margin: 0;
-      font-size: 34px;
-      font-weight: 800;
+      margin:0;
+      font-size:34px;
+      font-weight:800;
     }
 
     .kfc {
-      color: var(--red);
-      font-size: 28px;
-      font-weight: 900;
+      color:var(--red);
+      font-size:28px;
+      font-weight:900;
     }
 
     .date {
-      margin-top: 10px;
-      color: var(--gray);
-      font-size: 14px;
+      margin-top:10px;
+      color:var(--gray);
+      font-size:14px;
     }
 
-    /* =========================
-       SECTION
-    ========================= */
-
     .section {
-      padding: 22px 16px 0;
+      padding:22px 16px 0;
     }
 
     .section-title {
-      margin-bottom: 14px;
-      font-size: 20px;
-      font-weight: 800;
-      text-align: center;
+      margin-bottom:14px;
+      font-size:20px;
+      font-weight:800;
+      text-align:center;
     }
 
-    /* =========================
-       SUMMARY
-    ========================= */
-
     .summary {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
     }
 
     .summary-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px 8px;
-      text-align: center;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px 8px;
+      text-align:center;
     }
 
     .summary-label {
-      color: var(--gray);
-      font-size: 13px;
-      margin-bottom: 8px;
+      color:var(--gray);
+      font-size:13px;
+      margin-bottom:8px;
     }
 
     .summary-number {
-      font-size: 30px;
-      font-weight: 800;
+      font-size:30px;
+      font-weight:800;
     }
 
     .summary-card.done .summary-number {
-      color: var(--green);
+      color:var(--green);
     }
 
     .summary-card.abnormal .summary-number {
-      color: var(--danger);
+      color:var(--danger);
     }
 
-    /* =========================
-       SEARCH
-    ========================= */
+    .summary-card.oil .summary-number {
+      color:var(--yellow);
+    }
 
     .search-box {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
     }
 
     .search-input {
-      width: 100%;
-      height: 54px;
-
-      border: 2px solid #d8d3ca;
-      border-radius: 14px;
-
-      padding: 0 16px;
-
-      font-size: 18px;
-      text-align: center;
-
-      outline: none;
+      width:100%;
+      height:54px;
+      border:2px solid #d8d3ca;
+      border-radius:14px;
+      padding:0 16px;
+      font-size:18px;
+      text-align:center;
+      outline:none;
     }
 
     .search-input:focus {
-      border-color: var(--red);
+      border-color:var(--red);
     }
 
-    /* =========================
-       VEHICLE LIST
-    ========================= */
-
     .vehicle-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
 
     .vehicle-card {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-
-      padding: 18px;
-
-      cursor: pointer;
-
-      text-align: center;
-
-      transition:
-        transform .12s ease,
-        box-shadow .12s ease;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      cursor:pointer;
+      text-align:center;
+      transition:.12s ease;
     }
 
     .vehicle-card:hover {
-      box-shadow: 0 4px 14px rgba(0, 0, 0, .06);
+      box-shadow:0 4px 14px rgba(0,0,0,.06);
     }
 
     .vehicle-card:active {
-      transform: scale(.99);
+      transform:scale(.99);
     }
 
-    /* 異常車輛 */
     .vehicle-card.is-abnormal {
-      border: 2px solid #e2aaa4;
-      background: #fffafa;
+      border:2px solid #e2aaa4;
+      background:#fffafa;
+    }
+
+    .vehicle-card.oil-warning {
+      border:2px solid #e1c66e;
+      background:#fffdf5;
+    }
+
+    .vehicle-card.oil-danger {
+      border:2px solid #d9958d;
+      background:#fffafa;
     }
 
     .vehicle-top {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 9px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:9px;
     }
 
     .plate {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      text-align: center;
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-align:center;
     }
 
     .status {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-
-      padding: 6px 13px;
-
-      border-radius: 20px;
-
-      font-size: 13px;
-      font-weight: 800;
-
-      white-space: nowrap;
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      padding:6px 13px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
     }
 
     .status-normal {
-      background: var(--green-bg);
-      color: var(--green);
+      background:var(--green-bg);
+      color:var(--green);
     }
 
     .status-abnormal {
-      background: var(--danger-bg);
-      color: var(--danger);
+      background:var(--danger-bg);
+      color:var(--danger);
     }
 
     .status-none {
-      background: #f1eee8;
-      color: var(--gray);
+      background:#f1eee8;
+      color:var(--gray);
+    }
+
+    .oil-status {
+      display:inline-flex;
+      justify-content:center;
+      align-items:center;
+      margin-top:3px;
+      padding:6px 12px;
+      border-radius:20px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .oil-normal {
+      background:var(--green-bg);
+      color:var(--green);
+    }
+
+    .oil-warning-status {
+      background:var(--yellow-bg);
+      color:var(--yellow);
+    }
+
+    .oil-danger-status {
+      background:var(--danger-bg);
+      color:var(--danger);
+    }
+
+    .oil-none {
+      background:#f1eee8;
+      color:var(--gray);
     }
 
     .vehicle-info {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-
-      margin-top: 15px;
-
-      gap: 8px;
-
-      color: var(--gray);
-
-      font-size: 14px;
-
-      text-align: center;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      margin-top:15px;
+      gap:8px;
+      color:var(--gray);
+      font-size:14px;
+      text-align:center;
     }
 
     .vehicle-info > div {
-      padding: 8px 4px;
+      padding:8px 4px;
     }
 
     .vehicle-info strong {
-      display: block;
-
-      margin-top: 4px;
-
-      color: var(--black);
-
-      font-size: 15px;
-
-      text-align: center;
+      display:block;
+      margin-top:4px;
+      color:var(--black);
+      font-size:15px;
+      text-align:center;
     }
-
-    /* =========================
-       EMPTY / LOADING
-    ========================= */
 
     .empty,
     .loading {
-      padding: 40px 20px;
-
-      background: var(--paper);
-
-      border: 1px solid var(--line);
-      border-radius: 18px;
-
-      color: var(--gray);
-
-      text-align: center;
+      padding:40px 20px;
+      background:var(--paper);
+      border:1px solid var(--line);
+      border-radius:18px;
+      color:var(--gray);
+      text-align:center;
     }
 
-    /* =========================
-       MODAL
-    ========================= */
-
     .modal {
-      position: fixed;
-      inset: 0;
-
-      background: rgba(0, 0, 0, .45);
-
-      display: none;
-
-      justify-content: center;
-      align-items: flex-end;
-
-      z-index: 1000;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      display:none;
+      justify-content:center;
+      align-items:flex-end;
+      z-index:1000;
     }
 
     .modal.show {
-      display: flex;
+      display:flex;
     }
 
     .modal-content {
-      width: 100%;
-      max-width: 700px;
-
-      max-height: 88vh;
-
-      overflow-y: auto;
-
-      background: var(--paper);
-
-      border-radius: 25px 25px 0 0;
-
-      padding: 24px 18px 35px;
-
-      text-align: center;
-    }
-
-    .modal-header {
-      text-align: center;
-      margin-bottom: 20px;
+      width:100%;
+      max-width:700px;
+      max-height:88vh;
+      overflow-y:auto;
+      background:var(--paper);
+      border-radius:25px 25px 0 0;
+      padding:24px 18px 35px;
+      text-align:center;
     }
 
     .modal-title {
-      font-size: 25px;
-      font-weight: 800;
+      font-size:25px;
+      font-weight:800;
     }
 
     .modal-subtitle {
-      color: var(--gray);
-      margin-top: 5px;
-      font-size: 14px;
+      color:var(--gray);
+      margin-top:5px;
+      font-size:14px;
     }
 
-    /* =========================
-       HISTORY
-    ========================= */
-
     .history {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:20px;
     }
 
     .history-card {
-      border: 1px solid var(--line);
-
-      border-radius: 16px;
-
-      padding: 16px;
-
-      background: #faf9f6;
-
-      text-align: center;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      background:#faf9f6;
+      text-align:center;
     }
 
     .history-top {
-      display: flex;
-      flex-direction: column;
-
-      justify-content: center;
-      align-items: center;
-
-      gap: 8px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      gap:8px;
     }
 
     .history-date {
-      font-size: 14px;
-      color: var(--gray);
-      text-align: center;
+      font-size:14px;
+      color:var(--gray);
     }
 
     .history-mileage {
-      margin-top: 12px;
-
-      font-size: 18px;
-      font-weight: 800;
-
-      text-align: center;
+      margin-top:12px;
+      font-size:18px;
+      font-weight:800;
     }
 
     .history-abnormal {
-      margin-top: 10px;
-
-      padding: 12px;
-
-      border-radius: 11px;
-
-      background: var(--danger-bg);
-
-      color: var(--danger);
-
-      font-size: 14px;
-      line-height: 1.6;
-
-      white-space: pre-wrap;
-
-      text-align: center;
+      margin-top:10px;
+      padding:12px;
+      border-radius:11px;
+      background:var(--danger-bg);
+      color:var(--danger);
+      font-size:14px;
+      line-height:1.6;
+      white-space:pre-wrap;
     }
 
     .history-normal {
-      margin-top: 10px;
+      margin-top:10px;
+      padding:10px;
+      border-radius:11px;
+      background:var(--green-bg);
+      color:var(--green);
+      font-size:14px;
+      font-weight:700;
+    }
 
-      padding: 10px;
+    .oil-panel {
+      margin-top:18px;
+      padding:18px;
+      border-radius:18px;
+      background:#faf9f6;
+      border:1px solid var(--line);
+    }
 
-      border-radius: 11px;
+    .oil-panel-title {
+      font-size:17px;
+      font-weight:800;
+      margin-bottom:10px;
+    }
 
-      background: var(--green-bg);
+    .oil-panel-info {
+      color:var(--gray);
+      font-size:14px;
+      line-height:1.7;
+    }
 
-      color: var(--green);
+    .oil-panel-status {
+      margin-top:10px;
+      font-size:17px;
+      font-weight:800;
+    }
 
-      font-size: 14px;
-      font-weight: 700;
+    .oil-action {
+      width:100%;
+      height:50px;
+      margin-top:14px;
+      border:0;
+      border-radius:14px;
+      background:var(--red);
+      color:#fff;
+      font-size:16px;
+      font-weight:800;
+    }
 
-      text-align: center;
+    .oil-action:disabled {
+      opacity:.5;
     }
 
     .close-btn {
-      width: 100%;
-      height: 52px;
-
-      margin-top: 20px;
-
-      border: 0;
-      border-radius: 15px;
-
-      background: var(--black);
-      color: white;
-
-      font-size: 17px;
-      font-weight: 700;
+      width:100%;
+      height:52px;
+      margin-top:20px;
+      border:0;
+      border-radius:15px;
+      background:var(--black);
+      color:#fff;
+      font-size:17px;
+      font-weight:700;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 600px) {
+    @media(max-width:600px) {
 
       .summary {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns:repeat(2,1fr);
       }
 
       .summary-number {
-        font-size: 27px;
+        font-size:27px;
       }
 
       .title {
-        font-size: 28px;
+        font-size:28px;
       }
 
       .kfc {
-        font-size: 24px;
-      }
-
-      .vehicle-info {
-        grid-template-columns: 1fr 1fr;
+        font-size:24px;
       }
 
       .plate {
-        font-size: 20px;
+        font-size:20px;
       }
 
     }
-
   </style>
 </head>
 
 <body>
 
 <div class="page">
-
-  <!-- =========================
-       HEADER
-  ========================= -->
 
   <header class="header">
 
@@ -535,17 +503,10 @@
 
     </div>
 
-    <div
-      id="todayDate"
-      class="date">
-    </div>
+    <div id="todayDate" class="date"></div>
 
   </header>
 
-
-  <!-- =========================
-       SUMMARY
-  ========================= -->
 
   <section class="section">
 
@@ -561,9 +522,7 @@
           車輛總數
         </div>
 
-        <div
-          id="totalCount"
-          class="summary-number">
+        <div id="totalCount" class="summary-number">
           —
         </div>
 
@@ -576,9 +535,7 @@
           已巡檢
         </div>
 
-        <div
-          id="doneCount"
-          class="summary-number">
+        <div id="doneCount" class="summary-number">
           —
         </div>
 
@@ -591,9 +548,7 @@
           未巡檢
         </div>
 
-        <div
-          id="pendingCount"
-          class="summary-number">
+        <div id="pendingCount" class="summary-number">
           —
         </div>
 
@@ -606,9 +561,7 @@
           今日異常
         </div>
 
-        <div
-          id="abnormalCount"
-          class="summary-number">
+        <div id="abnormalCount" class="summary-number">
           —
         </div>
 
@@ -618,10 +571,6 @@
 
   </section>
 
-
-  <!-- =========================
-       SEARCH
-  ========================= -->
 
   <section class="section">
 
@@ -644,19 +593,13 @@
   </section>
 
 
-  <!-- =========================
-       VEHICLES
-  ========================= -->
-
   <section class="section">
 
     <div class="section-title">
       車輛列表
     </div>
 
-    <div
-      id="vehicleList"
-      class="vehicle-list">
+    <div id="vehicleList" class="vehicle-list">
 
       <div class="loading">
         載入車輛資料中…
@@ -669,43 +612,23 @@
 </div>
 
 
-<!-- =========================
-     MODAL
-========================= -->
-
-<div
-  id="modal"
-  class="modal">
+<div id="modal" class="modal">
 
   <div class="modal-content">
 
-    <div class="modal-header">
+    <div class="modal-title" id="modalTitle"></div>
 
-      <div
-        id="modalTitle"
-        class="modal-title">
-      </div>
-
-      <div
-        id="modalSubtitle"
-        class="modal-subtitle">
-      </div>
-
-    </div>
+    <div class="modal-subtitle" id="modalSubtitle"></div>
 
 
-    <div
-      id="history"
-      class="history">
-    </div>
+    <div id="oilPanel"></div>
 
 
-    <button
-      id="closeModal"
-      class="close-btn">
+    <div id="history" class="history"></div>
 
+
+    <button id="closeModal" class="close-btn">
       關閉
-
     </button>
 
   </div>
@@ -714,10 +637,6 @@
 
 
 <script>
-
-/* =====================================================
-   SUPABASE
-===================================================== */
 
 const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
@@ -732,105 +651,69 @@ const db =
   );
 
 
-/* =====================================================
-   DOM
-===================================================== */
+const OIL_INTERVAL = 1500;
+const OIL_WARNING_DISTANCE = 300;
+
 
 const vehicleList =
-  document.getElementById(
-    "vehicleList"
-  );
+  document.getElementById("vehicleList");
 
 const searchInput =
-  document.getElementById(
-    "searchInput"
-  );
+  document.getElementById("searchInput");
 
 const totalCount =
-  document.getElementById(
-    "totalCount"
-  );
+  document.getElementById("totalCount");
 
 const doneCount =
-  document.getElementById(
-    "doneCount"
-  );
+  document.getElementById("doneCount");
 
 const pendingCount =
-  document.getElementById(
-    "pendingCount"
-  );
+  document.getElementById("pendingCount");
 
 const abnormalCount =
-  document.getElementById(
-    "abnormalCount"
-  );
+  document.getElementById("abnormalCount");
 
 const todayDate =
-  document.getElementById(
-    "todayDate"
-  );
+  document.getElementById("todayDate");
 
 const modal =
-  document.getElementById(
-    "modal"
-  );
+  document.getElementById("modal");
 
 const modalTitle =
-  document.getElementById(
-    "modalTitle"
-  );
+  document.getElementById("modalTitle");
 
 const modalSubtitle =
-  document.getElementById(
-    "modalSubtitle"
-  );
+  document.getElementById("modalSubtitle");
+
+const oilPanel =
+  document.getElementById("oilPanel");
 
 const historyContainer =
-  document.getElementById(
-    "history"
-  );
+  document.getElementById("history");
 
 const closeModal =
-  document.getElementById(
-    "closeModal"
-  );
+  document.getElementById("closeModal");
 
 
 let vehicles = [];
-
 let todayReports = [];
-
 let latestReports = [];
 
 
-/* =====================================================
-   DATE
-===================================================== */
-
-const now =
-  new Date();
-
+const now = new Date();
 
 const todayStart =
   new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate(),
-    0,
-    0,
-    0
+    now.getDate()
   );
-
 
 const tomorrowStart =
   new Date(
     now.getFullYear(),
     now.getMonth(),
-    now.getDate() + 1,
-    0,
-    0,
-    0
+    now.getDate() + 1
   );
 
 
@@ -838,17 +721,13 @@ todayDate.textContent =
   now.toLocaleDateString(
     "zh-TW",
     {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "long"
+      year:"numeric",
+      month:"long",
+      day:"numeric",
+      weekday:"long"
     }
   );
 
-
-/* =====================================================
-   LOAD DATA
-===================================================== */
 
 async function loadData() {
 
@@ -858,51 +737,29 @@ async function loadData() {
     </div>
   `;
 
-
   try {
-
-    /* =========================
-       取得啟用車輛
-    ========================= */
 
     const vehicleResult =
       await db
         .from("vehicles")
         .select("*")
-        .eq(
-          "active",
-          true
-        )
-        .order(
-          "plate4",
-          {
-            ascending: true
-          }
-        );
+        .eq("active",true)
+        .order("plate4",{
+          ascending:true
+        });
 
 
-    if (
-      vehicleResult.error
-    ) {
-
+    if(vehicleResult.error)
       throw vehicleResult.error;
-
-    }
 
 
     vehicles =
       vehicleResult.data || [];
 
 
-    /* =========================
-       取得今日巡檢
-    ========================= */
-
     const todayResult =
       await db
-        .from(
-          "inspection_reports"
-        )
+        .from("inspection_reports")
         .select("*")
         .gte(
           "reported_at",
@@ -915,42 +772,27 @@ async function loadData() {
         .order(
           "reported_at",
           {
-            ascending: false
+            ascending:false
           }
         );
 
 
-    if (
-      todayResult.error
-    ) {
-
+    if(todayResult.error)
       throw todayResult.error;
-
-    }
 
 
     todayReports =
       todayResult.data || [];
 
 
-    /* =========================
-       取得每台車最新紀錄
-    ========================= */
-
-    latestReports = [];
-
-
     const latestResults =
       await Promise.all(
-
         vehicles.map(
           async vehicle => {
 
             const result =
               await db
-                .from(
-                  "inspection_reports"
-                )
+                .from("inspection_reports")
                 .select("*")
                 .eq(
                   "vehicle_id",
@@ -959,13 +801,13 @@ async function loadData() {
                 .order(
                   "reported_at",
                   {
-                    ascending: false
+                    ascending:false
                   }
                 )
                 .limit(1);
 
 
-            if (
+            if(
               result.error ||
               !result.data ||
               result.data.length === 0
@@ -975,34 +817,26 @@ async function loadData() {
 
             }
 
-
             return result.data[0];
 
           }
         )
-
       );
 
 
     latestReports =
       latestResults.filter(
-        item =>
-          item !== null
+        x => x !== null
       );
 
 
     updateSummary();
-
     renderVehicles();
 
 
-  } catch (error) {
+  } catch(error) {
 
-    console.error(
-      "ADMIN ERROR:",
-      error
-    );
-
+    console.error(error);
 
     vehicleList.innerHTML = `
       <div class="empty">
@@ -1026,10 +860,6 @@ async function loadData() {
 }
 
 
-/* =====================================================
-   SUMMARY
-===================================================== */
-
 function updateSummary() {
 
   const total =
@@ -1043,7 +873,7 @@ function updateSummary() {
   todayReports.forEach(
     report => {
 
-      if (
+      if(
         !todayMap.has(
           report.vehicle_id
         )
@@ -1077,7 +907,7 @@ function updateSummary() {
   todayMap.forEach(
     report => {
 
-      if (
+      if(
         report.overall_status ===
         "abnormal"
       ) {
@@ -1105,61 +935,191 @@ function updateSummary() {
 }
 
 
-/* =====================================================
-   VEHICLE STATUS
-===================================================== */
+function getTodayReport(vehicle) {
 
-function getVehicleStatus(
-  vehicle
-) {
+  return todayReports.find(
+    report =>
+      report.vehicle_id ===
+      vehicle.id
+  );
 
-  const todayReport =
-    todayReports.find(
-      report =>
-        report.vehicle_id ===
-        vehicle.id
-    );
+}
 
 
-  if (
-    !todayReport
+function getLatestReport(vehicle) {
+
+  return latestReports.find(
+    report =>
+      report.vehicle_id ===
+      vehicle.id
+  );
+
+}
+
+
+function getOilStatus(vehicle) {
+
+  const latest =
+    getLatestReport(vehicle);
+
+
+  const currentMileage =
+    latest
+      ? Number(latest.mileage || 0)
+      : null;
+
+
+  const lastOil =
+    vehicle.last_oil_change_mileage;
+
+
+  if(
+    lastOil === null ||
+    lastOil === undefined
   ) {
 
     return {
-      type: "pending",
-      order: 2,
-      text: "今日未巡檢"
+      type:"none",
+      order:4,
+      text:"尚未設定換油基準",
+      currentMileage,
+      lastOil:null,
+      remaining:null
     };
 
   }
 
 
-  if (
-    todayReport.overall_status ===
-    "abnormal"
+  if(
+    currentMileage === null
   ) {
 
     return {
-      type: "abnormal",
-      order: 1,
-      text: "今日異常"
+      type:"none",
+      order:4,
+      text:"等待里程",
+      currentMileage:null,
+      lastOil:Number(lastOil),
+      remaining:null
+    };
+
+  }
+
+
+  const used =
+    currentMileage -
+    Number(lastOil);
+
+
+  const remaining =
+    OIL_INTERVAL -
+    used;
+
+
+  if(
+    remaining <= 0
+  ) {
+
+    return {
+      type:"danger",
+      order:1,
+      text:`需要換油 ${Math.abs(remaining)} km`,
+      currentMileage,
+      lastOil:Number(lastOil),
+      remaining
+    };
+
+  }
+
+
+  if(
+    remaining <= OIL_WARNING_DISTANCE
+  ) {
+
+    return {
+      type:"warning",
+      order:2,
+      text:`距離換油 ${remaining} km`,
+      currentMileage,
+      lastOil:Number(lastOil),
+      remaining
     };
 
   }
 
 
   return {
-    type: "normal",
-    order: 3,
-    text: "今日正常"
+    type:"normal",
+    order:3,
+    text:`距離換油 ${remaining} km`,
+    currentMileage,
+    lastOil:Number(lastOil),
+    remaining
   };
 
 }
 
 
-/* =====================================================
-   RENDER VEHICLES
-===================================================== */
+function getVehicleSortStatus(vehicle) {
+
+  const today =
+    getTodayReport(vehicle);
+
+  const oil =
+    getOilStatus(vehicle);
+
+
+  /*
+    排序優先：
+
+    1. 機油已到期
+    2. 今日異常
+    3. 機油即將到期
+    4. 未巡檢
+    5. 正常
+  */
+
+
+  if(
+    oil.type === "danger"
+  ) {
+
+    return 1;
+
+  }
+
+
+  if(
+    today &&
+    today.overall_status ===
+    "abnormal"
+  ) {
+
+    return 2;
+
+  }
+
+
+  if(
+    oil.type === "warning"
+  ) {
+
+    return 3;
+
+  }
+
+
+  if(!today) {
+
+    return 4;
+
+  }
+
+
+  return 5;
+
+}
+
 
 function renderVehicles() {
 
@@ -1173,13 +1133,8 @@ function renderVehicles() {
     vehicles.filter(
       vehicle => {
 
-        if (
-          !keyword
-        ) {
-
+        if(!keyword)
           return true;
-
-        }
 
 
         return (
@@ -1188,9 +1143,7 @@ function renderVehicles() {
             vehicle.plate4 || ""
           )
           .toUpperCase()
-          .includes(
-            keyword
-          )
+          .includes(keyword)
 
           ||
 
@@ -1198,9 +1151,7 @@ function renderVehicles() {
             vehicle.full_plate || ""
           )
           .toUpperCase()
-          .includes(
-            keyword
-          )
+          .includes(keyword)
 
         );
 
@@ -1208,35 +1159,21 @@ function renderVehicles() {
     );
 
 
-  /* =========================
-     排序
-
-     1 今日異常
-     2 今日未巡檢
-     3 今日正常
-
-     同類型再依車牌
-  ========================= */
-
   filtered.sort(
-    (a, b) => {
+    (a,b) => {
 
       const statusA =
-        getVehicleStatus(a);
+        getVehicleSortStatus(a);
 
       const statusB =
-        getVehicleStatus(b);
+        getVehicleSortStatus(b);
 
 
-      if (
-        statusA.order !==
-        statusB.order
+      if(
+        statusA !== statusB
       ) {
 
-        return (
-          statusA.order -
-          statusB.order
-        );
+        return statusA - statusB;
 
       }
 
@@ -1253,7 +1190,7 @@ function renderVehicles() {
   );
 
 
-  if (
+  if(
     filtered.length === 0
   ) {
 
@@ -1274,63 +1211,95 @@ function renderVehicles() {
   filtered.forEach(
     vehicle => {
 
-      const status =
-        getVehicleStatus(
-          vehicle
-        );
-
+      const today =
+        getTodayReport(vehicle);
 
       const latest =
-        latestReports.find(
-          report =>
-            report.vehicle_id ===
-            vehicle.id
-        );
+        getLatestReport(vehicle);
 
-
-      const mileage =
-        latest
-
-          ? `${Number(
-              latest.mileage
-            ).toLocaleString()} km`
-
-          : "尚無資料";
-
-
-      const lastTime =
-        latest
-
-          ? formatDateTime(
-              latest.reported_at
-            )
-
-          : "尚無紀錄";
+      const oil =
+        getOilStatus(vehicle);
 
 
       let statusClass =
         "status-none";
 
+      let statusText =
+        "今日未巡檢";
 
-      if (
-        status.type ===
-        "abnormal"
-      ) {
 
-        statusClass =
-          "status-abnormal";
+      if(today) {
+
+        if(
+          today.overall_status ===
+          "abnormal"
+        ) {
+
+          statusClass =
+            "status-abnormal";
+
+          statusText =
+            "今日異常";
+
+        } else {
+
+          statusClass =
+            "status-normal";
+
+          statusText =
+            "今日正常";
+
+        }
 
       }
 
-      else if (
-        status.type ===
-        "normal"
+
+      let oilClass =
+        "oil-none";
+
+
+      if(
+        oil.type === "normal"
       ) {
 
-        statusClass =
-          "status-normal";
+        oilClass =
+          "oil-normal";
 
       }
+
+      if(
+        oil.type === "warning"
+      ) {
+
+        oilClass =
+          "oil-warning-status";
+
+      }
+
+      if(
+        oil.type === "danger"
+      ) {
+
+        oilClass =
+          "oil-danger-status";
+
+      }
+
+
+      const mileage =
+        latest
+          ? `${Number(
+              latest.mileage
+            ).toLocaleString()} km`
+          : "尚無資料";
+
+
+      const lastTime =
+        latest
+          ? formatDateTime(
+              latest.reported_at
+            )
+          : "尚無紀錄";
 
 
       const card =
@@ -1343,13 +1312,36 @@ function renderVehicles() {
         "vehicle-card";
 
 
-      if (
-        status.type ===
+      if(
+        today &&
+        today.overall_status ===
         "abnormal"
       ) {
 
         card.classList.add(
           "is-abnormal"
+        );
+
+      }
+
+
+      if(
+        oil.type === "warning"
+      ) {
+
+        card.classList.add(
+          "oil-warning"
+        );
+
+      }
+
+
+      if(
+        oil.type === "danger"
+      ) {
+
+        card.classList.add(
+          "oil-danger"
         );
 
       }
@@ -1372,7 +1364,16 @@ function renderVehicles() {
 
           <div class="status ${statusClass}">
 
-            ${status.text}
+            ${statusText}
+
+          </div>
+
+
+          <div class="oil-status ${oilClass}">
+
+            🛢️ ${escapeHtml(
+              oil.text
+            )}
 
           </div>
 
@@ -1410,11 +1411,7 @@ function renderVehicles() {
       card.addEventListener(
         "click",
         () => {
-
-          openHistory(
-            vehicle
-          );
-
+          openHistory(vehicle);
         }
       );
 
@@ -1429,13 +1426,7 @@ function renderVehicles() {
 }
 
 
-/* =====================================================
-   HISTORY
-===================================================== */
-
-async function openHistory(
-  vehicle
-) {
+async function openHistory(vehicle) {
 
   modalTitle.textContent =
     vehicle.full_plate ||
@@ -1445,6 +1436,11 @@ async function openHistory(
 
   modalSubtitle.textContent =
     "巡檢歷史紀錄";
+
+
+  renderOilPanel(
+    vehicle
+  );
 
 
   historyContainer.innerHTML = `
@@ -1474,25 +1470,20 @@ async function openHistory(
         .order(
           "reported_at",
           {
-            ascending: false
+            ascending:false
           }
         );
 
 
-    if (
-      result.error
-    ) {
-
+    if(result.error)
       throw result.error;
-
-    }
 
 
     const reports =
       result.data || [];
 
 
-    if (
+    if(
       reports.length === 0
     ) {
 
@@ -1523,7 +1514,7 @@ async function openHistory(
           "history-card";
 
 
-        const isAbnormal =
+        const abnormal =
           report.overall_status ===
           "abnormal";
 
@@ -1532,31 +1523,22 @@ async function openHistory(
           "";
 
 
-        if (
+        if(
           report.abnormal_items
         ) {
 
-          if (
+          abnormalText =
             Array.isArray(
               report.abnormal_items
             )
-          ) {
 
-            abnormalText =
-              report.abnormal_items.join(
-                "\n"
-              );
+              ? report.abnormal_items.join(
+                  "\n"
+                )
 
-          }
-
-          else {
-
-            abnormalText =
-              String(
-                report.abnormal_items
-              );
-
-          }
+              : String(
+                  report.abnormal_items
+                );
 
         }
 
@@ -1575,15 +1557,13 @@ async function openHistory(
 
 
             <div class="status ${
-              isAbnormal
-
+              abnormal
                 ? "status-abnormal"
-
                 : "status-normal"
             }">
 
               ${
-                isAbnormal
+                abnormal
                   ? "異常"
                   : "正常"
               }
@@ -1607,7 +1587,7 @@ async function openHistory(
 
 
           ${
-            isAbnormal
+            abnormal
 
               ? `
 
@@ -1650,12 +1630,9 @@ async function openHistory(
     );
 
 
-  }
-
-  catch (error) {
+  } catch(error) {
 
     historyContainer.innerHTML = `
-
       <div class="empty">
 
         歷史紀錄讀取失敗
@@ -1668,7 +1645,6 @@ async function openHistory(
         )}
 
       </div>
-
     `;
 
   }
@@ -1676,28 +1652,238 @@ async function openHistory(
 }
 
 
-/* =====================================================
-   UTILITIES
-===================================================== */
+function renderOilPanel(vehicle) {
+
+  const oil =
+    getOilStatus(vehicle);
+
+
+  let statusText =
+    oil.text;
+
+
+  let statusColor =
+    "var(--gray)";
+
+
+  if(
+    oil.type === "normal"
+  ) {
+
+    statusColor =
+      "var(--green)";
+
+  }
+
+
+  if(
+    oil.type === "warning"
+  ) {
+
+    statusColor =
+      "var(--yellow)";
+
+  }
+
+
+  if(
+    oil.type === "danger"
+  ) {
+
+    statusColor =
+      "var(--danger)";
+
+  }
+
+
+  const lastOilText =
+    oil.lastOil !== null
+      ? `${Number(
+          oil.lastOil
+        ).toLocaleString()} km`
+      : "尚未設定";
+
+
+  const currentText =
+    oil.currentMileage !== null
+      ? `${Number(
+          oil.currentMileage
+        ).toLocaleString()} km`
+      : "尚無巡檢里程";
+
+
+  oilPanel.innerHTML = `
+
+    <div class="oil-panel">
+
+      <div class="oil-panel-title">
+        🛢️ 機油保養
+      </div>
+
+
+      <div class="oil-panel-info">
+
+        上次換油里程：
+        <strong>
+          ${lastOilText}
+        </strong>
+
+        <br>
+
+        目前里程：
+        <strong>
+          ${currentText}
+        </strong>
+
+        <br>
+
+        換油週期：
+        <strong>
+          ${OIL_INTERVAL.toLocaleString()} km
+        </strong>
+
+      </div>
+
+
+      <div
+        class="oil-panel-status"
+        style="color:${statusColor};">
+
+        ${escapeHtml(
+          statusText
+        )}
+
+      </div>
+
+
+      <button
+        class="oil-action"
+        onclick="confirmOilChange('${vehicle.id}')">
+
+        🔧 已更換機油
+
+      </button>
+
+    </div>
+
+  `;
+
+}
+
+
+async function confirmOilChange(
+  vehicleId
+) {
+
+  const vehicle =
+    vehicles.find(
+      v =>
+        v.id ===
+        vehicleId
+    );
+
+
+  if(!vehicle)
+    return;
+
+
+  const latest =
+    getLatestReport(
+      vehicle
+    );
+
+
+  if(!latest) {
+
+    alert(
+      "這台車目前沒有巡檢里程，無法設定換油基準。"
+    );
+
+    return;
+
+  }
+
+
+  const mileage =
+    Number(
+      latest.mileage
+    );
+
+
+  const confirmed =
+    confirm(
+      `確認已更換機油？\n\n目前里程：${mileage.toLocaleString()} km\n\n系統會以 ${mileage.toLocaleString()} km 作為下一次換油基準。`
+    );
+
+
+  if(!confirmed)
+    return;
+
+
+  try {
+
+    const result =
+      await db
+        .from("vehicles")
+        .update({
+          last_oil_change_mileage:
+            mileage
+        })
+        .eq(
+          "id",
+          vehicleId
+        );
+
+
+    if(result.error)
+      throw result.error;
+
+
+    vehicle.last_oil_change_mileage =
+      mileage;
+
+
+    renderOilPanel(
+      vehicle
+    );
+
+
+    renderVehicles();
+
+
+    alert(
+      `完成！\n下一次換油里程：${(mileage + OIL_INTERVAL).toLocaleString()} km`
+    );
+
+
+  } catch(error) {
+
+    alert(
+      "更新失敗：\n" +
+      (
+        error.message ||
+        "未知錯誤"
+      )
+    );
+
+  }
+
+}
+
 
 function formatDateTime(
   value
 ) {
 
-  if (
-    !value
-  ) {
-
+  if(!value)
     return "尚無紀錄";
-
-  }
 
 
   const date =
     new Date(value);
 
 
-  if (
+  if(
     Number.isNaN(
       date.getTime()
     )
@@ -1711,11 +1897,11 @@ function formatDateTime(
   return date.toLocaleString(
     "zh-TW",
     {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit"
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit",
+      hour:"2-digit",
+      minute:"2-digit"
     }
   );
 
@@ -1726,9 +1912,7 @@ function escapeHtml(
   value
 ) {
 
-  return String(
-    value
-  )
+  return String(value)
 
     .replace(
       /&/g,
@@ -1758,10 +1942,6 @@ function escapeHtml(
 }
 
 
-/* =====================================================
-   EVENTS
-===================================================== */
-
 searchInput.addEventListener(
   "input",
   renderVehicles
@@ -1784,7 +1964,7 @@ modal.addEventListener(
   "click",
   event => {
 
-    if (
+    if(
       event.target ===
       modal
     ) {
@@ -1798,10 +1978,6 @@ modal.addEventListener(
   }
 );
 
-
-/* =====================================================
-   START
-===================================================== */
 
 loadData();
 
