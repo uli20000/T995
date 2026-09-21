@@ -175,14 +175,14 @@ button{cursor:pointer}
 .vehicle-list{
   display:flex;
   flex-direction:column;
-  gap:10px
+  gap:8px
 }
 
 .vehicle-card{
   background:#fff;
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px;
+  border-radius:16px;
+  padding:14px;
   cursor:pointer
 }
 
@@ -205,17 +205,17 @@ button{cursor:pointer}
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:8px
+  gap:6px
 }
 
 .plate{
-  font-size:22px;
+  font-size:20px;
   font-weight:800;
   letter-spacing:1px
 }
 
 .center{
-  font-size:14px;
+  font-size:13px;
   color:var(--gray);
   font-weight:700
 }
@@ -225,9 +225,9 @@ button{cursor:pointer}
   display:inline-flex;
   justify-content:center;
   align-items:center;
-  padding:6px 13px;
+  padding:5px 11px;
   border-radius:20px;
-  font-size:13px;
+  font-size:12px;
   font-weight:800
 }
 
@@ -255,41 +255,41 @@ button{cursor:pointer}
 }
 
 .unresolved-badge{
-  padding:6px 12px;
+  padding:5px 10px;
   border-radius:20px;
   background:var(--danger-bg);
   color:var(--danger);
-  font-size:13px;
+  font-size:12px;
   font-weight:800
 }
 
 .priority-badge{
-  padding:5px 11px;
+  padding:4px 10px;
   border-radius:20px;
   background:var(--danger);
   color:#fff;
-  font-size:12px;
+  font-size:11px;
   font-weight:800
 }
 
 .vehicle-info{
   display:grid;
   grid-template-columns:1fr 1fr;
-  margin-top:15px;
-  gap:8px;
+  margin-top:10px;
+  gap:5px;
   color:var(--gray);
-  font-size:14px
+  font-size:13px
 }
 
 .vehicle-info>div{
-  padding:8px 4px
+  padding:5px 3px
 }
 
 .vehicle-info strong{
   display:block;
-  margin-top:4px;
+  margin-top:3px;
   color:var(--black);
-  font-size:15px
+  font-size:14px
 }
 
 .empty,
@@ -592,15 +592,26 @@ button{cursor:pointer}
 
 @media(max-width:700px){
   .summary{
-    grid-template-columns:repeat(2,1fr)
+    grid-template-columns:repeat(2,1fr);
+    gap:8px
   }
 
   .summary-card:first-child{
-    grid-column:span 2
+    grid-column:auto
+  }
+
+  .summary-card{
+    padding:14px 6px;
+    border-radius:16px
+  }
+
+  .summary-label{
+    font-size:12px;
+    margin-bottom:6px
   }
 
   .summary-number{
-    font-size:27px
+    font-size:25px
   }
 
   .title{
@@ -615,8 +626,30 @@ button{cursor:pointer}
     grid-template-columns:1fr
   }
 
+  .vehicle-list{
+    gap:7px
+  }
+
+  .vehicle-card{
+    padding:12px;
+    border-radius:15px
+  }
+
+  .vehicle-top{
+    gap:5px
+  }
+
   .plate{
-    font-size:20px
+    font-size:19px
+  }
+
+  .vehicle-info{
+    margin-top:8px;
+    font-size:12px
+  }
+
+  .vehicle-info strong{
+    font-size:13px
   }
 }
 </style>
@@ -924,6 +957,35 @@ function ranges(){
     s,
     e
   };
+
+}
+
+/* =========================
+   車輛詳細頁只顯示最近 5 天
+   注意：只限制畫面顯示，不刪除雲端資料
+========================= */
+
+function fiveDayCutoff(){
+
+  const n = new Date();
+
+  return new Date(
+    n.getFullYear(),
+    n.getMonth(),
+    n.getDate()-4
+  );
+
+}
+
+function isWithinFiveDays(v){
+
+  if(!v)
+    return false;
+
+  const t = new Date(v).getTime();
+  const cutoff = fiveDayCutoff().getTime();
+
+  return !Number.isNaN(t) && t >= cutoff;
 
 }
 
@@ -1818,8 +1880,13 @@ async function renderClaimHistory(v){
     if(r.error)
       throw r.error;
 
-    const rows =
+    const allRows =
       r.data || [];
+
+    const rows =
+      allRows.filter(x =>
+        isWithinFiveDays(x.claimed_at)
+      );
 
     if(!rows.length){
 
@@ -1827,7 +1894,8 @@ async function renderClaimHistory(v){
         `
         <div class="claim-panel">
           <div class="claim-panel-title">🚗 領車紀錄</div>
-          <div class="empty">尚無領車紀錄</div>
+          <div class="claim-summary">只顯示最近 5 天紀錄</div>
+          <div class="empty">最近 5 天尚無領車紀錄</div>
         </div>
         `;
 
@@ -1840,7 +1908,7 @@ async function renderClaimHistory(v){
       <div class="claim-panel">
         <div class="claim-panel-title">🚗 領車紀錄</div>
         <div class="claim-summary">
-          共 ${rows.length} 筆｜同一天同一台車多人領車會全部保留
+          最近 5 天共 ${rows.length} 筆｜超過 5 天資料仍保存在雲端，可由月份匯出查看
         </div>
 
         ${rows.map(x => `
@@ -1907,13 +1975,18 @@ async function openHistory(v){
     if(r.error)
       throw r.error;
 
-    const reports =
+    const allVehicleReports =
       r.data || [];
 
     renderHealthPanel(
       v,
-      reports
+      allVehicleReports
     );
+
+    const reports =
+      allVehicleReports.filter(report =>
+        isWithinFiveDays(report.reported_at)
+      );
 
     historyContainer.innerHTML =
       "";
@@ -1921,11 +1994,26 @@ async function openHistory(v){
     if(!reports.length){
 
       historyContainer.innerHTML =
-        '<div class="empty">目前沒有巡檢紀錄</div>';
+        `
+        <div class="empty">
+          最近 5 天尚無巡檢紀錄
+          <br><br>
+          <span style="font-size:13px">超過 5 天的原始資料仍保存在雲端，可由月份匯出查看</span>
+        </div>
+        `;
 
       return;
 
     }
+
+    const historyNote =
+      document.createElement("div");
+
+    historyNote.className = "empty";
+    historyNote.style.padding = "16px";
+    historyNote.style.fontSize = "13px";
+    historyNote.textContent = "巡檢紀錄僅顯示最近 5 天｜更早資料仍保存在雲端，可由月份匯出查看";
+    historyContainer.appendChild(historyNote);
 
     reports.forEach(report => {
 
@@ -2681,4 +2769,3 @@ loadData();
 
 </body>
 </html>
-這是原始CODE
