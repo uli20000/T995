@@ -541,7 +541,36 @@
 
 
   <!-- =========================
-       03 CHECK
+       03 填表人
+  ========================= -->
+
+  <section class="card">
+
+    <div class="section-number">
+      03・填表人
+    </div>
+
+    <label class="label">
+      填表人
+    </label>
+
+    <input
+      id="reporterName"
+      type="text"
+      maxlength="3"
+      placeholder="請輸入姓名"
+      autocomplete="name"
+    >
+
+    <div class="hint" style="padding:10px 0 0;">
+      限填 3 個中文字，例如：王小明
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       04 CHECK
   ========================= -->
 
   <section class="card">
@@ -681,6 +710,9 @@ const readBtn =
 
 const mileageInput =
   document.getElementById("mileage");
+
+const reporterNameInput =
+  document.getElementById("reporterName");
 
 const vehicleSuccess =
   document.getElementById("vehicleSuccess");
@@ -1329,6 +1361,26 @@ function validateForm() {
 
 
   /*
+    填表人
+  */
+
+  const reporterName =
+    reporterNameInput.value.trim();
+
+  if (!/^[\u4e00-\u9fff]{3}$/.test(reporterName)) {
+
+    alert(
+      "請輸入正確的填表人姓名。\n\n限 3 個中文字，例如：王小明"
+    );
+
+    reporterNameInput.focus();
+
+    return false;
+
+  }
+
+
+  /*
     七項檢查
   */
 
@@ -1462,6 +1514,9 @@ async function saveRecord() {
 
     mileage:
       mileage,
+
+    reporter_name:
+      reporterNameInput.value.trim(),
 
     oil_light:
       checkState.oil_light.status,
