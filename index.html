@@ -14,7 +14,6 @@
       --red: #c8102e;
       --black: #242424;
       --gray: #77736d;
-      --light-gray: #aaa69f;
       --linen: #f4f0e8;
       --paper: #ffffff;
       --line: #ddd8ce;
@@ -22,16 +21,10 @@
       --green-bg: #eef5f0;
       --danger: #b42318;
       --danger-bg: #fff0ee;
-      --yellow: #9a6b00;
-      --yellow-bg: #fff8df;
     }
 
     * {
       box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
     }
 
     body {
@@ -62,10 +55,13 @@
       padding-bottom: 50px;
     }
 
-    /* Header */
+    /* =========================
+       Header
+    ========================= */
+
     .header {
       background: var(--paper);
-      padding: 42px 24px 36px;
+      padding: 40px 20px 34px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -85,20 +81,19 @@
 
     .title {
       margin: 0;
-      font-size: 42px;
+      font-size: 40px;
       font-weight: 800;
       letter-spacing: 2px;
     }
 
     .kfc {
       color: var(--red);
-      font-size: 34px;
+      font-size: 32px;
       font-weight: 900;
-      letter-spacing: -1px;
     }
 
     .intro {
-      padding: 34px 24px 18px;
+      padding: 32px 20px 16px;
     }
 
     .intro h2 {
@@ -112,14 +107,17 @@
       font-size: 16px;
     }
 
-    /* Card */
+    /* =========================
+       Card
+    ========================= */
+
     .card {
-      margin: 14px 18px;
+      margin: 14px 16px;
       padding: 26px 20px;
       background: var(--paper);
       border: 1px solid var(--line);
       border-radius: 22px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.035);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .035);
     }
 
     .section-number {
@@ -136,6 +134,10 @@
       font-weight: 700;
       margin-bottom: 13px;
     }
+
+    /* =========================
+       Vehicle
+    ========================= */
 
     .vehicle-row {
       display: flex;
@@ -155,29 +157,29 @@
       border-radius: 15px;
       background: #fff;
       color: var(--black);
-      font-size: 20px;
       outline: none;
-      text-align: center;
       transition: .2s;
     }
 
     input {
-      height: 64px;
-      padding: 0 16px;
+      height: 62px;
+      padding: 0 15px;
+      font-size: 20px;
+      text-align: center;
     }
 
     textarea {
       min-height: 90px;
-      padding: 15px;
-      resize: vertical;
+      padding: 14px;
       font-size: 17px;
       text-align: left;
+      resize: vertical;
     }
 
     input:focus,
     textarea:focus {
       border-color: var(--red);
-      box-shadow: 0 0 0 3px rgba(200,16,46,.08);
+      box-shadow: 0 0 0 3px rgba(200, 16, 46, .08);
     }
 
     input::placeholder,
@@ -186,7 +188,7 @@
     }
 
     .read-btn {
-      min-width: 116px;
+      min-width: 112px;
       border: 2px solid var(--black);
       border-radius: 15px;
       background: #fff;
@@ -196,19 +198,14 @@
       cursor: pointer;
     }
 
-    .read-btn:active {
-      transform: scale(.98);
-    }
-
     .read-btn:disabled {
       opacity: .5;
-      cursor: not-allowed;
     }
 
     .vehicle-success {
       display: none;
-      margin-top: 15px;
-      padding: 13px;
+      margin-top: 14px;
+      padding: 12px;
       border-radius: 12px;
       background: var(--green-bg);
       color: var(--green);
@@ -220,10 +217,13 @@
       display: block;
     }
 
-    /* Previous record */
+    /* =========================
+       Previous record
+    ========================= */
+
     .previous {
       display: none;
-      margin-top: 18px;
+      margin-top: 16px;
       padding: 16px;
       background: #f8f6f1;
       border-radius: 15px;
@@ -250,21 +250,19 @@
       margin-top: 6px;
       color: var(--gray);
       font-size: 14px;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
-    /* Mileage */
-    .mileage-card {
-      margin-top: 20px;
-    }
+    /* =========================
+       Checks
+    ========================= */
 
-    /* Checks */
     .checks {
-      text-align: left;
+      text-align: center;
     }
 
     .check-item {
-      padding: 18px 0;
+      padding: 20px 0;
       border-bottom: 1px solid #ebe7df;
     }
 
@@ -272,31 +270,23 @@
       border-bottom: 0;
     }
 
-    .check-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
     .check-name {
-      font-size: 19px;
+      font-size: 20px;
       font-weight: 700;
-      white-space: nowrap;
+      margin-bottom: 13px;
     }
 
     .options {
       display: flex;
-      gap: 8px;
-      flex-shrink: 0;
+      justify-content: center;
+      gap: 10px;
     }
 
     .option {
-      min-width: 70px;
-      height: 46px;
-      padding: 0 12px;
+      width: 110px;
+      height: 48px;
       border: 2px solid #ddd8ce;
-      border-radius: 24px;
+      border-radius: 25px;
       background: #fff;
       color: var(--gray);
       font-size: 16px;
@@ -318,41 +308,34 @@
 
     .abnormal-box {
       display: none;
-      margin-top: 13px;
+      margin-top: 14px;
     }
 
     .abnormal-box.show {
       display: block;
     }
 
-    .abnormal-box textarea {
-      border-color: #e4aaa4;
-      background: #fffafa;
-    }
-
     .required {
-      color: var(--red);
-      font-size: 13px;
       margin-top: 6px;
-      text-align: center;
+      color: var(--danger);
+      font-size: 13px;
     }
 
-    /* Status */
+    /* =========================
+       Status
+    ========================= */
+
     .status-card {
       display: none;
-      padding: 18px;
-      border-radius: 15px;
-      margin-top: 20px;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 14px;
       font-weight: 800;
+      line-height: 1.6;
     }
 
     .status-card.show {
       display: block;
-    }
-
-    .status-normal {
-      background: var(--green-bg);
-      color: var(--green);
     }
 
     .status-abnormal {
@@ -360,10 +343,13 @@
       color: var(--danger);
     }
 
-    /* Save */
+    /* =========================
+       Save
+    ========================= */
+
     .save-btn {
-      width: calc(100% - 36px);
-      margin: 20px 18px 0;
+      width: calc(100% - 32px);
+      margin: 20px 16px 0;
       height: 64px;
       border: 0;
       border-radius: 18px;
@@ -373,37 +359,32 @@
       font-weight: 800;
       letter-spacing: 2px;
       cursor: pointer;
-      box-shadow: 0 7px 18px rgba(200,16,46,.18);
-    }
-
-    .save-btn:active {
-      transform: scale(.99);
+      box-shadow: 0 7px 18px rgba(200, 16, 46, .18);
     }
 
     .save-btn:disabled {
-      opacity: .45;
-      cursor: not-allowed;
+      opacity: .5;
     }
 
     .hint {
+      padding: 18px 28px 0;
       color: var(--gray);
       font-size: 13px;
       line-height: 1.7;
-      padding: 18px 30px 0;
     }
 
-    /* Mobile */
+    /* =========================
+       Mobile
+    ========================= */
+
     @media (max-width: 500px) {
-      .header {
-        padding-top: 35px;
-      }
 
       .title {
-        font-size: 38px;
+        font-size: 36px;
       }
 
       .kfc {
-        font-size: 30px;
+        font-size: 29px;
       }
 
       .vehicle-row {
@@ -414,24 +395,6 @@
         height: 56px;
       }
 
-      .check-top {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .check-name {
-        margin-bottom: 4px;
-      }
-
-      .options {
-        width: 100%;
-        justify-content: center;
-      }
-
-      .option {
-        flex: 1;
-        max-width: 120px;
-      }
     }
   </style>
 </head>
@@ -440,30 +403,66 @@
 
 <div class="page">
 
+  <!-- =========================
+       HEADER
+  ========================= -->
+
   <header class="header">
-    <div class="eyebrow">DELIVERY CENTER</div>
+
+    <div class="eyebrow">
+      DELIVERY CENTER
+    </div>
 
     <div class="header-row">
-      <h1 class="title">車輛巡檢</h1>
-      <div class="kfc">KFC</div>
+
+      <h1 class="title">
+        車輛巡檢
+      </h1>
+
+      <div class="kfc">
+        KFC
+      </div>
+
     </div>
+
   </header>
 
+
+  <!-- =========================
+       INTRO
+  ========================= -->
+
   <section class="intro">
-    <h2>每日安全確認</h2>
-    <p>輸入車牌與里程，快速完成七項檢查。</p>
+
+    <h2>
+      每日安全確認
+    </h2>
+
+    <p>
+      輸入車牌與里程，快速完成七項檢查。
+    </p>
+
   </section>
 
-  <!-- 車輛 -->
+
+  <!-- =========================
+       01 車輛
+  ========================= -->
+
   <section class="card">
 
-    <div class="section-number">01・車輛</div>
+    <div class="section-number">
+      01・車輛
+    </div>
 
-    <label class="label" for="plate">車牌</label>
+    <label class="label">
+      車牌
+    </label>
 
     <div class="vehicle-row">
 
       <div class="vehicle-input">
+
         <input
           id="plate"
           type="text"
@@ -472,6 +471,7 @@
           placeholder="輸入車牌四碼"
           autocomplete="off"
         >
+
       </div>
 
       <button
@@ -484,23 +484,50 @@
 
     </div>
 
-    <div id="vehicleSuccess" class="vehicle-success"></div>
 
-    <div id="previousRecord" class="previous">
-      <div class="previous-title">最近一次巡檢</div>
-      <div id="previousMain" class="previous-main"></div>
-      <div id="previousDetail" class="previous-detail"></div>
+    <div
+      id="vehicleSuccess"
+      class="vehicle-success"
+    ></div>
+
+
+    <div
+      id="previousRecord"
+      class="previous"
+    >
+
+      <div class="previous-title">
+        最近一次巡檢
+      </div>
+
+      <div
+        id="previousMain"
+        class="previous-main"
+      ></div>
+
+      <div
+        id="previousDetail"
+        class="previous-detail"
+      ></div>
+
     </div>
 
   </section>
 
 
-  <!-- 里程 -->
-  <section class="card mileage-card">
+  <!-- =========================
+       02 里程
+  ========================= -->
 
-    <div class="section-number">02・里程</div>
+  <section class="card">
 
-    <label class="label" for="mileage">目前里程</label>
+    <div class="section-number">
+      02・里程
+    </div>
+
+    <label class="label">
+      目前里程
+    </label>
 
     <input
       id="mileage"
@@ -513,17 +540,33 @@
   </section>
 
 
-  <!-- 檢查 -->
+  <!-- =========================
+       03 CHECK
+  ========================= -->
+
   <section class="card">
 
-    <div class="section-number">03・CHECK</div>
+    <div class="section-number">
+      03・CHECK
+    </div>
 
-    <div id="checks"></div>
+    <div
+      id="checks"
+      class="checks"
+    ></div>
 
-    <div id="statusCard" class="status-card"></div>
+
+    <div
+      id="statusCard"
+      class="status-card"
+    ></div>
 
   </section>
 
+
+  <!-- =========================
+       SAVE
+  ========================= -->
 
   <button
     id="saveBtn"
@@ -532,6 +575,7 @@
   >
     儲存巡檢紀錄
   </button>
+
 
   <div class="hint">
     每次巡檢都會新增一筆紀錄，不會覆蓋過去資料。
@@ -542,689 +586,1039 @@
 
 <script>
 
-  /* ==========================================
-     SUPABASE 設定
-     ========================================== */
+/* =====================================================
+   SUPABASE
+   ===================================================== */
 
-  const SUPABASE_URL =
-    "https://nurnboqwhctyswcufkyk.supabase.co";
+const SUPABASE_URL =
+  "https://nurnboqwhctyswcufkyk.supabase.co";
 
-  const SUPABASE_KEY =
-    "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzIiwicmVmIjoibnVybmJvcXd1Y3R5c3djdWZreWt5IiwiaWF0IjoxNzg5OTIxOTIzLCJleHAiOjIxMDU0OTc5MjN9.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm5ib3F3aGN0eXN3Y3Vma3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
 
-  const db = supabase.createClient(
+const db =
+  supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
 
-  /* ==========================================
-     檢查項目
-     ========================================== */
+/* =====================================================
+   CHECK ITEMS
+   ===================================================== */
 
-  const checkItems = [
-    {
-      key: "oil_light",
-      name: "機油燈"
-    },
-    {
-      key: "front_tire",
-      name: "前輪"
-    },
-    {
-      key: "rear_tire",
-      name: "後輪"
-    },
-    {
-      key: "brake",
-      name: "煞車"
-    },
-    {
-      key: "headlight",
-      name: "大燈"
-    },
-    {
-      key: "brake_light",
-      name: "煞車燈"
-    },
-    {
-      key: "other",
-      name: "其他"
-    }
-  ];
+const checkItems = [
+
+  {
+    key: "oil_light",
+    name: "機油燈"
+  },
+
+  {
+    key: "front_tire",
+    name: "前輪"
+  },
+
+  {
+    key: "rear_tire",
+    name: "後輪"
+  },
+
+  {
+    key: "brake",
+    name: "煞車"
+  },
+
+  {
+    key: "headlight",
+    name: "大燈"
+  },
+
+  {
+    key: "brake_light",
+    name: "煞車燈"
+  },
+
+  {
+    key: "other",
+    name: "其他"
+  }
+
+];
 
 
-  const checkState = {};
+/* =====================================================
+   STATE
+   ===================================================== */
+
+const checkState = {};
+
+checkItems.forEach(item => {
+
+  checkState[item.key] = {
+
+    status: null,
+
+    note: ""
+
+  };
+
+});
+
+
+let currentVehicle = null;
+
+
+/* =====================================================
+   DOM
+   ===================================================== */
+
+const plateInput =
+  document.getElementById("plate");
+
+const readBtn =
+  document.getElementById("readBtn");
+
+const mileageInput =
+  document.getElementById("mileage");
+
+const vehicleSuccess =
+  document.getElementById("vehicleSuccess");
+
+const previousRecord =
+  document.getElementById("previousRecord");
+
+const previousMain =
+  document.getElementById("previousMain");
+
+const previousDetail =
+  document.getElementById("previousDetail");
+
+const checksContainer =
+  document.getElementById("checks");
+
+const statusCard =
+  document.getElementById("statusCard");
+
+const saveBtn =
+  document.getElementById("saveBtn");
+
+
+/* =====================================================
+   RENDER CHECKS
+   ===================================================== */
+
+function renderChecks() {
+
+  checksContainer.innerHTML = "";
+
 
   checkItems.forEach(item => {
-    checkState[item.key] = {
-      status: null,
-      note: ""
-    };
+
+    const wrapper =
+      document.createElement("div");
+
+    wrapper.className =
+      "check-item";
+
+
+    wrapper.innerHTML = `
+
+      <div class="check-name">
+        ${item.name}
+      </div>
+
+      <div class="options">
+
+        <button
+          type="button"
+          class="option normal"
+          data-key="${item.key}"
+          data-status="normal"
+        >
+          正常
+        </button>
+
+        <button
+          type="button"
+          class="option abnormal"
+          data-key="${item.key}"
+          data-status="abnormal"
+        >
+          異常
+        </button>
+
+      </div>
+
+
+      <div
+        class="abnormal-box"
+        id="note-${item.key}"
+      >
+
+        <textarea
+          placeholder="請輸入${item.name}異常狀況"
+        ></textarea>
+
+        <div class="required">
+          異常時請填寫說明
+        </div>
+
+      </div>
+
+    `;
+
+
+    checksContainer.appendChild(wrapper);
+
   });
 
 
-  /* ==========================================
-     DOM
-     ========================================== */
+  document
+    .querySelectorAll(".option")
+    .forEach(button => {
 
-  const plateInput = document.getElementById("plate");
-  const readBtn = document.getElementById("readBtn");
-  const mileageInput = document.getElementById("mileage");
-
-  const vehicleSuccess =
-    document.getElementById("vehicleSuccess");
-
-  const previousRecord =
-    document.getElementById("previousRecord");
-
-  const previousMain =
-    document.getElementById("previousMain");
-
-  const previousDetail =
-    document.getElementById("previousDetail");
-
-  const checksContainer =
-    document.getElementById("checks");
-
-  const statusCard =
-    document.getElementById("statusCard");
-
-  const saveBtn =
-    document.getElementById("saveBtn");
-
-
-  let currentVehicle = null;
-
-
-  /* ==========================================
-     建立檢查項目
-     ========================================== */
-
-  function renderChecks() {
-
-    checksContainer.innerHTML = "";
-
-    checkItems.forEach(item => {
-
-      const wrapper = document.createElement("div");
-
-      wrapper.className = "check-item";
-
-      wrapper.innerHTML = `
-        <div class="check-top">
-
-          <div class="check-name">
-            ${item.name}
-          </div>
-
-          <div class="options">
-
-            <button
-              type="button"
-              class="option normal"
-              data-key="${item.key}"
-              data-status="normal"
-            >
-              正常
-            </button>
-
-            <button
-              type="button"
-              class="option abnormal"
-              data-key="${item.key}"
-              data-status="abnormal"
-            >
-              異常
-            </button>
-
-          </div>
-
-        </div>
-
-        <div
-          class="abnormal-box"
-          id="note-${item.key}"
-        >
-
-          <textarea
-            placeholder="請輸入 ${item.name} 異常狀況"
-          ></textarea>
-
-          <div class="required">
-            異常時請填寫說明
-          </div>
-
-        </div>
-      `;
-
-      checksContainer.appendChild(wrapper);
-    });
-
-
-    document
-      .querySelectorAll(".option")
-      .forEach(button => {
-
-        button.addEventListener("click", () => {
+      button.addEventListener(
+        "click",
+        function() {
 
           const key =
-            button.dataset.key;
+            this.dataset.key;
 
           const status =
-            button.dataset.status;
+            this.dataset.status;
 
-          checkState[key].status = status;
+
+          checkState[key].status =
+            status;
+
 
           const parent =
-            button.closest(".check-item");
+            this.closest(".check-item");
+
 
           parent
             .querySelectorAll(".option")
             .forEach(btn => {
-              btn.classList.remove("selected");
+
+              btn.classList.remove(
+                "selected"
+              );
+
             });
 
-          button.classList.add("selected");
+
+          this.classList.add(
+            "selected"
+          );
 
 
           const noteBox =
-            document.getElementById(`note-${key}`);
+            document.getElementById(
+              `note-${key}`
+            );
+
 
           if (status === "abnormal") {
 
-            noteBox.classList.add("show");
+            noteBox.classList.add(
+              "show"
+            );
 
           } else {
 
-            noteBox.classList.remove("show");
+            noteBox.classList.remove(
+              "show"
+            );
+
 
             const textarea =
-              noteBox.querySelector("textarea");
+              noteBox.querySelector(
+                "textarea"
+              );
 
             textarea.value = "";
 
-            checkState[key].note = "";
+            checkState[key].note =
+              "";
+
           }
 
+
           updateStatus();
-        });
-      });
+
+        }
+      );
+
+    });
 
 
-    document
-      .querySelectorAll(".abnormal-box textarea")
-      .forEach(textarea => {
+  document
+    .querySelectorAll(
+      ".abnormal-box textarea"
+    )
+    .forEach(textarea => {
 
-        textarea.addEventListener("input", event => {
+      textarea.addEventListener(
+        "input",
+        function() {
 
           const key =
-            event.target
-              .closest(".abnormal-box")
-              .id
-              .replace("note-", "");
+            this.closest(
+              ".abnormal-box"
+            )
+            .id
+            .replace(
+              "note-",
+              ""
+            );
+
 
           checkState[key].note =
-            event.target.value;
-        });
+            this.value;
 
-      });
+        }
+      );
+
+    });
+
+}
+
+
+renderChecks();
+
+
+/* =====================================================
+   GET PLATE
+   ===================================================== */
+
+function getPlate4() {
+
+  const value =
+    plateInput.value
+      .trim()
+      .toUpperCase();
+
+
+  const numbers =
+    value.replace(
+      /\D/g,
+      ""
+    );
+
+
+  if (
+    numbers.length >= 4
+  ) {
+
+    return numbers.slice(-4);
+
   }
 
 
-  renderChecks();
+  return "";
+
+}
 
 
-  /* ==========================================
-     車牌格式
-     ========================================== */
+/* =====================================================
+   READ VEHICLE
+   ===================================================== */
 
-  function getPlate4() {
+async function loadVehicle() {
 
-    let value =
-      plateInput.value
-        .trim()
-        .toUpperCase();
+  const plate4 =
+    getPlate4();
+
+
+  if (
+    plate4.length !== 4
+  ) {
+
+    alert(
+      "請輸入正確的車牌四碼。"
+    );
+
+    plateInput.focus();
+
+    return;
+
+  }
+
+
+  readBtn.disabled = true;
+
+  readBtn.textContent =
+    "讀取中…";
+
+
+  vehicleSuccess
+    .classList
+    .remove("show");
+
+
+  previousRecord
+    .classList
+    .remove("show");
+
+
+  currentVehicle = null;
+
+
+  try {
 
     /*
-      如果目前顯示完整車牌，例如 ABC-1234，
-      自動取最後四碼。
+      直接從 vehicles 查詢
     */
 
-    const numbers =
-      value.replace(/\D/g, "");
-
-    if (numbers.length >= 4) {
-      return numbers.slice(-4);
-    }
-
-    return "";
-  }
-
-
-  /* ==========================================
-     讀取車輛
-     ========================================== */
-
-  async function loadVehicle() {
-
-    const plate4 = getPlate4();
-
-    if (plate4.length !== 4) {
-
-      alert("請輸入正確的車牌四碼。");
-
-      plateInput.focus();
-
-      return;
-    }
-
-
-    readBtn.disabled = true;
-    readBtn.textContent = "讀取中…";
-
-    vehicleSuccess.classList.remove("show");
-    previousRecord.classList.remove("show");
-
-
-    try {
-
-      const {
-        data: vehicle,
-        error
-      } = await db
+    const result =
+      await db
         .from("vehicles")
         .select("*")
-        .eq("plate4", plate4)
-        .eq("active", true)
+        .eq(
+          "plate4",
+          plate4
+        )
+        .eq(
+          "active",
+          true
+        )
         .maybeSingle();
 
 
-      if (error) {
-        throw error;
-      }
-
-
-      if (!vehicle) {
-
-        currentVehicle = null;
-
-        alert(
-          `讀取失敗：查無車牌 ${plate4}，請確認車牌四碼。`
-        );
-
-        return;
-      }
-
-
-      currentVehicle = vehicle;
-
-
-      /*
-        成功後直接在車牌欄位顯示完整車牌
-      */
-
-      plateInput.value =
-        vehicle.full_plate || plate4;
-
-      plateInput.dataset.plate4 =
-        plate4;
-
-
-      vehicleSuccess.textContent =
-        "✓ 車輛讀取成功";
-
-      vehicleSuccess.classList.add("show");
-
-
-      /*
-        讀取最近一次巡檢
-      */
-
-      const {
-        data: records,
-        error: reportError
-      } = await db
-        .from("inspection_reports")
-        .select("*")
-        .eq("vehicle_id", vehicle.id)
-        .order("reported_at", {
-          ascending: false
-        })
-        .limit(1);
-
-
-      if (reportError) {
-        throw reportError;
-      }
-
-
-      if (records && records.length > 0) {
-
-        const last = records[0];
-
-        const date =
-          new Date(last.reported_at)
-            .toLocaleString("zh-TW", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit"
-            });
-
-
-        previousMain.textContent =
-          `里程 ${Number(last.mileage).toLocaleString()} km`;
-
-
-        let abnormalText =
-          "上次檢查：全部正常";
-
-        if (
-          last.abnormal_items &&
-          last.abnormal_items.length > 0
-        ) {
-
-          abnormalText =
-            "上次異常：" +
-            last.abnormal_items.join("、");
-        }
-
-
-        previousDetail.innerHTML =
-          `${date}<br>${abnormalText}`;
-
-        previousRecord.classList.add("show");
-
-      } else {
-
-        previousMain.textContent =
-          "目前沒有巡檢紀錄";
-
-        previousDetail.textContent =
-          "這是第一次巡檢";
-
-        previousRecord.classList.add("show");
-      }
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      currentVehicle = null;
-
-      alert(
-        "讀取失敗：目前無法連線雲端資料庫，請稍後再試。"
-      );
-
-    } finally {
-
-      readBtn.disabled = false;
-      readBtn.textContent = "重新讀取";
-    }
-  }
-
-
-  readBtn.addEventListener(
-    "click",
-    loadVehicle
-  );
-
-
-  /* ==========================================
-     狀態判斷
-     ========================================== */
-
-  function updateStatus() {
-
-    const abnormalItems =
-      checkItems
-        .filter(item =>
-          checkState[item.key].status === "abnormal"
-        )
-        .map(item => item.name);
-
-
-    if (abnormalItems.length === 0) {
-
-      statusCard.className =
-        "status-card";
-
-      statusCard.textContent = "";
-
-      return;
-    }
-
-
-    statusCard.className =
-      "status-card show status-abnormal";
-
-    statusCard.textContent =
-      `⚠ 目前有 ${abnormalItems.length} 項異常：${abnormalItems.join("、")}`;
-  }
-
-
-  /* ==========================================
-     儲存前檢查
-     ========================================== */
-
-  function validateForm() {
-
-    if (!currentVehicle) {
-
-      alert("請先輸入車牌並按「讀取」。");
-
-      return false;
-    }
-
-
-    const mileage =
-      Number(mileageInput.value);
-
-    if (
-      !mileageInput.value ||
-      !Number.isFinite(mileage) ||
-      mileage < 0
-    ) {
-
-      alert("請輸入目前里程。");
-
-      mileageInput.focus();
-
-      return false;
-    }
-
-
-    for (const item of checkItems) {
-
-      const state =
-        checkState[item.key];
-
-
-      if (!state.status) {
-
-        alert(
-          `請完成「${item.name}」檢查。`
-        );
-
-        return false;
-      }
-
-
-      if (
-        state.status === "abnormal" &&
-        !state.note.trim()
-      ) {
-
-        alert(
-          `「${item.name}」選擇異常，請填寫異常說明。`
-        );
-
-        const noteBox =
-          document.querySelector(
-            `#note-${item.key} textarea`
-          );
-
-        noteBox.focus();
-
-        return false;
-      }
-    }
-
-
-    return true;
-  }
-
-
-  /* ==========================================
-     儲存
-     ========================================== */
-
-  async function saveRecord() {
-
-    if (!validateForm()) {
-      return;
-    }
-
-
-    const mileage =
-      Number(mileageInput.value);
-
-
-    const abnormalItems =
-      checkItems
-        .filter(item =>
-          checkState[item.key].status === "abnormal"
-        )
-        .map(item => item.name);
-
-
-    const overallStatus =
-      abnormalItems.length > 0
-        ? "abnormal"
-        : "normal";
-
-
-    const record = {
-
-      vehicle_id:
-        currentVehicle.id,
-
-      mileage,
-
-      oil_light:
-        checkState.oil_light.status,
-
-      front_tire:
-        checkState.front_tire.status,
-
-      rear_tire:
-        checkState.rear_tire.status,
-
-      brake:
-        checkState.brake.status,
-
-      headlight:
-        checkState.headlight.status,
-
-      brake_light:
-        checkState.brake_light.status,
-
-      overall_status:
-        overallStatus,
-
-      abnormal_items:
-        abnormalItems
-
-    };
+    const vehicle =
+      result.data;
+
+    const error =
+      result.error;
 
 
     /*
-      其他項目的說明，
-      先併入 abnormal_items，
-      保留目前資料庫結構相容性。
+      如果 Supabase 回傳錯誤
     */
 
-    if (
-      checkState.other.status === "abnormal"
-    ) {
+    if (error) {
 
-      record.abnormal_items = [
-        ...record.abnormal_items,
-        `其他：${checkState.other.note.trim()}`
-      ];
+      console.error(
+        "SUPABASE VEHICLE ERROR:",
+        error
+      );
+
+
+      alert(
+        "讀取失敗\n\n" +
+        "錯誤代碼：" +
+        (error.code || "無") +
+        "\n\n" +
+        "錯誤訊息：" +
+        (error.message || "無") +
+        "\n\n" +
+        "詳細：" +
+        (error.details || "無") +
+        "\n\n" +
+        "提示：" +
+        (error.hint || "無")
+      );
+
+
+      return;
+
     }
 
 
-    saveBtn.disabled = true;
-    saveBtn.textContent = "儲存中…";
+    /*
+      查不到車
+    */
+
+    if (!vehicle) {
+
+      alert(
+        `讀取失敗\n\n查無車牌 ${plate4}\n\n請確認 Supabase「vehicles」資料表是否有這台車。`
+      );
 
 
-    try {
+      return;
 
-      const {
-        error
-      } = await db
+    }
+
+
+    /*
+      成功
+    */
+
+    currentVehicle =
+      vehicle;
+
+
+    /*
+      車牌欄位直接顯示完整車牌
+    */
+
+    plateInput.value =
+      vehicle.full_plate ||
+      plate4;
+
+
+    plateInput.dataset.plate4 =
+      plate4;
+
+
+    vehicleSuccess.textContent =
+      "✓ 車輛讀取成功";
+
+
+    vehicleSuccess
+      .classList
+      .add("show");
+
+
+    /*
+      查詢最近一次巡檢
+    */
+
+    const reportResult =
+      await db
         .from("inspection_reports")
-        .insert(record);
+        .select("*")
+        .eq(
+          "vehicle_id",
+          vehicle.id
+        )
+        .order(
+          "reported_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(1);
 
 
-      if (error) {
-        throw error;
+    if (reportResult.error) {
+
+      console.error(
+        "SUPABASE REPORT ERROR:",
+        reportResult.error
+      );
+
+
+      alert(
+        "車輛讀取成功，但巡檢紀錄讀取失敗\n\n" +
+        "錯誤代碼：" +
+        (reportResult.error.code || "無") +
+        "\n\n" +
+        "錯誤訊息：" +
+        (reportResult.error.message || "無")
+      );
+
+
+      return;
+
+    }
+
+
+    const records =
+      reportResult.data;
+
+
+    /*
+      有歷史紀錄
+    */
+
+    if (
+      records &&
+      records.length > 0
+    ) {
+
+      const last =
+        records[0];
+
+
+      const date =
+        new Date(
+          last.reported_at
+        )
+        .toLocaleString(
+          "zh-TW",
+          {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        );
+
+
+      previousMain.textContent =
+        `上次里程 ${Number(
+          last.mileage
+        ).toLocaleString()} km`;
+
+
+      let abnormalText =
+        "上次檢查：全部正常";
+
+
+      if (
+        last.abnormal_items &&
+        last.abnormal_items.length > 0
+      ) {
+
+        abnormalText =
+          "上次異常：" +
+          last.abnormal_items.join(
+            "、"
+          );
+
       }
 
 
-      alert("✓ 巡檢紀錄已成功儲存到雲端。");
+      previousDetail.innerHTML =
+        `${date}<br>${abnormalText}`;
 
 
-      /*
-        清除本次檢查狀態
-      */
+      previousRecord
+        .classList
+        .add("show");
 
-      mileageInput.value = "";
 
-      checkItems.forEach(item => {
+    } else {
 
-        checkState[item.key].status = null;
-        checkState[item.key].note = "";
+      previousMain.textContent =
+        "目前沒有巡檢紀錄";
+
+
+      previousDetail.textContent =
+        "這是第一次巡檢";
+
+
+      previousRecord
+        .classList
+        .add("show");
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "UNEXPECTED ERROR:",
+      error
+    );
+
+
+    alert(
+      "讀取失敗\n\n" +
+      "錯誤：" +
+      (error.message || error)
+    );
+
+
+  } finally {
+
+    readBtn.disabled =
+      false;
+
+    readBtn.textContent =
+      "重新讀取";
+
+  }
+
+}
+
+
+/* =====================================================
+   READ BUTTON
+   ===================================================== */
+
+readBtn.addEventListener(
+  "click",
+  loadVehicle
+);
+
+
+/* =====================================================
+   STATUS
+   ===================================================== */
+
+function updateStatus() {
+
+  const abnormalItems =
+    checkItems
+      .filter(item =>
+        checkState[
+          item.key
+        ].status === "abnormal"
+      )
+      .map(item =>
+        item.name
+      );
+
+
+  if (
+    abnormalItems.length === 0
+  ) {
+
+    statusCard.className =
+      "status-card";
+
+    statusCard.textContent =
+      "";
+
+    return;
+
+  }
+
+
+  statusCard.className =
+    "status-card show status-abnormal";
+
+
+  statusCard.textContent =
+    `⚠ ${abnormalItems.length} 項異常：${abnormalItems.join("、")}`;
+
+}
+
+
+/* =====================================================
+   VALIDATE
+   ===================================================== */
+
+function validateForm() {
+
+  /*
+    必須先讀取車輛
+  */
+
+  if (!currentVehicle) {
+
+    alert(
+      "請先輸入車牌並按「讀取」。"
+    );
+
+    return false;
+
+  }
+
+
+  /*
+    里程
+  */
+
+  const mileage =
+    Number(
+      mileageInput.value
+    );
+
+
+  if (
+    !mileageInput.value ||
+    !Number.isFinite(mileage) ||
+    mileage < 0
+  ) {
+
+    alert(
+      "請輸入目前里程。"
+    );
+
+    mileageInput.focus();
+
+    return false;
+
+  }
+
+
+  /*
+    七項檢查
+  */
+
+  for (
+    const item of checkItems
+  ) {
+
+    const state =
+      checkState[
+        item.key
+      ];
+
+
+    /*
+      沒選
+    */
+
+    if (!state.status) {
+
+      alert(
+        `請完成「${item.name}」檢查。`
+      );
+
+      return false;
+
+    }
+
+
+    /*
+      異常必須填寫
+    */
+
+    if (
+      state.status ===
+        "abnormal" &&
+      !state.note.trim()
+    ) {
+
+      alert(
+        `「${item.name}」選擇異常，請填寫異常說明。`
+      );
+
+
+      const textarea =
+        document.querySelector(
+          `#note-${item.key} textarea`
+        );
+
+
+      if (textarea) {
+        textarea.focus();
+      }
+
+
+      return false;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =====================================================
+   SAVE
+   ===================================================== */
+
+async function saveRecord() {
+
+  if (
+    !validateForm()
+  ) {
+
+    return;
+
+  }
+
+
+  const mileage =
+    Number(
+      mileageInput.value
+    );
+
+
+  /*
+    找出異常項目
+  */
+
+  const abnormalItems =
+    checkItems
+      .filter(item =>
+        checkState[
+          item.key
+        ].status ===
+        "abnormal"
+      )
+      .map(item => {
+
+        if (
+          checkState[
+            item.key
+          ].note.trim()
+        ) {
+
+          return `${item.name}：${checkState[item.key].note.trim()}`;
+
+        }
+
+        return item.name;
 
       });
 
 
-      renderChecks();
-
-      updateStatus();
-
-
-      /*
-        重新讀取最新紀錄
-      */
-
-      await loadVehicle();
+  const overallStatus =
+    abnormalItems.length > 0
+      ? "abnormal"
+      : "normal";
 
 
-    } catch (error) {
+  /*
+    建立資料
+  */
 
-      console.error(error);
+  const record = {
 
-      alert(
-        "儲存失敗：請確認網路連線後再試一次。"
+    vehicle_id:
+      currentVehicle.id,
+
+    mileage:
+      mileage,
+
+    oil_light:
+      checkState.oil_light.status,
+
+    front_tire:
+      checkState.front_tire.status,
+
+    rear_tire:
+      checkState.rear_tire.status,
+
+    brake:
+      checkState.brake.status,
+
+    headlight:
+      checkState.headlight.status,
+
+    brake_light:
+      checkState.brake_light.status,
+
+    overall_status:
+      overallStatus,
+
+    abnormal_items:
+      abnormalItems
+
+  };
+
+
+  saveBtn.disabled =
+    true;
+
+  saveBtn.textContent =
+    "儲存中…";
+
+
+  try {
+
+    const result =
+      await db
+        .from(
+          "inspection_reports"
+        )
+        .insert(
+          record
+        );
+
+
+    if (result.error) {
+
+      console.error(
+        "SAVE ERROR:",
+        result.error
       );
 
-    } finally {
 
-      saveBtn.disabled = false;
-      saveBtn.textContent = "儲存巡檢紀錄";
+      alert(
+        "儲存失敗\n\n" +
+        "錯誤代碼：" +
+        (result.error.code || "無") +
+        "\n\n" +
+        "錯誤訊息：" +
+        (result.error.message || "無") +
+        "\n\n" +
+        "詳細：" +
+        (result.error.details || "無")
+      );
+
+
+      return;
+
     }
+
+
+    /*
+      儲存成功
+    */
+
+    alert(
+      "✓ 巡檢紀錄已成功儲存到雲端。"
+    );
+
+
+    /*
+      清空里程
+    */
+
+    mileageInput.value =
+      "";
+
+
+    /*
+      重設七項檢查
+    */
+
+    checkItems.forEach(
+      item => {
+
+        checkState[
+          item.key
+        ].status = null;
+
+        checkState[
+          item.key
+        ].note = "";
+
+      }
+    );
+
+
+    renderChecks();
+
+    updateStatus();
+
+
+    /*
+      重新讀取最新紀錄
+    */
+
+    await loadVehicle();
+
+
+  } catch (error) {
+
+    console.error(
+      "SAVE UNEXPECTED ERROR:",
+      error
+    );
+
+
+    alert(
+      "儲存失敗\n\n" +
+      "錯誤：" +
+      (error.message || error)
+    );
+
+
+  } finally {
+
+    saveBtn.disabled =
+      false;
+
+    saveBtn.textContent =
+      "儲存巡檢紀錄";
+
   }
 
+}
 
-  saveBtn.addEventListener(
-    "click",
-    saveRecord
-  );
+
+/* =====================================================
+   SAVE BUTTON
+   ===================================================== */
+
+saveBtn.addEventListener(
+  "click",
+  saveRecord
+);
 
 </script>
 
