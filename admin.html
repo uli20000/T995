@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f4f0e8">
+
+  <title>KFC｜車輛巡檢後台</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --red: #c8102e;
+      --black: #242424;
+      --gray: #77736d;
+      --light-gray: #aaa69f;
+      --linen: #f4f0e8;
+      --paper: #ffffff;
+      --line: #ddd8ce;
+      --green: #356b4b;
+      --green-bg: #eef5f0;
+      --danger: #b42318;
+      --danger-bg: #fff0ee;
+      --yellow: #9a6b00;
+      --yellow-bg: #fff8df;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--linen);
+      color: var(--black);
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Noto Sans TC",
+        "PingFang TC",
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 900px;
+      margin: auto;
+      padding-bottom: 50px;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    .header {
+      background: var(--paper);
+      padding: 30px 20px 26px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .eyebrow {
+      color: var(--gray);
+      font-size: 12px;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 800;
+    }
+
+    .kfc {
+      color: var(--red);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .date {
+      margin-top: 10px;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    /* =========================
+       SECTION
+    ========================= */
+
+    .section {
+      padding: 22px 16px 0;
+    }
+
+    .section-title {
+      margin-bottom: 14px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       SUMMARY
+    ========================= */
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .summary-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 8px;
+      text-align: center;
+    }
+
+    .summary-label {
+      color: var(--gray);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .summary-number {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .summary-card.abnormal .summary-number {
+      color: var(--danger);
+    }
+
+    .summary-card.done .summary-number {
+      color: var(--green);
+    }
+
+    /* =========================
+       SEARCH
+    ========================= */
+
+    .search-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 54px;
+      border: 2px solid #d8d3ca;
+      border-radius: 14px;
+      padding: 0 16px;
+      font-size: 18px;
+      text-align: center;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--red);
+    }
+
+    /* =========================
+       VEHICLE LIST
+    ========================= */
+
+    .vehicle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vehicle-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 17px;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .vehicle-card:active {
+      transform: scale(.99);
+    }
+
+    .vehicle-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plate {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .status {
+      padding: 6px 11px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .status-normal {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .status-abnormal {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .status-none {
+      background: #f1eee8;
+      color: var(--gray);
+    }
+
+    .vehicle-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 12px;
+      gap: 8px;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
+    .vehicle-info strong {
+      color: var(--black);
+      font-size: 15px;
+    }
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty {
+      padding: 40px 20px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      color: var(--gray);
+      text-align: center;
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading {
+      padding: 35px;
+      text-align: center;
+      color: var(--gray);
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display: none;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 700px;
+      max-height: 88vh;
+      overflow-y: auto;
+      background: var(--paper);
+      border-radius: 25px 25px 0 0;
+      padding: 24px 18px 35px;
+    }
+
+    .modal-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 25px;
+      font-weight: 800;
+    }
+
+    .modal-subtitle {
+      color: var(--gray);
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .close-btn {
+      width: 100%;
+      height: 52px;
+      margin-top: 20px;
+      border: 0;
+      border-radius: 15px;
+      background: var(--black);
+      color: white;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       HISTORY
+    ========================= */
+
+    .history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: #faf9f6;
+    }
+
+    .history-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .history-date {
+      font-size: 14px;
+      color: var(--gray);
+    }
+
+    .history-mileage {
+      margin-top: 9px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .history-abnormal {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 11px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .history-normal {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 11px;
+      background: var(--green-bg);
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      .summary {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .summary-number {
+        font-size: 27px;
+      }
+
+      .vehicle-top {
+        align-items: flex-start;
+      }
+
+      .plate {
+        font-size: 19px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+
+  <header class="header">
+
+    <div class="eyebrow">
+      KFC DELIVERY CENTER
+    </div>
+
+    <div class="title-row">
+
+      <h1 class="title">
+        車輛巡檢後台
+      </h1>
+
+      <div class="kfc">
+        KFC
+      </div>
+
+    </div>
+
+    <div
+      id="todayDate"
+      class="date"
+    ></div>
+
+  </header>
+
+
+  <!-- SUMMARY -->
+
+  <section class="section">
+
+    <div class="section-title">
+      今日巡檢
+    </div>
+
+    <div class="summary">
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          車輛總數
+        </div>
+
+        <div
+          id="totalCount"
+          class="summary-number"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="summary-card done">
+
+        <div class="summary-label">
+          已巡檢
+        </div>
+
+        <div
+          id="doneCount"
+          class="summary-number"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-label">
+          未巡檢
+        </div>
+
+        <div
+          id="pendingCount"
+          class="summary-number"
+        >
+          —
+        </div>
+
+      </div>
+
+
+      <div class="summary-card abnormal">
+
+        <div class="summary-label">
+          今日異常
+        </div>
+
+        <div
+          id="abnormalCount"
+          class="summary-number"
+        >
+          —
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- SEARCH -->
+
+  <section class="section">
+
+    <div class="section-title">
+      查詢車輛
+    </div>
+
+    <div class="search-box">
+
+      <input
+        id="searchInput"
+        class="search-input"
+        type="text"
+        inputmode="text"
+        placeholder="輸入車牌搜尋"
+        autocomplete="off"
+      >
+
+    </div>
+
+  </section>
+
+
+  <!-- LIST -->
+
+  <section class="section">
+
+    <div class="section-title">
+      車輛列表
+    </div>
+
+    <div
+      id="vehicleList"
+      class="vehicle-list"
+    >
+
+      <div class="loading">
+        載入車輛資料中…
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- =========================
+     HISTORY MODAL
+========================= -->
+
+<div
+  id="modal"
+  class="modal"
+>
+
+  <div class="modal-content">
+
+    <div class="modal-header">
+
+      <div
+        id="modalTitle"
+        class="modal-title"
+      ></div>
+
+      <div
+        id="modalSubtitle"
+        class="modal-subtitle"
+      ></div>
+
+    </div>
+
+
+    <div
+      id="history"
+      class="history"
+    ></div>
+
+
+    <button
+      id="closeModal"
+      class="close-btn"
+    >
+      關閉
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+  "https://nurnboqwhctyswcufkyk.supabase.co";
+
+const SUPABASE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm5ib3F3Y3Vma3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
+
+const db =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const vehicleList =
+  document.getElementById(
+    "vehicleList"
+  );
+
+const searchInput =
+  document.getElementById(
+    "searchInput"
+  );
+
+const totalCount =
+  document.getElementById(
+    "totalCount"
+  );
+
+const doneCount =
+  document.getElementById(
+    "doneCount"
+  );
+
+const pendingCount =
+  document.getElementById(
+    "pendingCount"
+  );
+
+const abnormalCount =
+  document.getElementById(
+    "abnormalCount"
+  );
+
+const todayDate =
+  document.getElementById(
+    "todayDate"
+  );
+
+const modal =
+  document.getElementById(
+    "modal"
+  );
+
+const modalTitle =
+  document.getElementById(
+    "modalTitle"
+  );
+
+const modalSubtitle =
+  document.getElementById(
+    "modalSubtitle"
+  );
+
+const historyContainer =
+  document.getElementById(
+    "history"
+  );
+
+const closeModal =
+  document.getElementById(
+    "closeModal"
+  );
+
+
+let vehicles = [];
+let latestReports = [];
+
+
+/* =====================================================
+   TODAY
+===================================================== */
+
+const today =
+  new Date();
+
+const todayStart =
+  new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    0,
+    0,
+    0
+  );
+
+const todayEnd =
+  new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+    23,
+    59,
+    59
+  );
+
+
+todayDate.textContent =
+  today.toLocaleDateString(
+    "zh-TW",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "long"
+    }
+  );
+
+
+/* =====================================================
+   LOAD VEHICLES
+===================================================== */
+
+async function loadVehicles() {
+
+  vehicleList.innerHTML =
+    `
+      <div class="loading">
+        載入資料中…
+      </div>
+    `;
+
+
+  try {
+
+    /*
+      取得所有啟用車輛
+    */
+
+    const vehicleResult =
+      await db
+        .from("vehicles")
+        .select("*")
+        .eq(
+          "active",
+          true
+        )
+        .order(
+          "plate4",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (vehicleResult.error) {
+      throw vehicleResult.error;
+    }
+
+
+    vehicles =
+      vehicleResult.data || [];
+
+
+    /*
+      取得今日巡檢
+    */
+
+    const reportResult =
+      await db
+        .from(
+          "inspection_reports"
+        )
+        .select("*")
+        .gte(
+          "reported_at",
+          todayStart.toISOString()
+        )
+        .lte(
+          "reported_at",
+          todayEnd.toISOString()
+        )
+        .order(
+          "reported_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (reportResult.error) {
+      throw reportResult.error;
+    }
+
+
+    const todayReports =
+      reportResult.data || [];
+
+
+    /*
+      建立每台車今日最新紀錄
+    */
+
+    const todayMap =
+      new Map();
+
+
+    todayReports.forEach(
+      report => {
+
+        if (
+          !todayMap.has(
+            report.vehicle_id
+          )
+        ) {
+
+          todayMap.set(
+            report.vehicle_id,
+            report
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+      再取得所有車輛最近一次紀錄
+    */
+
+    latestReports = [];
+
+
+    for (
+      const vehicle of vehicles
+    ) {
+
+      const result =
+        await db
+          .from(
+            "inspection_reports"
+          )
+          .select("*")
+          .eq(
+            "vehicle_id",
+            vehicle.id
+          )
+          .order(
+            "reported_at",
+            {
+              ascending: false
+            }
+          )
+          .limit(1);
+
+
+      if (
+        result.error
+      ) {
+
+        console.error(
+          result.error
+        );
+
+        continue;
+
+      }
+
+
+      if (
+        result.data &&
+        result.data.length
+      ) {
+
+        latestReports.push(
+          result.data[0]
+        );
+
+      }
+
+    }
+
+
+    /*
+      顯示統計
+    */
+
+    updateSummary(
+      todayMap
+    );
+
+
+    /*
+      顯示列表
+    */
+
+    renderVehicles(
+      todayMap
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "ADMIN ERROR:",
+      error
+    );
+
+
+    vehicleList.innerHTML = `
+
+      <div class="empty">
+
+        <strong>
+          資料讀取失敗
+        </strong>
+
+        <br><br>
+
+        ${escapeHtml(
+          error.message ||
+          "未知錯誤"
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   SUMMARY
+===================================================== */
+
+function updateSummary(
+  todayMap
+) {
+
+  const total =
+    vehicles.length;
+
+
+  const done =
+    todayMap.size;
+
+
+  const pending =
+    Math.max(
+      total - done,
+      0
+    );
+
+
+  let abnormal =
+    0;
+
+
+  todayMap.forEach(
+    report => {
+
+      if (
+        report.overall_status ===
+        "abnormal"
+      ) {
+
+        abnormal++;
+
+      }
+
+    }
+  );
+
+
+  totalCount.textContent =
+    total;
+
+  doneCount.textContent =
+    done;
+
+  pendingCount.textContent =
+    pending;
+
+  abnormalCount.textContent =
+    abnormal;
+
+}
+
+
+/* =====================================================
+   RENDER VEHICLES
+===================================================== */
+
+function renderVehicles(
+  todayMap
+) {
+
+  const keyword =
+    searchInput.value
+      .trim()
+      .toUpperCase();
+
+
+  const filtered =
+    vehicles.filter(
+      vehicle => {
+
+        if (!keyword) {
+          return true;
+        }
+
+
+        return (
+          String(
+            vehicle.plate4 ||
+            ""
+          )
+          .toUpperCase()
+          .includes(
+            keyword
+          )
+          ||
+          String(
+            vehicle.full_plate ||
+            ""
+          )
+          .toUpperCase()
+          .includes(
+            keyword
+          )
+        );
+
+      }
+    );
+
+
+  if (
+    filtered.length === 0
+  ) {
+
+    vehicleList.innerHTML = `
+
+      <div class="empty">
+        找不到符合的車輛
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  vehicleList.innerHTML = "";
+
+
+  filtered.forEach(
+    vehicle => {
+
+      /*
+        今天紀錄
+      */
+
+      const todayReport =
+        todayMap.get(
+          vehicle.id
+        );
+
+
+      /*
+        所有歷史最新紀錄
+      */
+
+      const latest =
+        latestReports.find(
+          report =>
+            report.vehicle_id ===
+            vehicle.id
+        );
+
+
+      let statusClass =
+        "status-none";
+
+      let statusText =
+        "今日未巡檢";
+
+
+      if (
+        todayReport
+      ) {
+
+        if (
+          todayReport.overall_status ===
+          "abnormal"
+        ) {
+
+          statusClass =
+            "status-abnormal";
+
+          statusText =
+            "⚠ 異常";
+
+        } else {
+
+          statusClass =
+            "status-normal";
+
+          statusText =
+            "✓ 正常";
+
+        }
+
+      }
+
+
+      const mileage =
+        latest
+          ? Number(
+              latest.mileage
+            ).toLocaleString()
+          : "—";
+
+
+      const lastDate =
+        latest
+          ? formatDate(
+              latest.reported_at
+            )
+          : "尚無紀錄";
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "vehicle-card";
+
+
+      card.innerHTML = `
+
+        <div class="vehicle-top">
+
+          <div class="plate">
+            ${escapeHtml(
+              vehicle.full_plate ||
+              vehicle.plate4
+            )}
+          </div>
+
+          <div
+            class="status ${statusClass}"
+          >
+            ${statusText}
+          </div>
+
+        </div>
+
+
+        <div class="vehicle-info">
+
+          <div>
+            最新里程<br>
+            <strong>
+              ${mileage} km
+            </strong>
+          </div>
+
+          <div>
+            最後巡檢<br>
+            <strong>
+              ${lastDate}
+            </strong>
+          </div>
+
+        </div>
+
+      `;
+
+
+      card.addEventListener(
+        "click",
+        () => {
+
+          openHistory(
+            vehicle
+          );
+
+        }
+      );
+
+
+      vehicleList.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+searchInput.addEventListener(
+  "input",
+  () => {
+
+    /*
+      重新計算今天的資料
+    */
+
+    rebuildTodayMap();
+
+  }
+);
+
+
+/* =====================================================
+   REBUILD TODAY MAP
+===================================================== */
+
+async function rebuildTodayMap() {
+
+  const result =
+    await db
+      .from(
+        "inspection_reports"
+      )
+      .select("*")
+      .gte(
+        "reported_at",
+        todayStart.toISOString()
+      )
+      .lte(
+        "reported_at",
+        todayEnd.toISOString()
+      )
+      .order(
+        "reported_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (result.error) {
+
+    console.error(
+      result.error
+    );
+
+    return;
+
+  }
+
+
+  const map =
+    new Map();
+
+
+  (result.data || [])
+    .forEach(
+      report => {
+
+        if (
+          !map.has(
+            report.vehicle_id
+          )
+        ) {
+
+          map.set(
+            report.vehicle_id,
+            report
+          );
+
+        }
+
+      }
+    );
+
+
+  renderVehicles(
+    map
+  );
+
+}
+
+
+/* =====================================================
+   OPEN HISTORY
+===================================================== */
+
+async function openHistory(
+  vehicle
+) {
+
+  modalTitle.textContent =
+    vehicle.full_plate ||
+    vehicle.plate4;
+
+
+  modalSubtitle.textContent =
+    "巡檢歷史紀錄";
+
+
+  historyContainer.innerHTML =
+    `
+      <div class="loading">
+        讀取歷史紀錄中…
+      </div>
+    `;
+
+
+  modal.classList.add(
+    "show"
+  );
+
+
+  try {
+
+    const result =
+      await db
+        .from(
+          "inspection_reports"
+        )
+        .select("*")
+        .eq(
+          "vehicle_id",
+          vehicle.id
+        )
+        .order(
+          "reported_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (result.error) {
+      throw result.error;
+    }
+
+
+    const records =
+      result.data || [];
+
+
+    if (
+      records.length === 0
+    ) {
+
+      historyContainer.innerHTML = `
+
+        <div class="empty">
+          目前沒有巡檢紀錄
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    historyContainer.innerHTML =
+      "";
+
+
+    records.forEach(
+      record => {
+
+        const card =
+          document.createElement(
+            "div"
+          );
+
+
+        card.className =
+          "history-card";
+
+
+        const isAbnormal =
+          record.overall_status ===
+          "abnormal";
+
+
+        const statusHtml =
+          isAbnormal
+
+            ? `
+              <div
+                class="history-abnormal"
+              >
+                ⚠ ${
+                  record.abnormal_items &&
+                  record.abnormal_items.length
+                    ? record.abnormal_items.join(
+                        "<br>"
+                      )
+                    : "有異常項目"
+                }
+              </div>
+            `
+
+            : `
+              <div
+                class="history-normal"
+              >
+                ✓ 全部正常
+              </div>
+            `;
+
+
+        card.innerHTML = `
+
+          <div class="history-top">
+
+            <div class="history-date">
+              ${formatDate(
+                record.reported_at
+              )}
+            </div>
+
+            <div
+              class="status ${
+                isAbnormal
+                  ? "status-abnormal"
+                  : "status-normal"
+              }"
+            >
+              ${
+                isAbnormal
+                  ? "異常"
+                  : "正常"
+              }
+            </div>
+
+          </div>
+
+
+          <div class="history-mileage">
+            里程
+            ${Number(
+              record.mileage
+            ).toLocaleString()}
+            km
+          </div>
+
+
+          ${statusHtml}
+
+        `;
+
+
+        historyContainer.appendChild(
+          card
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    historyContainer.innerHTML = `
+
+      <div class="empty">
+
+        歷史紀錄讀取失敗
+
+        <br><br>
+
+        ${escapeHtml(
+          error.message ||
+          "未知錯誤"
+        )}
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+closeModal.addEventListener(
+  "click",
+  () => {
+
+    modal.classList.remove(
+      "show"
+    );
+
+  }
+);
+
+
+modal.addEventListener(
+  "click",
+  event => {
+
+    if (
+      event.target === modal
+    ) {
+
+      modal.classList.remove(
+        "show"
+      );
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   FORMAT DATE
+===================================================== */
+
+function formatDate(
+  value
+) {
+
+  if (!value) {
+    return "—";
+  }
+
+
+  return new Date(
+    value
+  ).toLocaleString(
+    "zh-TW",
+    {
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    }
+  );
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  value
+) {
+
+  return String(
+    value
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadVehicles();
+
+</script>
+
+</body>
+</html>
