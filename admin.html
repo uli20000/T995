@@ -254,6 +254,20 @@ button{cursor:pointer}
   color:var(--yellow)
 }
 
+.vehicle-card.claim-pending{
+  border:2px solid #6f9b7a;
+  background:#f7fbf8
+}
+
+.claim-pending-badge{
+  padding:5px 10px;
+  border-radius:20px;
+  background:var(--green-bg);
+  color:var(--green);
+  font-size:12px;
+  font-weight:800
+}
+
 .unresolved-badge{
   padding:5px 10px;
   border-radius:20px;
@@ -898,6 +912,8 @@ let allReports = [];
 let todayReports = [];
 let latestReports = [];
 let unresolvedReports = [];
+let allClaims = [];
+let claimLoadError = null;
 
 function esc(v){
 
@@ -1129,6 +1145,47 @@ function oilStatus(v){
 }
 
 /* =========================
+   領車狀態
+========================= */
+
+function latestClaim(v){
+
+  return allClaims.find(
+    r => r.vehicle_id === v.id
+  ) || null;
+
+}
+
+function isClaimPending(v){
+
+  if(unresolvedForVehicle(v).length)
+    return false;
+
+  const claim =
+    latestClaim(v);
+
+  if(!claim)
+    return false;
+
+  const claimTime =
+    new Date(claim.claimed_at).getTime();
+
+  const report =
+    latestReport(v);
+
+  const reportTime =
+    report
+      ? new Date(report.reported_at).getTime()
+      : 0;
+
+  return (
+    !Number.isNaN(claimTime) &&
+    claimTime > reportTime
+  );
+
+}
+
+/* =========================
    車輛排序
 
    1. 待處理異常
@@ -1142,18 +1199,21 @@ function priority(v){
   if(unresolvedForVehicle(v).length)
     return 1;
 
+  if(isClaimPending(v))
+    return 2;
+
   const today = todayReport(v);
 
   if(
     today?.overall_status === "abnormal" &&
     today?.resolution_status === "resolved"
   )
-    return 2;
-
-  if(today)
     return 3;
 
-  return 4;
+  if(today)
+    return 4;
+
+  return 5;
 
 }
 
@@ -1165,6 +1225,8 @@ async function loadData(){
 
   vehicleList.innerHTML =
     '<div class="loading">載入資料中…</div>';
+
+  claimLoadError = null;
 
   try{
 
@@ -1187,6 +1249,7 @@ async function loadData(){
       todayReports = [];
       latestReports = [];
       unresolvedReports = [];
+      allClaims = [];
 
       updateSummary();
       renderVehicles();
@@ -1254,6 +1317,37 @@ async function loadData(){
 
       });
 
+    /*
+      領車資料獨立讀取：
+      claim_records 讀取失敗時，
+      不讓整個後台跟著顯示資料讀取失敗。
+    */
+
+    const cr =
+      await db
+        .from("claim_records")
+        .select("*")
+        .in("vehicle_id",ids)
+        .order("claimed_at",{ascending:false});
+
+    if(cr.error){
+
+      console.warn(
+        "領車紀錄讀取失敗：",
+        cr.error
+      );
+
+      allClaims = [];
+      claimLoadError = cr.error;
+
+    }
+    else{
+
+      allClaims =
+        cr.data || [];
+
+    }
+
     updateSummary();
     renderVehicles();
 
@@ -1278,7 +1372,6 @@ async function loadData(){
   }
 
 }
-
 /* =========================
    上方統計
 ========================= */
@@ -1422,6 +1515,7 @@ function renderVehicles(){
       `
       vehicle-card
       ${u.length ? "has-unresolved" : ""}
+      ${isClaimPending(v) ? "claim-pending" : ""}
       ${o.type === "warning" ? "oil-warning" : ""}
       ${o.type === "danger" ? "oil-danger" : ""}
       `;
@@ -1434,7 +1528,9 @@ function renderVehicles(){
         ${
           priority(v) === 1
             ? '<div class="priority-badge">🔴 優先處理</div>'
-            : ""
+            : isClaimPending(v)
+              ? '<div class="claim-pending-badge">🟢 已領車｜待還車</div>'
+              : ""
         }
 
         <div class="plate">
