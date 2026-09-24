@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#f4f0e8">
 
-  <title>KFC｜車輛管理</title>
+  <title>KFC｜桃園-T995 車輛管理</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -731,7 +731,20 @@
       text-align: center;
     }
 
-  </style>
+  
+
+/* 三行標題：城市-Rider Center／KFC／日期 */
+.header-row,
+.title-row{
+  flex-direction:column;
+  gap:4px;
+}
+.title{font-size:30px;line-height:1.2}
+.kfc{font-size:26px}
+.date{margin-top:4px;font-size:14px}
+@media(max-width:700px){.title{font-size:26px}}
+
+</style>
 </head>
 
 <body>
@@ -742,7 +755,7 @@
     <div class="eyebrow">DELIVERY CENTER</div>
 
     <div class="header-row">
-      <h1 id="pageTitle" class="title">車輛管理</h1>
+      <h1 id="pageTitle" class="title">桃園-Rider Center</h1>
       <div class="kfc">KFC</div>
     </div>
 
@@ -1369,7 +1382,7 @@ const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
 
 const SUPABASE_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm5ib3F3aGN0eXN3Y3Vma3lrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
+  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
 
 const db =
   supabase.createClient(
@@ -3227,25 +3240,25 @@ function showMode(mode) {
   introText.classList.add("show");
 
   if (mode === "claim") {
-    pageTitle.textContent = "領車";
+    pageTitle.textContent = "桃園-Rider Center";
     introTitle.textContent = "開始上班";
     introText.textContent = "完成領車確認，準備安全出勤。";
     claimForm.style.display = "block";
     claimSuccess.classList.remove("show");
   } else if (mode === "inspection") {
-    pageTitle.textContent = "還車";
+    pageTitle.textContent = "桃園-Rider Center";
     introTitle.textContent = "下班前完成安全檢查";
     introText.textContent = "10 項安全檢查全部完成後，提交今日還車紀錄。";
     inspectionForm.style.display = "block";
     inspectionSuccess.classList.remove("show");
   } else if (mode === "battery") {
-    pageTitle.textContent = "電池異常回饋";
+    pageTitle.textContent = "桃園-Rider Center";
     introTitle.textContent = "回報電池異常";
     introText.textContent = "此紀錄不綁定車牌，只使用電池編號與所在餐廳。";
     batteryForm.style.display = "block";
     batterySuccess.classList.remove("show");
   } else if (mode === "survey") {
-    pageTitle.textContent = "駕駛意向調查";
+    pageTitle.textContent = "桃園-Rider Center";
     introTitle.textContent = "完成駕駛安全調查";
     introText.textContent = "兩部分分開計算，請依實際情況作答。";
     surveyForm.style.display = "block";
@@ -3272,7 +3285,7 @@ function showHome() {
   surveyForm.style.display = "block";
   surveySuccess.classList.remove("show");
 
-  pageTitle.textContent = "車輛管理";
+  pageTitle.textContent = "桃園-Rider Center";
   introTitle.textContent = "";
   introText.textContent = "";
   introSection.style.display = "none";
