@@ -837,12 +837,12 @@ button{cursor:pointer}
       <div id="totalCount" class="summary-number">—</div>
     </div>
 
-    <div class="summary-card done">
+    <div id="claimedCard" class="summary-card done clickable">
       <div class="summary-label">已領車</div>
       <div id="claimedCount" class="summary-number">—</div>
     </div>
 
-    <div class="summary-card done">
+    <div id="returnedCard" class="summary-card done clickable">
       <div class="summary-label">已還車</div>
       <div id="returnedCount" class="summary-number">—</div>
     </div>
@@ -1014,6 +1014,12 @@ const totalCount =
 
 const claimedCount =
   $("claimedCount");
+
+const claimedCard =
+  $("claimedCard");
+
+const returnedCard =
+  $("returnedCard");
 
 const returnedCount =
   $("returnedCount");
@@ -1556,7 +1562,7 @@ function updateSummary(){
   );
 
   totalCount.textContent = vehicles.length;
-  claimedCount.textContent = vehicles.filter(isClaimedToday).length;
+  claimedCount.textContent = vehicles.filter(v => isClaimedToday(v) && !isReturnedToday(v)).length;
   returnedCount.textContent = vehicles.filter(isReturnedToday).length;
   unresolvedCount.textContent = unresolvedVehicleIds.size;
 }
@@ -1752,146 +1758,70 @@ function renderVehicles(){
 ========================= */
 
 function openQuickList(type){
-
   let list = [];
+  let title = "";
 
-  if(type === "pending"){
-
-    list =
-      vehicles.filter(
-        v => !todayReport(v)
-      );
-
-    quickModalTitle.textContent =
-      "尚未巡檢車輛";
-
+  if(type === "claimed"){
+    list = vehicles.filter(v => isClaimedToday(v) && !isReturnedToday(v));
+    title = "已領車未還車";
+  }
+  else if(type === "returned"){
+    list = vehicles.filter(isReturnedToday);
+    title = "已領車已還車";
+  }
+  else if(type === "unresolved"){
+    const ids = new Set(unresolvedReports.map(r => r.vehicle_id));
+    list = vehicles.filter(v => ids.has(v.id));
+    title = "待處理異常車輛";
   }
   else{
-
-    /*
-      現在只有一種異常清單：
-      所有尚未解決異常
-    */
-
-    const ids =
-      new Set(
-        unresolvedReports.map(
-          r => r.vehicle_id
-        )
-      );
-
-    list =
-      vehicles.filter(
-        v => ids.has(v.id)
-      );
-
-    quickModalTitle.textContent =
-      "待處理異常車輛";
-
+    list = vehicles.filter(v => !todayReport(v));
+    title = "尚未巡檢車輛";
   }
 
-  quickModalSubtitle.textContent =
-    `共 ${list.length} 台｜點選車輛查看詳細紀錄`;
-
+  quickModalTitle.textContent = title;
+  quickModalSubtitle.textContent = `共 ${list.length} 台｜點選車輛查看詳細紀錄`;
   quickList.innerHTML = "";
 
   if(!list.length){
-
-    quickList.innerHTML =
-      '<div class="empty">目前沒有符合資料</div>';
-
+    quickList.innerHTML = '<div class="empty">目前沒有符合資料</div>';
   }
   else{
-
     list.forEach(v => {
+      const latest = latestReport(v);
+      const claim = latestClaim(v);
+      const unresolved = unresolvedForVehicle(v)[0];
+      let detail = "";
 
-      const l =
-        latestReport(v);
-
-      const u =
-        unresolvedForVehicle(v)[0];
-
-      const o =
-        oilStatus(v);
-
-      let detail;
-
-      if(type === "unresolved" && u){
-
-        detail =
-          `
-          🔴 ${esc(abnormalText(u))}
-
-          <br>
-
-          發生時間：
-          ${esc(fmt(u.reported_at))}
-
-          <br>
-
-          里程：
-          ${Number(u.mileage || 0).toLocaleString()} km
-          `;
-
+      if(type === "claimed"){
+        detail = `領車人：${esc(claim?.claimant_name || "未填寫")}<br>領車時間：${esc(fmt(claim?.claimed_at))}`;
+      }
+      else if(type === "returned"){
+        detail = `領車時間：${esc(fmt(claim?.claimed_at))}<br>還車時間：${esc(fmt(latest?.reported_at))}`;
+      }
+      else if(type === "unresolved"){
+        detail = `🔴 ${esc(abnormalText(unresolved))}<br>發生時間：${esc(fmt(unresolved?.reported_at))}`;
       }
       else{
-
-        detail =
-          `
-          最新里程：
-          ${
-            l
-              ? Number(l.mileage).toLocaleString()+" km"
-              : "尚無紀錄"
-          }
-
-          <br>
-
-          ${esc(o.text)}
-          `;
-
+        detail = `最新里程：${latest ? Number(latest.mileage || 0).toLocaleString()+" km" : "尚無紀錄"}`;
       }
 
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "quick-item";
-
-      item.innerHTML =
-        `
-
-        <div class="quick-plate">
-          ${esc(v.full_plate || v.plate4)}
-        </div>
-
-        <div class="quick-center">
-          CENTER｜${esc(v.center || "未設定")}
-        </div>
-
-        <div class="quick-detail">
-          ${detail}
-        </div>
-
-        `;
-
-      item.onclick =
-        () => {
-
-          quickModal.classList.remove("show");
-
-          openHistory(v);
-
-        };
-
+      const item = document.createElement("div");
+      item.className = "quick-item";
+      item.innerHTML = `
+        <div class="quick-plate">${esc(v.full_plate || v.plate4)}</div>
+        <div class="quick-center">CENTER｜${esc(v.center || "未設定")}</div>
+        <div class="quick-detail">${detail}</div>
+      `;
+      item.onclick = () => {
+        quickModal.classList.remove("show");
+        openHistory(v);
+      };
       quickList.appendChild(item);
-
     });
-
   }
 
   quickModal.classList.add("show");
-
 }
 
 /* =========================
@@ -3071,6 +3001,12 @@ function showAdminMode(mode){
 
 searchInput.oninput =
   renderVehicles;
+
+claimedCard.onclick =
+  () => openQuickList("claimed");
+
+returnedCard.onclick =
+  () => openQuickList("returned");
 
 vehicleModeBtn.onclick =
   () => showAdminMode("vehicle");
