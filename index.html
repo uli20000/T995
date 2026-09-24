@@ -2350,6 +2350,9 @@ const introTitle =
     "introTitle"
   );
 
+const introSection =
+  introTitle.closest(".intro");
+
 const introText =
   document.getElementById(
     "introText"
@@ -3207,6 +3210,7 @@ function showMode(mode) {
   batteryPage.style.display = mode === "battery" ? "block" : "none";
   surveyPage.style.display = mode === "survey" ? "block" : "none";
 
+  introSection.style.display = "block";
   introText.classList.add("show");
 
   if (mode === "claim") {
@@ -3256,8 +3260,9 @@ function showHome() {
   surveySuccess.classList.remove("show");
 
   pageTitle.textContent = "車輛管理";
-  introTitle.textContent = "領車・還車・安全回饋";
+  introTitle.textContent = "";
   introText.textContent = "";
+  introSection.style.display = "none";
   introText.classList.remove("show");
 
   resetClaimForm();
