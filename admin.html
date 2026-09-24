@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f4f0e8">
-<title>KFC｜T995 巡檢後台</title>
+<title>KFC｜桃園-T995 巡檢後台</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -670,35 +670,25 @@ button{cursor:pointer}
 
 .admin-menu{
   display:grid;
-  grid-template-columns:1fr;
+  grid-template-columns:repeat(3,1fr);
   gap:12px;
   padding:20px 16px 0;
 }
 
 .admin-mode-btn{
-  display:flex;
-  align-items:center;
-  justify-content:flex-start;
-  gap:22px;
-  width:100%;
-  min-height:88px;
-  padding:18px 24px;
+  min-height:110px;
   border:1px solid var(--line);
   border-radius:18px;
   background:#fff;
   box-shadow:0 3px 12px rgba(0,0,0,.035);
   font-size:18px;
   font-weight:800;
-  text-align:left;
 }
 
 .admin-mode-btn .icon{
   display:block;
-  flex:0 0 42px;
   font-size:32px;
-  line-height:1;
-  margin:0;
-  text-align:center;
+  margin-bottom:8px;
 }
 
 .admin-mode-page{display:none}
@@ -771,23 +761,22 @@ button{cursor:pointer}
 
 
 
-/* 入口改為可持續新增的長條型按鈕 */
-.admin-menu{grid-template-columns:1fr}
-.admin-mode-btn{
-  min-height:82px;
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  padding:14px 20px;
-  text-align:center;
+/* 前後台標題字體統一 */
+.title{font-size:30px;line-height:1.2}
+@media(max-width:700px){.title{font-size:26px}}
+
+
+
+/* 三行標題：城市-Rider Center／KFC／日期 */
+.header-row,
+.title-row{
+  flex-direction:column;
+  gap:4px;
 }
-.admin-mode-btn .icon{
-  display:inline;
-  margin:0;
-  font-size:30px;
-}
+.title{font-size:30px;line-height:1.2}
+.kfc{font-size:26px}
+.date{margin-top:4px;font-size:14px}
+@media(max-width:700px){.title{font-size:26px}}
 
 </style>
 </head>
@@ -800,7 +789,7 @@ button{cursor:pointer}
   <div class="eyebrow">KFC DELIVERY CENTER</div>
 
   <div class="title-row">
-    <h1 class="title">車輛巡檢後台</h1>
+    <h1 id="adminTitle" class="title">桃園-Rider Center</h1>
     <div class="kfc">KFC</div>
   </div>
 
@@ -837,12 +826,12 @@ button{cursor:pointer}
       <div id="totalCount" class="summary-number">—</div>
     </div>
 
-    <div id="claimedCard" class="summary-card done clickable">
+    <div class="summary-card done">
       <div class="summary-label">已領車</div>
       <div id="claimedCount" class="summary-number">—</div>
     </div>
 
-    <div id="returnedCard" class="summary-card done clickable">
+    <div class="summary-card done">
       <div class="summary-label">已還車</div>
       <div id="returnedCount" class="summary-number">—</div>
     </div>
@@ -992,7 +981,7 @@ const SUPABASE_URL =
   "https://nurnboqwhctyswcufkyk.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51cm5ib3F3YWhjdHlzd2N1ZnlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MjE5MjMsImV4cCI6MjEwNTQ5NzkyM30.-OYo96FZ3Yz3tCsKDG0KqhUgQuxXUAGPHbtDXcd0yB8";
 
 const db =
   supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1014,12 +1003,6 @@ const totalCount =
 
 const claimedCount =
   $("claimedCount");
-
-const claimedCard =
-  $("claimedCard");
-
-const returnedCard =
-  $("returnedCard");
 
 const returnedCount =
   $("returnedCount");
@@ -1087,6 +1070,7 @@ const exportMonth =
 const exportExcelBtn =
   $("exportExcelBtn");
 
+const adminTitle = $("adminTitle");
 const adminModeMenu = $("adminModeMenu");
 const vehicleModePage = $("vehicleModePage");
 const surveyModePage = $("surveyModePage");
@@ -1562,7 +1546,7 @@ function updateSummary(){
   );
 
   totalCount.textContent = vehicles.length;
-  claimedCount.textContent = vehicles.filter(v => isClaimedToday(v) && !isReturnedToday(v)).length;
+  claimedCount.textContent = vehicles.filter(isClaimedToday).length;
   returnedCount.textContent = vehicles.filter(isReturnedToday).length;
   unresolvedCount.textContent = unresolvedVehicleIds.size;
 }
@@ -1758,70 +1742,146 @@ function renderVehicles(){
 ========================= */
 
 function openQuickList(type){
-  let list = [];
-  let title = "";
 
-  if(type === "claimed"){
-    list = vehicles.filter(v => isClaimedToday(v) && !isReturnedToday(v));
-    title = "已領車未還車";
-  }
-  else if(type === "returned"){
-    list = vehicles.filter(isReturnedToday);
-    title = "已領車已還車";
-  }
-  else if(type === "unresolved"){
-    const ids = new Set(unresolvedReports.map(r => r.vehicle_id));
-    list = vehicles.filter(v => ids.has(v.id));
-    title = "待處理異常車輛";
+  let list = [];
+
+  if(type === "pending"){
+
+    list =
+      vehicles.filter(
+        v => !todayReport(v)
+      );
+
+    quickModalTitle.textContent =
+      "尚未巡檢車輛";
+
   }
   else{
-    list = vehicles.filter(v => !todayReport(v));
-    title = "尚未巡檢車輛";
+
+    /*
+      現在只有一種異常清單：
+      所有尚未解決異常
+    */
+
+    const ids =
+      new Set(
+        unresolvedReports.map(
+          r => r.vehicle_id
+        )
+      );
+
+    list =
+      vehicles.filter(
+        v => ids.has(v.id)
+      );
+
+    quickModalTitle.textContent =
+      "待處理異常車輛";
+
   }
 
-  quickModalTitle.textContent = title;
-  quickModalSubtitle.textContent = `共 ${list.length} 台｜點選車輛查看詳細紀錄`;
+  quickModalSubtitle.textContent =
+    `共 ${list.length} 台｜點選車輛查看詳細紀錄`;
+
   quickList.innerHTML = "";
 
   if(!list.length){
-    quickList.innerHTML = '<div class="empty">目前沒有符合資料</div>';
+
+    quickList.innerHTML =
+      '<div class="empty">目前沒有符合資料</div>';
+
   }
   else{
-    list.forEach(v => {
-      const latest = latestReport(v);
-      const claim = latestClaim(v);
-      const unresolved = unresolvedForVehicle(v)[0];
-      let detail = "";
 
-      if(type === "claimed"){
-        detail = `領車人：${esc(claim?.claimant_name || "未填寫")}<br>領車時間：${esc(fmt(claim?.claimed_at))}`;
-      }
-      else if(type === "returned"){
-        detail = `領車時間：${esc(fmt(claim?.claimed_at))}<br>還車時間：${esc(fmt(latest?.reported_at))}`;
-      }
-      else if(type === "unresolved"){
-        detail = `🔴 ${esc(abnormalText(unresolved))}<br>發生時間：${esc(fmt(unresolved?.reported_at))}`;
+    list.forEach(v => {
+
+      const l =
+        latestReport(v);
+
+      const u =
+        unresolvedForVehicle(v)[0];
+
+      const o =
+        oilStatus(v);
+
+      let detail;
+
+      if(type === "unresolved" && u){
+
+        detail =
+          `
+          🔴 ${esc(abnormalText(u))}
+
+          <br>
+
+          發生時間：
+          ${esc(fmt(u.reported_at))}
+
+          <br>
+
+          里程：
+          ${Number(u.mileage || 0).toLocaleString()} km
+          `;
+
       }
       else{
-        detail = `最新里程：${latest ? Number(latest.mileage || 0).toLocaleString()+" km" : "尚無紀錄"}`;
+
+        detail =
+          `
+          最新里程：
+          ${
+            l
+              ? Number(l.mileage).toLocaleString()+" km"
+              : "尚無紀錄"
+          }
+
+          <br>
+
+          ${esc(o.text)}
+          `;
+
       }
 
-      const item = document.createElement("div");
-      item.className = "quick-item";
-      item.innerHTML = `
-        <div class="quick-plate">${esc(v.full_plate || v.plate4)}</div>
-        <div class="quick-center">CENTER｜${esc(v.center || "未設定")}</div>
-        <div class="quick-detail">${detail}</div>
-      `;
-      item.onclick = () => {
-        quickModal.classList.remove("show");
-        openHistory(v);
-      };
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "quick-item";
+
+      item.innerHTML =
+        `
+
+        <div class="quick-plate">
+          ${esc(v.full_plate || v.plate4)}
+        </div>
+
+        <div class="quick-center">
+          CENTER｜${esc(v.center || "未設定")}
+        </div>
+
+        <div class="quick-detail">
+          ${detail}
+        </div>
+
+        `;
+
+      item.onclick =
+        () => {
+
+          quickModal.classList.remove("show");
+
+          openHistory(v);
+
+        };
+
       quickList.appendChild(item);
+
     });
+
   }
 
   quickModal.classList.add("show");
+
 }
 
 /* =========================
@@ -3001,12 +3061,6 @@ function showAdminMode(mode){
 
 searchInput.oninput =
   renderVehicles;
-
-claimedCard.onclick =
-  () => openQuickList("claimed");
-
-returnedCard.onclick =
-  () => openQuickList("returned");
 
 vehicleModeBtn.onclick =
   () => showAdminMode("vehicle");
