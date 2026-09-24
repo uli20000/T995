@@ -111,31 +111,41 @@
 
     .mode-menu {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      grid-template-columns: 1fr;
+      gap: 12px;
       padding: 10px 16px 0;
     }
 
     .mode-btn {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 22px;
+      width: 100%;
+      min-height: 92px;
+      padding: 18px 26px;
       border: 1px solid var(--line);
-      border-radius: 22px;
+      border-radius: 18px;
       background: var(--paper);
-      min-height: 150px;
       cursor: pointer;
+      text-align: left;
       box-shadow: 0 3px 12px rgba(0,0,0,.035);
     }
 
     .mode-btn .icon {
       display: block;
-      font-size: 42px;
-      margin-bottom: 12px;
+      flex: 0 0 48px;
+      font-size: 38px;
+      line-height: 1;
+      margin: 0;
+      text-align: center;
     }
 
     .mode-btn .main {
       display: block;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 800;
-      margin-bottom: 6px;
+      margin: 0;
     }
 
     .mode-btn .sub {
@@ -559,12 +569,12 @@
 
 
     .mode-menu {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr;
     }
 
     .mode-btn {
-      padding: 18px 10px;
-      min-height: 170px;
+      min-height: 92px;
+      padding: 18px 26px;
     }
 
     .battery-page .card,
@@ -683,6 +693,36 @@
       .mode-menu {
         grid-template-columns: 1fr;
       }
+    }
+
+  
+
+    /* 入口改為可持續新增的長條型按鈕 */
+    .mode-menu {
+      grid-template-columns: 1fr;
+    }
+
+    .mode-btn {
+      min-height: 92px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .mode-btn .icon {
+      display: inline;
+      margin: 0;
+      font-size: 34px;
+    }
+
+    .mode-btn .main {
+      margin: 0;
+      font-size: 23px;
+      text-align: center;
     }
 
   </style>
