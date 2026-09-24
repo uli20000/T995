@@ -89,6 +89,12 @@
       font-weight: 900;
     }
 
+    .date {
+      margin-top: 10px;
+      color: var(--gray);
+      font-size: 14px;
+    }
+
     .intro {
       padding: 32px 20px 16px;
     }
@@ -739,6 +745,8 @@
       <h1 id="pageTitle" class="title">車輛管理</h1>
       <div class="kfc">KFC</div>
     </div>
+
+    <div id="todayDate" class="date"></div>
   </header>
 
   <section class="intro">
@@ -2345,6 +2353,11 @@ const pageTitle =
     "pageTitle"
   );
 
+const todayDate =
+  document.getElementById(
+    "todayDate"
+  );
+
 const introTitle =
   document.getElementById(
     "introTitle"
@@ -3433,6 +3446,16 @@ cleanupOldClaimRecords();
 /* =====================================================
    INITIAL
    ===================================================== */
+
+todayDate.textContent = new Date().toLocaleDateString(
+  "zh-TW",
+  {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long"
+  }
+);
 
 showHome();
 
