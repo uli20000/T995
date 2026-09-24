@@ -666,6 +666,99 @@ button{cursor:pointer}
     font-size:13px
   }
 }
+
+
+.admin-menu{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:20px 16px 0;
+}
+
+.admin-mode-btn{
+  min-height:110px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 3px 12px rgba(0,0,0,.035);
+  font-size:18px;
+  font-weight:800;
+}
+
+.admin-mode-btn .icon{
+  display:block;
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.admin-mode-page{display:none}
+
+.card-abnormal-text{
+  max-width:100%;
+  margin-top:6px;
+  color:var(--danger);
+  font-size:12px;
+  line-height:1.45;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.resolved-detail{
+  margin-top:10px;
+  padding:9px 11px;
+  border-radius:11px;
+  background:var(--green-bg);
+  color:var(--green);
+  font-size:12px;
+  line-height:1.65;
+}
+
+.resolved-detail summary{
+  cursor:pointer;
+  font-weight:800;
+}
+
+.survey-summary{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.survey-card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px;
+  text-align:left;
+}
+
+.survey-card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+
+.survey-name{font-size:18px;font-weight:800}
+.survey-time{color:var(--gray);font-size:12px}
+.survey-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.survey-item{padding:9px;border-radius:10px;background:#faf9f6;color:var(--gray);font-size:13px;line-height:1.5}
+.survey-item strong{display:block;color:var(--black);font-size:15px}
+.survey-result-pass{color:var(--green)!important}
+.survey-result-fail{color:var(--danger)!important}
+.survey-detail{margin-top:10px;color:var(--gray);font-size:13px;line-height:1.6}
+
+@media(max-width:700px){
+  .admin-menu{grid-template-columns:1fr}
+  .survey-summary{grid-template-columns:repeat(2,1fr)}
+}
+
+
+.mode-back-row{padding:16px 16px 0}
+.mode-back-row .action-btn{width:100%}
+
 </style>
 </head>
 
@@ -684,30 +777,49 @@ button{cursor:pointer}
   <div id="todayDate" class="date"></div>
 </header>
 
+<div id="adminModeMenu" class="admin-menu">
+  <button id="vehicleModeBtn" class="admin-mode-btn" type="button">
+    <span class="icon">🚗</span>
+    車輛檢查
+  </button>
+  <button id="surveyModeBtn" class="admin-mode-btn" type="button">
+    <span class="icon">📋</span>
+    意向調查
+  </button>
+  <button id="batteryModeBtn" class="admin-mode-btn" type="button">
+    <span class="icon">🔋</span>
+    電池設備查看
+  </button>
+</div>
+
+<section id="vehicleModePage" class="admin-mode-page">
+
+<div class="mode-back-row"><button id="vehicleBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
+
 <section class="section">
 
-  <div class="section-title">今日巡檢</div>
+  <div class="section-title">今日車輛狀態</div>
 
   <div class="summary">
 
     <div class="summary-card">
-      <div class="summary-label">車輛總數</div>
+      <div class="summary-label">總車輛數</div>
       <div id="totalCount" class="summary-number">—</div>
     </div>
 
     <div class="summary-card done">
-      <div class="summary-label">已巡檢</div>
-      <div id="doneCount" class="summary-number">—</div>
+      <div class="summary-label">已領車</div>
+      <div id="claimedCount" class="summary-number">—</div>
+    </div>
+
+    <div class="summary-card done">
+      <div class="summary-label">已還車</div>
+      <div id="returnedCount" class="summary-number">—</div>
     </div>
 
     <div id="unresolvedCard" class="summary-card abnormal clickable">
-      <div class="summary-label">待處理異常</div>
+      <div class="summary-label">待處理</div>
       <div id="unresolvedCount" class="summary-number">—</div>
-    </div>
-
-    <div id="pendingCard" class="summary-card clickable">
-      <div class="summary-label">未巡檢</div>
-      <div id="pendingCount" class="summary-number">—</div>
     </div>
 
   </div>
@@ -761,6 +873,41 @@ button{cursor:pointer}
   </div>
 </section>
 
+</div>
+
+<section id="surveyModePage" class="admin-mode-page">
+  <div class="mode-back-row"><button id="surveyBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
+  <section class="section">
+    <div class="section-title">駕駛意向調查</div>
+    <div id="surveySummary" class="survey-summary"></div>
+    <div class="search-box">
+      <input id="surveySearchInput" class="search-input" type="text" placeholder="搜尋填寫人姓名">
+    </div>
+  </section>
+
+  <section class="section">
+    <div id="surveyResponseList" class="vehicle-list">
+      <div class="loading">尚未載入問卷資料</div>
+    </div>
+  </section>
+</section>
+
+<section id="batteryModePage" class="admin-mode-page">
+  <div class="mode-back-row"><button id="batteryBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
+  <section class="section">
+    <div class="section-title">電池設備查看</div>
+    <div id="batterySummary" class="survey-summary"></div>
+    <div class="search-box">
+      <input id="batterySearchInput" class="search-input" type="text" placeholder="搜尋電池編號或餐廳店號">
+      <button id="batteryRefreshBtn" class="action-btn" style="width:100%;margin-top:12px">↻ 重新整理電池紀錄</button>
+    </div>
+  </section>
+  <section class="section">
+    <div id="batteryReportList" class="vehicle-list">
+      <div class="loading">尚未載入電池紀錄</div>
+    </div>
+  </section>
+</section>
 </div>
 
 <!-- 快速清單 -->
@@ -835,17 +982,14 @@ const searchInput =
 const totalCount =
   $("totalCount");
 
-const doneCount =
-  $("doneCount");
+const claimedCount =
+  $("claimedCount");
 
-const pendingCount =
-  $("pendingCount");
+const returnedCount =
+  $("returnedCount");
 
 const unresolvedCount =
   $("unresolvedCount");
-
-const pendingCard =
-  $("pendingCard");
 
 const unresolvedCard =
   $("unresolvedCard");
@@ -906,6 +1050,26 @@ const exportMonth =
 
 const exportExcelBtn =
   $("exportExcelBtn");
+
+const adminModeMenu = $("adminModeMenu");
+const vehicleModePage = $("vehicleModePage");
+const surveyModePage = $("surveyModePage");
+const vehicleModeBtn = $("vehicleModeBtn");
+const surveyModeBtn = $("surveyModeBtn");
+const vehicleBackBtn = $("vehicleBackBtn");
+const surveyBackBtn = $("surveyBackBtn");
+const surveySearchInput = $("surveySearchInput");
+const surveySummary = $("surveySummary");
+const surveyResponseList = $("surveyResponseList");
+const batteryModePage = $("batteryModePage");
+const batteryModeBtn = $("batteryModeBtn");
+const batteryBackBtn = $("batteryBackBtn");
+const batteryRefreshBtn = $("batteryRefreshBtn");
+const batterySearchInput = $("batterySearchInput");
+const batterySummary = $("batterySummary");
+const batteryReportList = $("batteryReportList");
+let surveyResponses = [];
+let batteryReports = [];
 
 let vehicles = [];
 let allReports = [];
@@ -1157,32 +1321,7 @@ function latestClaim(v){
 }
 
 function isClaimPending(v){
-
-  if(unresolvedForVehicle(v).length)
-    return false;
-
-  const claim =
-    latestClaim(v);
-
-  if(!claim)
-    return false;
-
-  const claimTime =
-    new Date(claim.claimed_at).getTime();
-
-  const report =
-    latestReport(v);
-
-  const reportTime =
-    report
-      ? new Date(report.reported_at).getTime()
-      : 0;
-
-  return (
-    !Number.isNaN(claimTime) &&
-    claimTime > reportTime
-  );
-
+  return isClaimedToday(v) && !isReturnedToday(v);
 }
 
 /* =========================
@@ -1194,27 +1333,32 @@ function isClaimPending(v){
    4. 未檢查
 ========================= */
 
+function isToday(value){
+  if(!value) return false;
+  const d = new Date(value);
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear()
+    && d.getMonth() === n.getMonth()
+    && d.getDate() === n.getDate();
+}
+
+function isClaimedToday(v){
+  const claim = latestClaim(v);
+  return Boolean(claim && isToday(claim.claimed_at));
+}
+
+function isReturnedToday(v){
+  const claim = latestClaim(v);
+  const report = todayReport(v);
+  if(!claim || !report || !isToday(claim.claimed_at)) return false;
+  return new Date(report.reported_at).getTime() >= new Date(claim.claimed_at).getTime();
+}
+
 function priority(v){
-
-  if(unresolvedForVehicle(v).length)
-    return 1;
-
-  if(isClaimPending(v))
-    return 2;
-
-  const today = todayReport(v);
-
-  if(
-    today?.overall_status === "abnormal" &&
-    today?.resolution_status === "resolved"
-  )
-    return 3;
-
-  if(today)
-    return 4;
-
-  return 5;
-
+  if(unresolvedForVehicle(v).length) return 1;
+  if(isClaimedToday(v) && !isReturnedToday(v)) return 2;
+  if(isReturnedToday(v)) return 3;
+  return 4;
 }
 
 /* =========================
@@ -1377,42 +1521,14 @@ async function loadData(){
 ========================= */
 
 function updateSummary(){
+  const unresolvedVehicleIds = new Set(
+    unresolvedReports.map(r => r.vehicle_id)
+  );
 
-  const doneIds =
-    new Set(
-      todayReports.map(
-        r => r.vehicle_id
-      )
-    );
-
-  /*
-    待處理異常：
-    同一台車只算一次
-  */
-
-  const unresolvedVehicleIds =
-    new Set(
-      unresolvedReports.map(
-        r => r.vehicle_id
-      )
-    );
-
-  totalCount.textContent =
-    vehicles.length;
-
-  doneCount.textContent =
-    vehicles.filter(
-      v => doneIds.has(v.id)
-    ).length;
-
-  pendingCount.textContent =
-    vehicles.filter(
-      v => !doneIds.has(v.id)
-    ).length;
-
-  unresolvedCount.textContent =
-    unresolvedVehicleIds.size;
-
+  totalCount.textContent = vehicles.length;
+  claimedCount.textContent = vehicles.filter(isClaimedToday).length;
+  returnedCount.textContent = vehicles.filter(isReturnedToday).length;
+  unresolvedCount.textContent = unresolvedVehicleIds.size;
 }
 
 /* =========================
@@ -1527,10 +1643,12 @@ function renderVehicles(){
 
         ${
           priority(v) === 1
-            ? '<div class="priority-badge">🔴 優先處理</div>'
-            : isClaimPending(v)
-              ? '<div class="claim-pending-badge">🟢 已領車｜待還車</div>'
-              : ""
+            ? '<div class="priority-badge">🔴 待處理</div>'
+            : isClaimedToday(v) && !isReturnedToday(v)
+              ? '<div class="claim-pending-badge">🟢 已領車｜未還車</div>'
+              : isReturnedToday(v)
+                ? '<div class="claim-pending-badge">✅ 已領車｜已還車</div>'
+                : '<div class="status status-none">⚪ 未領車</div>'
         }
 
         <div class="plate">
@@ -1548,9 +1666,8 @@ function renderVehicles(){
         ${
           u.length
             ? `
-              <div class="unresolved-badge">
-                待處理異常 ${u.length} 筆
-              </div>
+              <div class="unresolved-badge">待處理異常 ${u.length} 筆</div>
+              <div class="card-abnormal-text">${esc(abnormalText(u[0]))}</div>
             `
             : ""
         }
@@ -2204,38 +2321,16 @@ function renderAbnormal(r){
   ){
 
     return `
-
-      <div class="history-abnormal">
-
-        <strong>異常項目</strong>
-
-        <br>
-
-        ${esc(abnormalText(r))}
-
-      </div>
-
-      <div class="resolved-box">
-
-        🟢 <strong>已解決</strong>
-
-        <br>
-
-        處理時間：
-        ${esc(fmt(r.resolved_at))}
-
-        ${
-          r.resolution_note
-            ? `
-              <br>
-              處理備註：
-              ${esc(r.resolution_note)}
-            `
-            : ""
-        }
-
-      </div>
-
+      <details class="resolved-detail">
+        <summary>🟢 已解決｜點擊查看異常原因</summary>
+        <div class="history-abnormal">
+          <strong>異常項目：</strong>${esc(abnormalText(r))}
+        </div>
+        <div>
+          處理時間：${esc(fmt(r.resolved_at))}
+          ${r.resolution_note ? `<br>處理備註：${esc(r.resolution_note)}` : ""}
+        </div>
+      </details>
     `;
 
   }
@@ -2711,13 +2806,18 @@ async function exportMonthlyExcel(){
         "車牌":v.full_plate || v.plate4 || "",
         "CENTER":v.center || "",
         "里程":r.mileage ?? "",
-        "機油燈":r.oil_light || "",
-        "前輪":r.front_tire || "",
-        "後輪":r.rear_tire || "",
-        "煞車":r.brake || "",
+        "引擎發動":r.engine_start || "",
+        "前輪胎紋":r.front_tire || "",
+        "前輪胎壓":r.front_tire_pressure || "",
+        "後輪胎紋":r.rear_tire || "",
+        "後輪胎壓":r.rear_tire_pressure || "",
+        "前剎車":r.front_brake || "",
+        "後剎車":r.rear_brake || "",
         "大燈":r.headlight || "",
-        "煞車燈":r.brake_light || "",
+        "剎車燈":r.brake_light || "",
         "其他":r.other || "",
+        "舊版機油燈":r.oil_light || "",
+        "舊版煞車":r.brake || "",
         "整體狀態":r.overall_status === "abnormal" ? "異常" : "正常",
         "異常項目":Array.isArray(r.abnormal_items) ? r.abnormal_items.join("、") : (r.abnormal_items || ""),
         "處理狀態":r.resolution_status === "resolved" ? "已處理" : (r.overall_status === "abnormal" ? "待處理" : "-"),
@@ -2784,6 +2884,157 @@ async function exportMonthlyExcel(){
   }
 }
 
+
+/* =========================
+   駕駛意向調查後台
+========================= */
+
+function parseSurveyPart(value){
+  if(!value) return {};
+  if(typeof value === "object") return value;
+  try { return JSON.parse(value); } catch(e) { return {}; }
+}
+
+function surveyResultClass(value){
+  return value === "合格" ? "survey-result-pass" : "survey-result-fail";
+}
+
+function renderSurveySummary(){
+  const part1Fail = surveyResponses.filter(x => x.part1_result === "不合格").length;
+  const part2Fail = surveyResponses.filter(x => x.part2_result === "不合格").length;
+  const accident = surveyResponses.filter(x => x.accident_within_one_year === true).length;
+  surveySummary.innerHTML = `
+    <div class="summary-card"><div class="summary-label">調查總數</div><div class="summary-number">${surveyResponses.length}</div></div>
+    <div class="summary-card abnormal"><div class="summary-label">第一部分不合格</div><div class="summary-number">${part1Fail}</div></div>
+    <div class="summary-card abnormal"><div class="summary-label">第二部分不合格</div><div class="summary-number">${part2Fail}</div></div>
+    <div class="summary-card abnormal"><div class="summary-label">一年內有肇事</div><div class="summary-number">${accident}</div></div>
+  `;
+}
+
+function renderSurveyResponses(){
+  const keyword = surveySearchInput.value.trim().toLowerCase();
+  const rows = surveyResponses.filter(x =>
+    !keyword || String(x.respondent_name || "").toLowerCase().includes(keyword)
+  );
+
+  if(!rows.length){
+    surveyResponseList.innerHTML = '<div class="empty">目前沒有問卷紀錄</div>';
+    return;
+  }
+
+  surveyResponseList.innerHTML = rows.map(row => {
+    const p1 = parseSurveyPart(row.part1_answers);
+    const p1Answers = p1.answers || p1;
+    const violation = p1.violation_points ?? "未填";
+    const accident = row.accident_within_one_year === true;
+    return `
+      <div class="survey-card">
+        <div class="survey-card-top">
+          <div class="survey-name">${esc(row.respondent_name || "未填姓名")}</div>
+          <div class="survey-time">${esc(fmt(row.submitted_at))}</div>
+        </div>
+        <div class="survey-grid">
+          <div class="survey-item">違規記點<strong>${esc(violation)} 點</strong></div>
+          <div class="survey-item">第一部分<strong class="${surveyResultClass(row.part1_result)}">${esc(row.part1_total ?? "-")} 分｜${esc(row.part1_result || "未判定")}</strong></div>
+          <div class="survey-item">第二部分<strong class="${surveyResultClass(row.part2_result)}">${esc(row.part2_total ?? "-")} 分｜${esc(row.part2_result || "未判定")}</strong></div>
+          <div class="survey-item">一年內肇事<strong class="${accident ? "survey-result-fail" : "survey-result-pass"}">${accident ? "有" : "沒有"}</strong></div>
+        </div>
+        ${accident ? `<div class="survey-detail"><strong>肇事說明：</strong>${esc(row.accident_description || "未填寫")}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+async function loadSurveyData(){
+  surveyResponseList.innerHTML = '<div class="loading">載入問卷資料中…</div>';
+  try{
+    const result = await db
+      .from("driver_survey_responses")
+      .select("*")
+      .order("submitted_at",{ascending:false});
+    if(result.error) throw result.error;
+    surveyResponses = result.data || [];
+    renderSurveySummary();
+    renderSurveyResponses();
+  }
+  catch(e){
+    surveySummary.innerHTML = "";
+    surveyResponseList.innerHTML = `<div class="empty">問卷資料讀取失敗：${esc(e.message || "請確認 anon SELECT 權限")}</div>`;
+  }
+}
+
+function renderBatterySummary(){
+  const pending = batteryReports.filter(x => x.resolution_status !== "resolved").length;
+  const resolved = batteryReports.filter(x => x.resolution_status === "resolved").length;
+  batterySummary.innerHTML = `
+    <div class="summary-card"><div class="summary-label">回報總數</div><div class="summary-number">${batteryReports.length}</div></div>
+    <div class="summary-card abnormal"><div class="summary-label">待處理</div><div class="summary-number">${pending}</div></div>
+    <div class="summary-card done"><div class="summary-label">已處理</div><div class="summary-number">${resolved}</div></div>
+  `;
+}
+
+function renderBatteryReports(){
+  const keyword = batterySearchInput.value.trim().toLowerCase();
+  const rows = batteryReports.filter(x => {
+    if(!keyword) return true;
+    return [x.battery_number, x.restaurant_no, x.issue_description]
+      .filter(Boolean)
+      .some(value => String(value).toLowerCase().includes(keyword));
+  });
+
+  if(!rows.length){
+    batteryReportList.innerHTML = '<div class="empty">目前沒有電池異常回報</div>';
+    return;
+  }
+
+  batteryReportList.innerHTML = rows.map(row => {
+    const resolved = row.resolution_status === "resolved";
+    return `
+      <div class="survey-card">
+        <div class="survey-card-top">
+          <div class="survey-name">🔋 ${esc(row.battery_number || "未填編號")}</div>
+          <div class="survey-time">${esc(fmt(row.reported_at))}</div>
+        </div>
+        <div class="survey-grid">
+          <div class="survey-item">所在餐廳<strong>${esc(row.restaurant_no || "未填寫")}</strong></div>
+          <div class="survey-item">處理狀態<strong class="${resolved ? "survey-result-pass" : "survey-result-fail"}">${resolved ? "已處理" : "待處理"}</strong></div>
+        </div>
+        <div class="survey-detail"><strong>異常內容：</strong>${esc(row.issue_description || "未填寫")}</div>
+        ${row.resolution_note ? `<div class="survey-detail"><strong>處理備註：</strong>${esc(row.resolution_note)}</div>` : ""}
+      </div>
+    `;
+  }).join("");
+}
+
+async function loadBatteryData(){
+  batteryReportList.innerHTML = '<div class="loading">載入電池紀錄中…</div>';
+  try{
+    const result = await db
+      .from("battery_issue_reports")
+      .select("*")
+      .order("reported_at",{ascending:false});
+    if(result.error) throw result.error;
+    batteryReports = result.data || [];
+    renderBatterySummary();
+    renderBatteryReports();
+  }
+  catch(e){
+    batterySummary.innerHTML = "";
+    batteryReportList.innerHTML = `<div class="empty">電池資料讀取失敗：${esc(e.message || "請確認 anon SELECT 權限")}</div>`;
+  }
+}
+
+function showAdminMode(mode){
+  adminModeMenu.style.display = mode === "home" ? "grid" : "none";
+  vehicleModePage.style.display = mode === "vehicle" ? "block" : "none";
+  surveyModePage.style.display = mode === "survey" ? "block" : "none";
+  batteryModePage.style.display = mode === "battery" ? "block" : "none";
+  if(mode === "vehicle") loadData();
+  if(mode === "survey") loadSurveyData();
+  if(mode === "battery") loadBatteryData();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
 /* =========================
    事件
 ========================= */
@@ -2791,8 +3042,32 @@ async function exportMonthlyExcel(){
 searchInput.oninput =
   renderVehicles;
 
-pendingCard.onclick =
-  () => openQuickList("pending");
+vehicleModeBtn.onclick =
+  () => showAdminMode("vehicle");
+
+surveyModeBtn.onclick =
+  () => showAdminMode("survey");
+
+batteryModeBtn.onclick =
+  () => showAdminMode("battery");
+
+vehicleBackBtn.onclick =
+  () => showAdminMode("home");
+
+surveyBackBtn.onclick =
+  () => showAdminMode("home");
+
+batteryBackBtn.onclick =
+  () => showAdminMode("home");
+
+batteryRefreshBtn.onclick =
+  loadBatteryData;
+
+batterySearchInput.oninput =
+  renderBatteryReports;
+
+surveySearchInput.oninput =
+  renderSurveyResponses;
 
 unresolvedCard.onclick =
   () => openQuickList("unresolved");
@@ -2859,7 +3134,7 @@ const now = new Date();
 exportMonth.value =
   `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
 
-loadData();
+showAdminMode("home");
 
 </script>
 
