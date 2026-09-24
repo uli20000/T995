@@ -2107,6 +2107,14 @@ async function saveInspection() {
       vehicle_id: currentVehicle.id,
       mileage,
       engine_start: checkState.engine_start.status,
+      // 舊欄位為 NOT NULL：以新版結果做相容性保存
+      // oil_light 對應新版「引擎發動」；brake 為前後剎車整合結果
+      oil_light: checkState.engine_start.status,
+      brake: (
+        checkState.front_brake.status === "normal" &&
+        checkState.rear_brake.status === "normal"
+      ) ? "normal" : "abnormal",
+
       // 沿用既有欄位：front_tire／rear_tire 代表新版胎紋判定
       front_tire: checkState.front_tread.status,
       front_tire_pressure: checkState.front_tire_pressure.status,
