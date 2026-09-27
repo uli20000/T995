@@ -933,18 +933,17 @@
             <option>新竹光復</option>
             <option>新竹竹北</option>
             <option>新竹新豐</option>
-            <option>中壢環中東</option>
-            <option>楊梅中山</option>    
+            <option>龍潭北龍</option>
+            <option>楊梅中山</option>
+            <option>桃園大溪</option>
+            <option>桃園大竹</option>
             <option>桃園大興西</option>
             <option>桃園萬壽</option>
             <option>桃園中山二</option>
             <option>林口文化</option>
             <option>南崁中正</option>
             <option>中壢中正</option>
-            <option>桃園大溪</option>
-            <option>龍潭北龍</option>
-            <option>桃園大竹</option>
-            <option>桃園大園</option>
+            <option>中壢環中東</option>
           </select>
         </div>
       </section>
@@ -1508,7 +1507,8 @@ const db =
     SUPABASE_KEY
   );
 
-const CURRENT_SURVEY_ROUND = "2027M1";
+const SURVEY_ROUND_YEAR = 2027;
+const CURRENT_SURVEY_ROUND = `${SURVEY_ROUND_YEAR}M${new Date().getMonth() + 1 >= 7 ? 7 : 1}`;
 
 // 桃園 T995 安全月曆：與 index.html 同層的 pdf 資料夾
 const SAFETY_CALENDAR_PDFS = {
