@@ -2416,9 +2416,15 @@ async function openHistory(v){
       allVehicleReports
     );
 
+    // 一般歷史只顯示最近 5 天；但所有尚未解決的異常，
+    // 不論發生多久都必須保留顯示，才能直接完成結案。
     const reports =
       allVehicleReports.filter(report =>
-        isWithinFiveDays(report.reported_at)
+        isWithinFiveDays(report.reported_at) ||
+        (
+          report.overall_status === "abnormal" &&
+          report.resolution_status !== "resolved"
+        )
       );
 
     historyContainer.innerHTML =
@@ -2445,7 +2451,7 @@ async function openHistory(v){
     historyNote.className = "empty";
     historyNote.style.padding = "16px";
     historyNote.style.fontSize = "13px";
-    historyNote.textContent = "巡檢紀錄僅顯示最近 5 天｜更早資料仍保存在雲端，可由月份匯出查看";
+    historyNote.textContent = "巡檢紀錄顯示最近 5 天，以及所有尚未解決異常｜更早且已解決資料可由月份匯出查看";
     historyContainer.appendChild(historyNote);
 
     reports.forEach(report => {
