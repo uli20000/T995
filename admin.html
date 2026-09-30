@@ -3504,7 +3504,6 @@ function renderDefensiveSummary(uniqueNames, completed, incomplete){
     <button type="button" class="summary-card clickable" data-defensive-status="required"><div class="summary-label">應完成</div><div class="summary-number">${uniqueNames.length}</div></button>
     <button type="button" class="summary-card abnormal clickable" data-defensive-status="incomplete"><div class="summary-label">未完成</div><div class="summary-number">${incomplete.length}</div></button>
     <button type="button" class="summary-card done clickable" data-defensive-status="completed"><div class="summary-label">已完成</div><div class="summary-number">${completed.size}</div></button>
-    <button type="button" class="summary-card clickable" data-defensive-status="active"><div class="summary-label">在職名單</div></button>
   `;
   defensiveSummary.querySelectorAll("[data-defensive-status]").forEach(card => {
     card.classList.toggle("active", card.dataset.defensiveStatus === activeDefensiveStatus);
