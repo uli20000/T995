@@ -1164,11 +1164,14 @@ button{cursor:pointer}
 .shift-open-toggle input,.shift-test-toggle input{width:16px;height:16px;margin:0;accent-color:var(--red);flex:none}
 .shift-name-search{padding:0 9px;font-size:14px;text-align:center}
 .shift-toolbar-search-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;align-items:stretch;min-width:0}
+.shift-toolbar-search-row>button,.shift-open-toggle{height:48px;min-height:48px;box-sizing:border-box}
 .shift-toolbar-search-row>button{height:44px;min-height:44px;padding:4px 3px;font-size:12px;white-space:nowrap}
-.shift-test-control{position:relative;display:flex;align-items:center;justify-content:center;min-width:0}
-.shift-test-control .shift-test-toggle{width:100%;height:44px;min-height:44px;padding-right:30px}
-.shift-mini-delete{position:absolute;right:3px;top:7px;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:1px solid #e2aaa4;border-radius:8px;background:var(--danger-bg);color:var(--danger);font-size:14px;cursor:pointer}
-.shift-mini-delete[hidden]{display:none}
+.shift-test-control{display:grid;grid-template-rows:1fr 1fr;gap:2px;align-items:stretch;min-width:0;height:48px;min-height:48px;box-sizing:border-box}
+.shift-test-control .shift-test-toggle{width:100%;height:23px;min-height:23px;margin:0;padding:1px 3px;box-sizing:border-box}
+.shift-admin-toolbar .shift-mini-delete{position:static;width:100%;height:23px!important;min-height:23px!important;padding:1px 2px;border:1px solid #e2aaa4;border-radius:7px;background:var(--danger-bg);color:var(--danger);font-size:10px;line-height:1;white-space:nowrap;cursor:pointer}
+.shift-admin-toolbar .shift-mini-delete:disabled{opacity:.48;cursor:not-allowed}
+.shift-open-toggle.is-checked,.shift-test-toggle.is-checked{border-color:var(--red)!important;background:var(--danger-bg)!important;color:var(--danger)!important;box-shadow:0 0 0 1px rgba(200,16,46,.08)}
+.shift-open-toggle input,.shift-test-toggle input{accent-color:var(--red)}
 @media(max-width:699px){
  .shift-toolbar-week-row,.shift-toolbar-status-row,.shift-toolbar-search-row{gap:4px}
  .shift-week-buttons,.shift-status-tabs{gap:4px}
@@ -1177,8 +1180,10 @@ button{cursor:pointer}
  .shift-name-search{padding:0 3px;font-size:12px}
  .shift-open-toggle,.shift-test-toggle{gap:3px;padding:3px 2px;font-size:10px}
  .shift-open-toggle input,.shift-test-toggle input{width:14px;height:14px}
- .shift-test-control .shift-test-toggle{padding-right:25px}
- .shift-mini-delete{right:2px;top:9px;width:25px;height:26px;min-width:25px;min-height:26px;font-size:12px}
+ .shift-toolbar-search-row>button,.shift-open-toggle{height:48px;min-height:48px}
+ .shift-test-control{height:48px;min-height:48px}
+ .shift-test-control .shift-test-toggle{height:23px;min-height:23px;padding:1px 2px}
+ .shift-mini-delete{height:23px;min-height:23px;font-size:9px}
 }
 
 </style>
@@ -1524,9 +1529,9 @@ button{cursor:pointer}
       <div class="shift-toolbar-search-row">
         <button id="shiftRefreshBtn" class="action-btn" type="button">重新整理</button>
         <button id="shiftExportBtn" class="action-btn" type="button">匯出</button>
-        <div class="shift-test-control">
+        <div class="shift-test-control" aria-label="測試模式與測試資料管理">
           <label class="shift-test-toggle"><input id="shiftTestModeToggle" type="checkbox" aria-label="測試模式"><span>測試</span></label>
-          <button id="shiftDeleteTestBtn" class="shift-mini-delete" type="button" hidden title="刪除所選週測試資料" aria-label="刪除所選週測試資料">🗑</button>
+          <button id="shiftDeleteTestBtn" class="shift-mini-delete" type="button" title="刪除所選週測試資料">刪測試</button>
         </div>
         <label class="shift-open-toggle"><input id="shiftOpenToggle" type="checkbox" aria-label="開放指休"><span>開放</span></label>
       </div>
@@ -5107,14 +5112,14 @@ async function t995LoadShiftAdmin(){
     const latest=t995LatestShiftByEmployee(sr.data||[]);t995ShiftTestRecordCount=(sr.data||[]).filter(r=>r.is_test).length;
     t995ShiftRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
     const forecastRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
-    const openToggle=document.getElementById("shiftOpenToggle");if(openToggle)openToggle.checked=Boolean(t995StaffingSettings.shift_submission_open);
-    const testToggle=document.getElementById("shiftTestModeToggle");if(testToggle)testToggle.checked=Boolean(t995StaffingSettings.shift_test_mode);
+    const openToggle=document.getElementById("shiftOpenToggle");if(openToggle){openToggle.checked=Boolean(t995StaffingSettings.shift_submission_open);t995SyncShiftToggleVisual(openToggle);}
+    const testToggle=document.getElementById("shiftTestModeToggle");if(testToggle){testToggle.checked=Boolean(t995StaffingSettings.shift_test_mode);t995SyncShiftToggleVisual(testToggle);}
     t995RenderShiftAdmin();await t995RenderStaffingRecommendation(t995ShiftWeekSelect.value,forecastRows);
   }catch(e){t995ShiftRows=[];t995ShiftAdminList.innerHTML=`<div class="empty">讀取失敗：${esc(e.message||"請確認權限")}</div>`;t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="empty">人力資料讀取失敗</div>';}
 }
 function t995RenderShiftAdmin(){
   const active=t995ShiftRows.length;const submitted=t995ShiftRows.filter(x=>x.shift).length;const missing=active-submitted;
-  if(t995ShiftDeleteTestBtn)t995ShiftDeleteTestBtn.hidden=t995ShiftTestRecordCount===0;
+  if(t995ShiftDeleteTestBtn){const count=Number(t995ShiftTestRecordCount||0);t995ShiftDeleteTestBtn.disabled=count===0;t995ShiftDeleteTestBtn.textContent=count?`刪測試 ${count}`:"無測試";t995ShiftDeleteTestBtn.title=count?`刪除所選週 ${count} 筆測試資料`:"所選週沒有測試資料";}
   const choices=[['all',`全部 ${active}`],['submitted',`已提交 ${submitted}`],['missing',`未提交 ${missing}`]];
   t995ShiftStatusTabs.innerHTML=choices.map(([key,label])=>`<button type="button" class="shift-status-btn ${t995ShiftStatusFilter===key?'active':''}" data-t995-shift-status="${key}" role="tab" aria-selected="${t995ShiftStatusFilter===key?'true':'false'}">${label}</button>`).join('');
   const weekLabel=t995ShiftWeekSelect.options[t995ShiftWeekSelect.selectedIndex]?.text||"";const term=t995ShiftNameSearch.value.trim().toLocaleLowerCase('zh-Hant');
@@ -5586,6 +5591,7 @@ let t995DeviceClaimRecords=[];
 let t995DeviceClaimFetchError="";
 const t995ShiftOpenToggle=document.getElementById("shiftOpenToggle");
 const t995ShiftTestModeToggle=document.getElementById("shiftTestModeToggle");
+function t995SyncShiftToggleVisual(input){const label=input?.closest("label");if(label)label.classList.toggle("is-checked",Boolean(input.checked));}
 
 function t995ClearPasswordDialog(){
   [t995CurrentInput,t995NewInput,t995ConfirmInput,t995UnlockInput].forEach(input=>input.value="");
@@ -5662,7 +5668,7 @@ document.getElementById("shiftPasswordChangeBtn").onclick=()=>t995OpenPasswordDi
 
 if(t995ShiftOpenToggle){
   t995ShiftOpenToggle.addEventListener("change",async()=>{
-    const requested=t995ShiftOpenToggle.checked;
+    const requested=t995ShiftOpenToggle.checked;t995SyncShiftToggleVisual(t995ShiftOpenToggle);
     t995ShiftOpenToggle.disabled=true;
     try{
       const r=await db.from("staffing_settings").update({shift_submission_open:requested,updated_at:new Date().toISOString()}).eq("singleton",true);
@@ -5670,20 +5676,20 @@ if(t995ShiftOpenToggle){
       t995StaffingSettings={...t995StaffingSettings,shift_submission_open:requested};
       alert(requested?"指休表已開放，任何時間都可填寫；新提交會列為正式資料。":"指休表已關閉。" );
       await t995LoadShiftAdmin();
-    }catch(e){t995ShiftOpenToggle.checked=!requested;alert(`更新指休開放狀態失敗：${e.message||"請確認已執行開放開關 SQL 並重新登入。"}`);}
+    }catch(e){t995ShiftOpenToggle.checked=!requested;t995SyncShiftToggleVisual(t995ShiftOpenToggle);alert(`更新指休開放狀態失敗：${e.message||"請確認已執行開放開關 SQL 並重新登入。"}`);}
     finally{t995ShiftOpenToggle.disabled=false;}
   });
 }
 if(t995ShiftTestModeToggle){
   t995ShiftTestModeToggle.addEventListener("change",async()=>{
-    const requested=t995ShiftTestModeToggle.checked;t995ShiftTestModeToggle.disabled=true;
+    const requested=t995ShiftTestModeToggle.checked;t995SyncShiftToggleVisual(t995ShiftTestModeToggle);t995ShiftTestModeToggle.disabled=true;
     try{
       const r=await db.from("staffing_settings").update({shift_test_mode:requested,updated_at:new Date().toISOString()}).eq("singleton",true);
       if(r.error)throw r.error;
       t995StaffingSettings={...t995StaffingSettings,shift_test_mode:requested};
       alert(requested?"測試模式已開啟；測試提交會標記為測試資料。":"測試模式已關閉；提交將列為正式資料。");
       await t995LoadShiftAdmin();
-    }catch(e){t995ShiftTestModeToggle.checked=!requested;alert(`更新測試模式失敗：${e.message||"請確認管理員權限。"}`);}
+    }catch(e){t995ShiftTestModeToggle.checked=!requested;t995SyncShiftToggleVisual(t995ShiftTestModeToggle);alert(`更新測試模式失敗：${e.message||"請確認管理員權限。"}`);}
     finally{t995ShiftTestModeToggle.disabled=false;}
   });
 }
