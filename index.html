@@ -852,6 +852,40 @@
 .device-type-btn{min-height:58px;border:2px solid #d8d3ca;border-radius:15px;background:#fff;color:var(--black);font-size:18px;font-weight:800;cursor:pointer}
 .device-type-btn.active{border-color:var(--red);background:var(--danger-bg);color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,.08)}
 .device-type-btn:focus-visible{outline:3px solid rgba(22,131,223,.35);outline-offset:2px}
+.shift-note{border:1px solid #f0c36d;background:#fff8e8;color:#754f00;border-radius:14px;padding:13px 15px;line-height:1.6;font-size:14px;margin:12px 0}
+.shift-week-label{font-weight:900;font-size:17px;margin:8px 0;color:var(--black)}
+.shift-days{display:grid;grid-template-columns:1fr;gap:10px}
+.shift-day{display:grid;grid-template-columns:58px minmax(0,1fr);align-items:center;gap:10px;background:#fbfaf7;border:1px solid var(--line);border-radius:13px;padding:10px 11px}
+.shift-day label{display:block;font-weight:800;margin:0}
+.shift-day input{width:100%;height:46px;border:1px solid #d8d3ca;border-radius:10px;padding:0 11px;font:inherit;background:#fff}
+.shift-day input:focus{outline:3px solid rgba(200,16,46,.16);border-color:var(--red)}
+.shift-state{margin-top:8px;font-size:14px;line-height:1.55;font-weight:700}
+.shift-state.ok{color:#176b3a}.shift-state.bad{color:#a52a2a}
+.shift-window-closed{opacity:.65}
+.shift-helper{font-size:14px;line-height:1.6;color:var(--gray);margin-top:10px}
+.shift-day-structured{grid-template-columns:48px minmax(0,1fr);align-items:start}
+.shift-day-name{padding-top:12px;font-weight:800;white-space:nowrap}
+.shift-day-content{display:grid;gap:8px;min-width:0}
+.shift-time-slots{display:grid;gap:6px;min-width:0}
+.shift-time-slots[hidden]{display:none}
+.shift-time-slot{display:grid;grid-template-columns:minmax(0,160px) 12px minmax(0,160px);align-items:center;gap:5px;min-width:0}
+.shift-time-slot-extra{grid-template-columns:minmax(0,160px) 12px minmax(0,160px)}
+.shift-time-input{height:44px!important;min-width:0;max-width:160px;padding:0 6px!important;border:1px solid #d8d3ca!important;border-radius:9px!important;font:inherit!important;font-size:15px!important;text-align:center}
+.shift-time-separator{font-weight:800;color:var(--gray)}
+.shift-slot-remove{min-height:36px;padding:6px 9px;border:1px solid #e2aaa4;border-radius:9px;background:var(--danger-bg);color:var(--danger);font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+.shift-slot-remove[hidden]{display:none}
+.shift-day-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.shift-add-slot{min-height:36px;padding:6px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--black);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.shift-add-slot:disabled{display:none}
+.shift-unavailable{display:inline-flex!important;align-items:center;gap:6px;min-height:36px;padding:5px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:13px;font-weight:800;cursor:pointer}
+.shift-unavailable input[type="checkbox"]{width:18px!important;height:18px!important;min-height:18px;margin:0;padding:0;accent-color:var(--red)}
+.shift-day-structured.is-unavailable .shift-day-name{color:var(--danger)}
+.shift-day-error{grid-column:2;color:var(--danger);font-size:12px;line-height:1.4}
+@media(max-width:500px){.shift-day-structured{grid-template-columns:42px minmax(0,1fr);gap:7px;padding:9px}.shift-time-slot,.shift-time-slot-extra{grid-template-columns:minmax(0,1fr) 10px minmax(0,1fr);gap:4px}.shift-time-input{font-size:14px!important}.shift-unavailable,.shift-add-slot{font-size:12px;padding:5px 8px}}
+
+/* 指休測試模式與電池領用欄位 */
+.shift-window-test{background:#fff4dd;border:1px solid #e9b95e;border-radius:12px;padding:10px 12px;color:#76500c}
+#claimBatteryNumber{width:100%;height:48px;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--black);font:inherit}
 </style>
 </head>
 
@@ -876,6 +910,7 @@
     <div id="batteryBackTop" class="front-top-back intro-back" style="display:none"><button id="batteryBackBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
     <div id="batteryRegisterBackTop" class="front-top-back intro-back" style="display:none"><button id="batteryRegisterBackBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
     <div id="surveyBackTop" class="front-top-back intro-back" style="display:none"><button id="surveyBackBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
+    <div id="shiftBackTop" class="front-top-back intro-back" style="display:none"><button id="shiftBackBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
     <div id="defensiveBackTop" class="front-top-back intro-back" style="display:none"><button id="defensiveBackBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
     <h2 id="introTitle">上班領車・下班還車</h2>
     <p id="introText">完成領車、還車安全檢查與回饋。</p>
@@ -910,6 +945,11 @@
     <button id="surveyModeBtn" class="mode-btn" type="button">
       <span class="icon">📋</span>
       <span class="main">意向調查</span>
+    </button>
+
+    <button id="shiftModeBtn" class="mode-btn" type="button">
+      <span class="icon">🗓️</span>
+      <span class="main">指休表單</span>
     </button>
 
   </div>
@@ -1048,7 +1088,14 @@
 
 
       <section class="card">
-        <div class="section-number">05・油卡</div>
+        <div class="section-number">05・電池</div>
+        <label class="label" for="claimBatteryNumber">使用電池編號（選填）</label>
+        <input id="claimBatteryNumber" class="search-input" type="text" maxlength="100" placeholder="若有領用電池，請輸入編號" autocomplete="off">
+        <div id="claimBatteryStatus" class="hint" style="display:none;margin-top:8px"></div>
+      </section>
+
+      <section class="card">
+        <div class="section-number">06・油卡</div>
 
         <label class="label">
           油卡確認
@@ -1489,6 +1536,49 @@
       <div id="surveySuccessData" class="success-data"></div>
 </div>
 
+  </section>
+
+  <!-- 員工指休表單 -->
+  <section id="shiftPage" class="mode-page">
+    <div id="shiftForm">
+      <section class="card">
+        <div class="section-number">員工指休／可上班時間</div>
+        <div class="shift-note"><strong>每天都要填可上班時段，或選「無法上班」。</strong><br>可新增第二時段；七天皆無法上班時，備註必填原因。</div>
+        <div id="shiftWeekLabel" class="shift-week-label">查詢開放週次中…</div>
+        <div id="shiftWindowMessage" class="hint"></div>
+        <label class="label" for="shiftEmployeeName" style="margin-top:20px">姓名</label>
+        <div class="name-search-wrap">
+          <input id="shiftEmployeeName" type="text" maxlength="60" autocomplete="off" placeholder="輸入任一字搜尋在職名單">
+          <div id="shiftEmployeeNameSuggestions" class="name-suggestions"></div>
+        </div>
+        <div id="shiftEmployeeStatus" class="shift-state" role="status" aria-live="polite"></div>
+      </section>
+      <section class="card">
+        <div class="section-number">週一至週日</div>
+        <div class="shift-helper">時間僅輸入 10–22 的整數，例如 10–15；每天填一組時段或選「無法上班」，第二時段選填。</div>
+        <div id="shiftDays" class="shift-days" style="margin-top:14px">
+          <div class="shift-day shift-day-structured" data-shift-day="monday"><div class="shift-day-name">週一</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週一開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週一結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="tuesday"><div class="shift-day-name">週二</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週二開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週二結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="wednesday"><div class="shift-day-name">週三</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週三開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週三結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="thursday"><div class="shift-day-name">週四</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週四開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週四結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="friday"><div class="shift-day-name">週五</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週五開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週五結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="saturday"><div class="shift-day-name">週六</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週六開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週六結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="sunday"><div class="shift-day-name">週日</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週日開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週日結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+        </div>
+        <label class="label" for="shiftNotes" style="margin-top:20px">備註／排班需求</label>
+        <textarea id="shiftNotes" maxlength="500" placeholder="選填；若七天皆無法上班，必須說明原因"></textarea>
+      </section>
+      <button id="shiftSubmitBtn" class="save-btn" type="button">送出本週指休表</button>
+      <div id="shiftSubmitMessage" class="hint" style="margin-top:10px" role="status" aria-live="polite"></div>
+    </div>
+    <div id="shiftSuccess" class="success-panel">
+      <div class="front-top-back"><button id="shiftSuccessHomeBtn" class="back-home-btn" type="button">← 返回首頁</button></div>
+      <div class="success-icon">✓</div>
+      <div class="success-title">指休表已送出</div>
+      <div id="shiftSuccessData" class="success-data"></div>
+      <div class="hint">開放期間可重新送出修改；後台以最後一次提交為準。</div>
+      <button id="shiftEditAgainBtn" class="action-btn" type="button" style="margin-top:12px">重新修改本週資料</button>
+    </div>
   </section>
 
   <!-- =========================
@@ -2598,6 +2688,8 @@ let defensivePdfOpenedAt = null;
 let defensiveExistingResponse = null;
 let defensiveTargetNames = [];
 let defensiveTargetNamesLoaded = false;
+let activeEmployeeDirectory = [];
+let nameListLoadPromise = null;
 
 
 const pageTitle =
@@ -2658,6 +2750,8 @@ const recorderNumber =
   document.getElementById(
     "recorderNumber"
   );
+const claimBatteryNumber = document.getElementById("claimBatteryNumber");
+const claimBatteryStatus = document.getElementById("claimBatteryStatus");
 
 const recorderNumberWrap =
   document.getElementById(
@@ -2987,6 +3081,9 @@ function resetClaimForm() {
   claimPlate.value = "";
 
   recorderNumber.value = "";
+  claimBatteryNumber.value = "";
+  claimBatteryStatus.style.display = "none";
+  claimBatteryStatus.textContent = "";
   recorderNumberWrap.classList.remove("show");
   recorderHealthInfo.style.display = "none";
   recorderHealthInfo.textContent = "";
@@ -3103,6 +3200,16 @@ async function saveClaim() {
     }
   }
 
+  const batteryNumber = claimBatteryNumber.value.trim();
+  if(batteryNumber){
+    try{
+      const batteryResult=await db.from("batteries").select("status,health_status").eq("battery_number",batteryNumber).maybeSingle();
+      if(batteryResult.error)throw batteryResult.error;
+      if(!batteryResult.data){alert("查無此電池編號，請確認設備已建檔或清空此欄位。");claimBatteryNumber.focus();return;}
+      if(batteryResult.data.status==="scrapped"){alert("此電池已報廢，請勿領用。");claimBatteryNumber.focus();return;}
+    }catch(e){alert(`電池查詢失敗：${e.message||"請確認資料庫更新後重試"}`);return;}
+  }
+
   const oilCard =
     document.querySelector(
       'input[name="oilCardStatus"]:checked'
@@ -3144,6 +3251,9 @@ async function saveClaim() {
 
           recorder_number:
             recorder,
+
+          battery_number:
+            batteryNumber || null,
 
           oil_card_status:
             oilCard.value
@@ -3693,11 +3803,15 @@ async function saveSurvey() {
   surveySaveBtn.textContent = "送出中…";
 
   try {
+    const respondentName = surveyRespondentNameInput.value.trim();
+    const employeeCheck = await db.from("employee_directory").select("id").eq("full_name", respondentName).eq("is_active", true).maybeSingle();
+    if(employeeCheck.error) throw employeeCheck.error;
+    if(!employeeCheck.data){alert("目前查無在職名單或員工已停用，無法填寫意向調查，請找店長確認。");return;}
     const behaviorScore = Object.values(surveyAnswers.behavior).reduce((sum, value) => sum + value, 0);
     const attitudeScore = Object.values(surveyAnswers.attitude).reduce((sum, value) => sum + value, 0);
     const accident = document.querySelector('input[name="accidentWithinYear"]:checked');
     const result = await db.from("driver_survey_responses").insert({
-      respondent_name: surveyRespondentNameInput.value.trim(),
+      respondent_name: respondentName,
       survey_round: CURRENT_SURVEY_ROUND,
       part1_answers: {
         violation_points: Number(violationPointsInput.value),
@@ -3773,12 +3887,20 @@ renderSurvey();
 
 async function loadTargetNames(){
   if(defensiveTargetNamesLoaded) return;
-  try{
-    const result = await db.from("driver_survey_targets").select("respondent_name");
-    if(result.error) throw result.error;
-    defensiveTargetNames = [...new Set((result.data || []).map(row => String(row.respondent_name || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b, "zh-Hant"));
+  if(nameListLoadPromise) return nameListLoadPromise;
+  nameListLoadPromise = (async()=>{
+    const employeeResult = await db.from("employee_directory")
+      .select("id,full_name,area_code,is_active")
+      .eq("is_active", true);
+    if(employeeResult.error) throw employeeResult.error;
+    activeEmployeeDirectory = (employeeResult.data || []).filter(row => row.is_active !== false && row.full_name);
+    defensiveTargetNames = [...new Set(activeEmployeeDirectory.map(row => String(row.full_name || "").trim()).filter(Boolean))]
+      .sort((a,b) => a.localeCompare(b, "zh-Hant"));
     defensiveTargetNamesLoaded = true;
-  }catch(e){
+  })();
+  try{ await nameListLoadPromise; }
+  catch(e){
+    nameListLoadPromise = null;
     console.error("姓名名單讀取失敗", e);
   }
 }
@@ -3790,7 +3912,8 @@ function renderNameSuggestions(input, container){
     container.innerHTML = "";
     return;
   }
-  const matches = defensiveTargetNames.filter(name => name.startsWith(keyword)).slice(0, 8);
+  const normalizedKeyword = keyword.toLocaleLowerCase();
+  const matches = defensiveTargetNames.filter(name => name.toLocaleLowerCase().includes(normalizedKeyword)).slice(0, 8);
   container.innerHTML = matches.map(name => `<button type="button" class="name-suggestion" data-name="${escapeHtml(name)}">${escapeHtml(name)}</button>`).join("");
   container.classList.toggle("show", matches.length > 0);
 }
@@ -3813,9 +3936,7 @@ function setupNameAutocomplete(input, container){
 }
 
 function closeAllNameSuggestions(){
-  [claimantNameSuggestions, reporterNameSuggestions, surveyRespondentNameSuggestions, defensiveNameSuggestions].forEach(item => {
-    item.classList.remove("show");
-  });
+  document.querySelectorAll(".name-suggestions.show").forEach(item => item.classList.remove("show"));
 }
 
 
@@ -3869,6 +3990,15 @@ async function loadDefensiveLesson(){
   defensiveLoadBtn.textContent = "載入中…";
   defensiveStatus.style.display = "block";
   try{
+    const employeeCheck = await db.from("employee_directory").select("id").eq("full_name", name).eq("is_active", true).maybeSingle();
+    if(employeeCheck.error) throw employeeCheck.error;
+    if(!employeeCheck.data){
+      defensiveStatus.className = "training-message";
+      defensiveStatus.textContent = "此員工目前已停用或不在職，無法填寫防禦駕駛，請找店長確認。";
+      defensiveLessonPanel.style.display = "none";
+      defensiveQuestions.style.display = "none";
+      return;
+    }
     const targetResult = await db.from("driver_survey_targets").select("id").eq("respondent_name", name).limit(1);
     if(targetResult.error) throw targetResult.error;
     if(!targetResult.data?.length){
@@ -4290,6 +4420,217 @@ todayDate.textContent = new Date().toLocaleDateString(
 );
 
 showHome();
+
+/* ===============================
+   桃園 T995 員工指休表單
+================================ */
+const shiftPage = document.getElementById("shiftPage");
+const shiftForm = document.getElementById("shiftForm");
+const shiftSuccess = document.getElementById("shiftSuccess");
+const shiftNameInput = document.getElementById("shiftEmployeeName");
+const shiftEmployeeStatus = document.getElementById("shiftEmployeeStatus");
+const shiftNameSuggestions = document.getElementById("shiftEmployeeNameSuggestions");
+const shiftWeekLabel = document.getElementById("shiftWeekLabel");
+const shiftWindowMessage = document.getElementById("shiftWindowMessage");
+const shiftSubmitBtn = document.getElementById("shiftSubmitBtn");
+const shiftSubmitMessage = document.getElementById("shiftSubmitMessage");
+const shiftSuccessData = document.getElementById("shiftSuccessData");
+const shiftHomeTitle = document.getElementById("pageTitle").textContent;
+let verifiedShiftEmployee = null;
+let shiftVerifySerial = 0;
+let shiftLookupSerial = 0;
+let shiftLookupTimer = null;
+let shiftEmployeeSearchResults = [];
+
+function taipeiShiftNow(){
+  const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit",weekday:"short",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+  const y=Number(p.year),m=Number(p.month),d=Number(p.day);
+  return {y,m,d,dow:new Date(Date.UTC(y,m-1,d)).getUTCDay(),minute:Number(p.hour)*60+Number(p.minute)};
+}
+function shiftISO(y,m,d){return `${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;}
+function shiftDateAdd(iso,days){const [y,m,d]=iso.split("-").map(Number);const dt=new Date(Date.UTC(y,m-1,d+days));return shiftISO(dt.getUTCFullYear(),dt.getUTCMonth()+1,dt.getUTCDate());}
+function shiftRangeLabel(start){return `${start} 至 ${shiftDateAdd(start,6)}`;}
+let shiftTestModeEnabled=false;
+function getShiftSubmissionCycle(testMode=shiftTestModeEnabled){
+  const p=taipeiShiftNow();const today=shiftISO(p.y,p.m,p.d);const monday=shiftDateAdd(today,-((p.dow+6)%7));
+  const normalOpen=(p.dow===1&&p.minute>=600)||(p.dow>=2&&p.dow<=5)||(p.dow===6&&p.minute<600);
+  const open=Boolean(testMode)||normalOpen;
+  const weekStart=shiftDateAdd(monday,(normalOpen||(p.dow===1&&p.minute<600))?7:14);
+  return {open,normalOpen,weekStart,testMode:Boolean(testMode)};
+}
+async function loadShiftTestMode(){
+  const r=await db.rpc("shift_test_mode_enabled");if(r.error)throw r.error;
+  shiftTestModeEnabled=Boolean(r.data);return shiftTestModeEnabled;
+}
+function updateShiftWindow(){
+  const cycle=getShiftSubmissionCycle();shiftWeekLabel.textContent=`填寫週次：${shiftRangeLabel(cycle.weekStart)}`;
+  if(cycle.testMode){shiftWindowMessage.textContent="測試開放中：目前任何時間皆可填寫（仍需在職名單驗證）。";shiftWindowMessage.className="hint shift-window-test";}
+  else if(cycle.normalOpen){shiftWindowMessage.textContent="目前開放中：週一 10:00 至週六 10:00（台灣時間）。";shiftWindowMessage.className="hint";}
+  else{shiftWindowMessage.textContent="目前未開放；請於每週一 10:00 至週六 10:00 填寫。";shiftWindowMessage.className="hint shift-window-closed";}
+  shiftSubmitBtn.disabled=!cycle.open;return cycle;
+}
+async function enterShiftMode(){
+  try{await loadShiftTestMode();const cycle=getShiftSubmissionCycle();if(!cycle.open){alert("指休表目前未開放。請於每週一 10:00 至週六 10:00（台灣時間）再進入填寫。");return;}showMode("shift");}
+  catch(e){alert(`目前無法確認指休表開放狀態：${e.message||"請稍後再試"}`);}
+}
+function parseAvailabilityRanges(value){
+  const text=String(value||"").trim();if(!text)return [];
+  const parts=text.split(/[，,、;；/\n]+/).map(x=>x.trim()).filter(Boolean);const out=[];
+  for(const part of parts){
+    const m=part.match(/^(\d{1,2})(?::(\d{2}))?\s*[-~～至]\s*(\d{1,2})(?::(\d{2}))?$/);
+    if(!m)return null;
+    const sh=Number(m[1]),sm=Number(m[2]||0),eh=Number(m[3]),em=Number(m[4]||0);
+    const start=sh*60+sm,end=eh*60+em;
+    if(sh>23||eh>24||sm>59||em>59||start<0||end>1440||start>=end)return null;
+    out.push([start,end]);
+  }
+  return out;
+}
+async function verifyShiftEmployee(){
+  const name=shiftNameInput.value.trim();const serial=++shiftVerifySerial;verifiedShiftEmployee=null;
+  shiftEmployeeStatus.textContent="";shiftEmployeeStatus.className="shift-state";
+  if(!name)return false;
+  shiftEmployeeStatus.textContent="確認在職名單中…";
+  try{
+    const r=await db.from("employee_directory").select("id,full_name,area_code,is_active").eq("full_name",name).eq("is_active",true).maybeSingle();
+    if(serial!==shiftVerifySerial)return false;if(r.error)throw r.error;
+    if(!r.data){shiftEmployeeStatus.textContent="歡迎加入桃園外送中心，目前查無名單，請找店長確認！";shiftEmployeeStatus.className="shift-state bad";return false;}
+    if(!r.data.area_code){shiftEmployeeStatus.textContent="已在職名單中，但尚未設定區域；請找店長確認後再填寫。";shiftEmployeeStatus.className="shift-state bad";return false;}
+    verifiedShiftEmployee=r.data;shiftEmployeeStatus.textContent=`✅ 已確認在職｜${r.data.area_code} 區`;shiftEmployeeStatus.className="shift-state ok";return true;
+  }catch(e){if(serial===shiftVerifySerial){shiftEmployeeStatus.textContent=`名單查詢失敗，請稍後重試或找店長確認。`;shiftEmployeeStatus.className="shift-state bad";}return false;}
+}
+const shiftDayLabels={monday:"週一",tuesday:"週二",wednesday:"週三",thursday:"週四",friday:"週五",saturday:"週六",sunday:"週日"};
+const shiftDaysContainer=document.getElementById("shiftDays");
+function updateShiftDayControls(dayElement){
+  const unavailable=dayElement.querySelector("[data-shift-unavailable]").checked;
+  dayElement.classList.toggle("is-unavailable",unavailable);
+  dayElement.querySelectorAll("[data-shift-start],[data-shift-end]").forEach(input=>input.disabled=unavailable);
+  const addButton=dayElement.querySelector("[data-shift-add-slot]");
+  const hasExtra=dayElement.querySelectorAll("[data-shift-slot]").length>=2;
+  addButton.disabled=unavailable||hasExtra;
+  const removeButton=dayElement.querySelector("[data-shift-remove-slot]");removeButton.hidden=unavailable||!hasExtra;removeButton.disabled=unavailable;
+  dayElement.querySelector(".shift-time-slots").hidden=unavailable;
+}
+function addShiftTimeSlot(dayElement){
+  const slots=dayElement.querySelector(".shift-time-slots");if(slots.querySelectorAll("[data-shift-slot]").length>=2)return;
+  const dayName=shiftDayLabels[dayElement.dataset.shiftDay]||"當日";const number=slots.querySelectorAll("[data-shift-slot]").length+1;
+  const slot=document.createElement("div");slot.className="shift-time-slot shift-time-slot-extra";slot.setAttribute("data-shift-slot","");
+  slot.innerHTML=`<input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="${dayName}第${number}時段開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="${dayName}第${number}時段結束時間">`;
+  slots.appendChild(slot);updateShiftDayControls(dayElement);
+}
+shiftDaysContainer.addEventListener("change",event=>{if(event.target.matches("[data-shift-unavailable]"))updateShiftDayControls(event.target.closest("[data-shift-day]"));});
+shiftDaysContainer.addEventListener("click",event=>{
+  const addButton=event.target.closest("[data-shift-add-slot]");if(addButton){addShiftTimeSlot(addButton.closest("[data-shift-day]"));return;}
+  const removeButton=event.target.closest("[data-shift-remove-slot]");if(removeButton){const dayElement=removeButton.closest("[data-shift-day]");dayElement.querySelector(".shift-time-slot-extra")?.remove();updateShiftDayControls(dayElement);}
+});
+function readShiftDayValue(dayKey){
+  const dayElement=shiftDaysContainer.querySelector(`[data-shift-day="${dayKey}"]`);const dayName=shiftDayLabels[dayKey];
+  if(dayElement.querySelector("[data-shift-unavailable]").checked)return {value:"無法上班",intervals:[]};
+  const slots=[...dayElement.querySelectorAll("[data-shift-slot]")].map(slot=>({start:slot.querySelector("[data-shift-start]").value,end:slot.querySelector("[data-shift-end]").value}));
+  const filled=slots.filter(slot=>slot.start||slot.end);
+  if(!filled.length)return {error:`${dayName}請填可上班時段，或選「無法上班」。`,focus:dayElement.querySelector("[data-shift-start]")};
+  if(filled.some(slot=>!slot.start||!slot.end)){
+    const index=slots.findIndex(slot=>!slot.start||!slot.end);const incomplete=slots[index];
+    return {error:`${dayName}時段請同時選擇開始與結束時間。`,focus:dayElement.querySelectorAll(incomplete.start?"[data-shift-end]":"[data-shift-start]")[index]};
+  }
+  const invalid=filled.find(slot=>![slot.start,slot.end].every(value=>Number.isInteger(Number(value))&&Number(value)>=10&&Number(value)<=22));
+  if(invalid){const index=slots.indexOf(invalid);const startValue=Number(invalid.start);const focus=(invalid.start===""||!Number.isInteger(startValue)||startValue<10||startValue>22)?"[data-shift-start]":"[data-shift-end]";return {error:`${dayName}時間請輸入 10 到 22 的整數。`,focus:dayElement.querySelectorAll(focus)[index]};}
+  const intervals=filled.map(slot=>[Number(slot.start)*60,Number(slot.end)*60]).sort((a,b)=>a[0]-b[0]);
+  if(intervals.some(([start,end])=>start>=end))return {error:`${dayName}結束時間需晚於開始時間。`,focus:dayElement.querySelector("[data-shift-end]")};
+  for(let i=1;i<intervals.length;i++)if(intervals[i][0]<intervals[i-1][1])return {error:`${dayName}時段不能重疊。`,focus:dayElement.querySelectorAll("[data-shift-start]")[1]};
+  return {value:intervals.map(([start,end])=>`${start/60}-${end/60}`).join("/"),intervals};
+}
+async function submitShiftAvailability(){
+  try{await loadShiftTestMode();}catch(e){shiftSubmitMessage.textContent="無法確認開放狀態，請稍後再試。";return;}
+  const cycle=updateShiftWindow();if(!cycle.open){shiftSubmitMessage.textContent="目前不在開放時間，無法送出。";return;}
+  if(!await verifyShiftEmployee())return;
+  const values={},dayResults={};
+  for(const key of Object.keys(shiftDayLabels)){
+    const result=readShiftDayValue(key);if(result.error){alert(result.error);result.focus?.focus();return;}
+    dayResults[key]=result;values[key]=result.value;
+  }
+  const notes=document.getElementById("shiftNotes").value.trim();
+  if(Object.values(values).every(value=>value==="無法上班")&&!notes){alert("七天皆無法上班，請在備註欄說明原因。");document.getElementById("shiftNotes").focus();return;}
+  if(dayResults.saturday.value==="無法上班"||dayResults.sunday.value==="無法上班"){
+    const ok=confirm("週六或週日選擇無法上班，可能影響排班工時；若能提供週末時段可增加排班彈性。仍要送出嗎？");if(!ok)return;
+  }
+  const payload={employee_id:verifiedShiftEmployee.id,week_start:cycle.weekStart,...values,notes:notes||null};
+  shiftSubmitBtn.disabled=true;shiftSubmitMessage.textContent="送出中…";
+  try{
+    const r=await db.from("weekly_shift_availability").insert(payload);if(r.error)throw r.error;
+    shiftSuccessData.textContent=`${verifiedShiftEmployee.full_name}｜${verifiedShiftEmployee.area_code} 區｜${shiftRangeLabel(cycle.weekStart)}`;
+    shiftForm.style.display="none";shiftSuccess.classList.add("show");shiftSubmitMessage.textContent="";
+  }catch(e){shiftSubmitMessage.textContent=`送出失敗：${e.message||"請確認開放時間並稍後重試。"}`;}
+  finally{try{await loadShiftTestMode();}catch(e){}shiftSubmitBtn.disabled=!getShiftSubmissionCycle().open;}
+}
+function resetShiftForm(){
+  clearTimeout(shiftLookupTimer);++shiftLookupSerial;shiftEmployeeSearchResults=[];
+  shiftNameInput.value="";verifiedShiftEmployee=null;shiftNameSuggestions.innerHTML="";shiftNameSuggestions.classList.remove("show");shiftEmployeeStatus.textContent="";shiftEmployeeStatus.className="shift-state";
+  for(const dayElement of shiftDaysContainer.querySelectorAll("[data-shift-day]")){
+    dayElement.querySelector("[data-shift-unavailable]").checked=false;
+    const slots=[...dayElement.querySelectorAll("[data-shift-slot]")];for(const slot of slots.slice(1))slot.remove();
+    dayElement.querySelectorAll("[data-shift-start],[data-shift-end]").forEach(input=>input.value="");updateShiftDayControls(dayElement);
+  }
+  document.getElementById("shiftNotes").value="";shiftSubmitMessage.textContent="";shiftForm.style.display="block";shiftSuccess.classList.remove("show");updateShiftWindow();
+}
+function renderShiftEmployeeSuggestions(matches,keyword){
+  if(!keyword){shiftNameSuggestions.innerHTML="";shiftNameSuggestions.classList.remove("show");return;}
+  if(!matches.length){shiftNameSuggestions.innerHTML='<div class="name-suggestion" style="cursor:default;color:#777">查無符合的在職姓名</div>';shiftNameSuggestions.classList.add("show");return;}
+  shiftNameSuggestions.innerHTML=matches.map(row=>`<button type="button" class="name-suggestion" data-shift-employee-id="${escapeHtml(row.id)}">${escapeHtml(row.full_name)}${row.area_code?`｜${escapeHtml(row.area_code)} 區`:"｜尚未設定區域"}</button>`).join("");
+  shiftNameSuggestions.classList.add("show");
+}
+async function searchShiftEmployeeSuggestions(keyword,serial){
+  try{
+    const result=await db.from("employee_directory").select("id,full_name,area_code,is_active")
+      .eq("is_active",true).ilike("full_name",`%${keyword}%`).order("full_name",{ascending:true}).limit(8);
+    if(serial!==shiftLookupSerial||keyword!==shiftNameInput.value.trim())return;
+    if(result.error)throw result.error;
+    shiftEmployeeSearchResults=(result.data||[]).filter(row=>row.is_active!==false&&row.full_name);
+    renderShiftEmployeeSuggestions(shiftEmployeeSearchResults,keyword);
+    const exact=shiftEmployeeSearchResults.find(row=>String(row.full_name||"").trim()===keyword);
+    if(exact)setShiftEmployeeSuggestion(exact);
+  }catch(error){
+    if(serial!==shiftLookupSerial||keyword!==shiftNameInput.value.trim())return;
+    shiftEmployeeSearchResults=[];
+    shiftNameSuggestions.innerHTML='<div class="name-suggestion" style="cursor:default;color:#b42318">名單查詢失敗，請稍後重試</div>';
+    shiftNameSuggestions.classList.add("show");
+    shiftEmployeeStatus.textContent="名單查詢失敗，請稍後重試或找店長確認。";shiftEmployeeStatus.className="shift-state bad";
+  }
+}
+function setShiftEmployeeSuggestion(row){
+  verifiedShiftEmployee=row;
+  shiftEmployeeStatus.textContent=row.area_code?`✅ 已確認在職｜${row.area_code} 區`:"已在職名單中，但尚未設定區域；請找店長確認後再填寫。";
+  shiftEmployeeStatus.className=row.area_code?"shift-state ok":"shift-state bad";
+}
+shiftNameInput.addEventListener("input",()=>{
+  const keyword=shiftNameInput.value.trim();++shiftVerifySerial;verifiedShiftEmployee=null;shiftEmployeeStatus.textContent="";shiftEmployeeStatus.className="shift-state";
+  clearTimeout(shiftLookupTimer);const serial=++shiftLookupSerial;
+  if(!keyword){shiftEmployeeSearchResults=[];shiftNameSuggestions.innerHTML="";shiftNameSuggestions.classList.remove("show");return;}
+  shiftNameSuggestions.innerHTML='<div class="name-suggestion" style="cursor:default;color:#777">搜尋中…</div>';shiftNameSuggestions.classList.add("show");
+  shiftLookupTimer=setTimeout(()=>searchShiftEmployeeSuggestions(keyword,serial),180);
+});
+shiftNameSuggestions.addEventListener("pointerdown",event=>{if(event.target.closest("[data-shift-employee-id]"))event.preventDefault();});
+shiftNameSuggestions.addEventListener("click",event=>{
+  const button=event.target.closest("[data-shift-employee-id]");if(!button)return;
+  const row=shiftEmployeeSearchResults.find(item=>String(item.id)===String(button.dataset.shiftEmployeeId));if(!row)return;
+  clearTimeout(shiftLookupTimer);++shiftLookupSerial;shiftNameInput.value=row.full_name;setShiftEmployeeSuggestion(row);shiftNameSuggestions.classList.remove("show");
+});
+shiftNameInput.addEventListener("blur",()=>setTimeout(()=>{clearTimeout(shiftLookupTimer);++shiftLookupSerial;shiftNameSuggestions.classList.remove("show");verifyShiftEmployee();},100));
+shiftSubmitBtn.addEventListener("click",submitShiftAvailability);
+document.getElementById("shiftEditAgainBtn").addEventListener("click",()=>{shiftSuccess.classList.remove("show");shiftForm.style.display="block";shiftSubmitMessage.textContent="重新送出後，後台將以最後一次內容為準。";window.scrollTo({top:0,behavior:"smooth"});});
+const baseShowModeForShift=showMode;
+showMode=function(mode){
+  baseShowModeForShift(mode);shiftPage.style.display=mode==="shift"?"block":"none";
+  document.getElementById("shiftBackTop").style.display=mode==="shift"?"block":"none";
+  if(mode==="shift"){
+    pageTitle.textContent=shiftHomeTitle;introTitle.textContent="員工指休表單";introText.textContent="輸入姓名確認在職後，填寫下週可上班時段。";introSection.style.display="block";introText.style.display="block";resetShiftForm();
+  }
+};
+const baseShowHomeForShift=showHome;
+showHome=function(){baseShowHomeForShift();shiftPage.style.display="none";document.getElementById("shiftBackTop").style.display="none";resetShiftForm();};
+document.getElementById("shiftModeBtn").addEventListener("click",enterShiftMode);
+document.getElementById("shiftBackBtn").addEventListener("click",showHome);
+document.getElementById("shiftSuccessHomeBtn").addEventListener("click",showHome);
 
 </script>
 
