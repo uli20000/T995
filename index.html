@@ -886,6 +886,8 @@
 /* 指休開放狀態與電池領用欄位 */
 .shift-window-open{background:#edf5ef;border:1px solid #c9ddcf;border-radius:12px;padding:10px 12px;color:#2f6c47}
 #claimBatteryNumber{width:100%;height:48px;box-sizing:border-box;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--black);font:inherit}
+
+.shift-window-test{background:#fff7e8;border:1px solid #e1c66e;border-radius:12px;padding:10px 12px;color:#765800}
 </style>
 </head>
 
@@ -4451,24 +4453,28 @@ function shiftISO(y,m,d){return `${y}-${String(m).padStart(2,"0")}-${String(d).p
 function shiftDateAdd(iso,days){const [y,m,d]=iso.split("-").map(Number);const dt=new Date(Date.UTC(y,m-1,d+days));return shiftISO(dt.getUTCFullYear(),dt.getUTCMonth()+1,dt.getUTCDate());}
 function shiftRangeLabel(start){return `${start} 至 ${shiftDateAdd(start,6)}`;}
 let shiftSubmissionOpen=false;
-function getShiftSubmissionCycle(isOpen=shiftSubmissionOpen){
+let shiftTestModeEnabled=false;
+function getShiftSubmissionCycle(){
   const p=taipeiShiftNow();const today=shiftISO(p.y,p.m,p.d);const monday=shiftDateAdd(today,-((p.dow+6)%7));
   const beforeWeekCutoff=(p.dow>=1&&p.dow<=5)||(p.dow===6&&p.minute<600);
   const weekStart=shiftDateAdd(monday,beforeWeekCutoff?7:14);
-  return {open:Boolean(isOpen),weekStart,submissionOpen:Boolean(isOpen)};
+  return {open:shiftSubmissionOpen||shiftTestModeEnabled,weekStart,testMode:shiftTestModeEnabled};
 }
-async function loadShiftSubmissionOpen(){
-  const r=await db.rpc("shift_submission_open_enabled");if(r.error)throw r.error;
-  shiftSubmissionOpen=Boolean(r.data);return shiftSubmissionOpen;
+async function loadShiftSubmissionSettings(){
+  const [openResult,testResult]=await Promise.all([db.rpc("shift_submission_open_enabled"),db.rpc("shift_test_mode_enabled")]);
+  if(openResult.error)throw openResult.error;if(testResult.error)throw testResult.error;
+  shiftSubmissionOpen=Boolean(openResult.data);shiftTestModeEnabled=Boolean(testResult.data);
+  return {open:shiftSubmissionOpen,testMode:shiftTestModeEnabled};
 }
 function updateShiftWindow(){
   const cycle=getShiftSubmissionCycle();shiftWeekLabel.textContent=`填寫週次：${shiftRangeLabel(cycle.weekStart)}`;
-  if(cycle.open){shiftWindowMessage.textContent="目前已開放｜任何時間皆可填寫，提交視為正式資料。";shiftWindowMessage.className="hint shift-window-open";}
+  if(cycle.testMode){shiftWindowMessage.textContent="測試模式開放｜提交會標記為測試資料。";shiftWindowMessage.className="hint shift-window-test";}
+  else if(cycle.open){shiftWindowMessage.textContent="目前已開放｜任何時間皆可填寫，提交視為正式資料。";shiftWindowMessage.className="hint shift-window-open";}
   else{shiftWindowMessage.textContent="目前未開放，請留意後台公告。";shiftWindowMessage.className="hint shift-window-closed";}
   shiftSubmitBtn.disabled=!cycle.open;return cycle;
 }
 async function enterShiftMode(){
-  try{await loadShiftSubmissionOpen();const cycle=getShiftSubmissionCycle();if(!cycle.open){alert("指休表目前未開放，請留意後台公告。");return;}showMode("shift");}
+  try{await loadShiftSubmissionSettings();const cycle=getShiftSubmissionCycle();if(!cycle.open){alert("指休表目前未開放，請留意後台公告。");return;}showMode("shift");}
   catch(e){alert(`目前無法確認指休表開放狀態：${e.message||"請稍後再試"}`);}
 }
 function parseAvailabilityRanges(value){
@@ -4539,7 +4545,7 @@ function readShiftDayValue(dayKey){
   return {value:intervals.map(([start,end])=>`${start/60}-${end/60}`).join("/"),intervals};
 }
 async function submitShiftAvailability(){
-  try{await loadShiftSubmissionOpen();}catch(e){shiftSubmitMessage.textContent="無法確認開放狀態，請稍後再試。";return;}
+  try{await loadShiftSubmissionSettings();}catch(e){shiftSubmitMessage.textContent="無法確認開放狀態，請稍後再試。";return;}
   const cycle=updateShiftWindow();if(!cycle.open){shiftSubmitMessage.textContent="指休表目前已關閉，無法送出。";return;}
   if(!await verifyShiftEmployee())return;
   const values={},dayResults={};
@@ -4559,7 +4565,7 @@ async function submitShiftAvailability(){
     shiftSuccessData.textContent=`${verifiedShiftEmployee.full_name}｜${verifiedShiftEmployee.area_code} 區｜${shiftRangeLabel(cycle.weekStart)}`;
     shiftForm.style.display="none";shiftSuccess.classList.add("show");shiftSubmitMessage.textContent="";
   }catch(e){shiftSubmitMessage.textContent=`送出失敗：${e.message||"請確認指休表仍為開放狀態並稍後重試。"}`;}
-  finally{try{await loadShiftSubmissionOpen();}catch(e){}shiftSubmitBtn.disabled=!getShiftSubmissionCycle().open;}
+  finally{try{await loadShiftSubmissionSettings();}catch(e){}shiftSubmitBtn.disabled=!getShiftSubmissionCycle().open;}
 }
 function resetShiftForm(){
   clearTimeout(shiftLookupTimer);++shiftLookupSerial;shiftEmployeeSearchResults=[];
