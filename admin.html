@@ -965,9 +965,9 @@ button{cursor:pointer}
 
 /* T995 v3 — protected modules and equal-height administrative cards */
 .protected-mode-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.shift-test-toggle{display:flex;align-items:center;gap:12px;margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left;cursor:pointer}
-.shift-test-toggle input{width:22px;height:22px;accent-color:var(--red);flex:none}
-.shift-test-toggle span{display:grid;gap:3px}.shift-test-toggle small{color:var(--gray);line-height:1.45}
+.shift-open-toggle{display:flex;align-items:center;gap:12px;margin-top:12px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-align:left;cursor:pointer}
+.shift-open-toggle input{width:22px;height:22px;accent-color:var(--red);flex:none}
+.shift-open-toggle span{display:grid;gap:3px}.shift-open-toggle small{color:var(--gray);line-height:1.45}
 .admin-fixed-card{height:300px;min-height:300px;max-height:300px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;overflow:hidden;padding:14px;background:#fff;border:1px solid var(--line);border-radius:16px;text-align:left}
 .admin-fixed-card .admin-card-head{min-height:34px;display:flex;align-items:center;justify-content:space-between;gap:8px;overflow:hidden}
 .admin-fixed-card .admin-card-body{flex:1;min-height:0;overflow:hidden}
@@ -1022,15 +1022,16 @@ button{cursor:pointer}
 .employee-directory-card .employee-area-save-btn,.employee-directory-card .permanent-delete-employee{width:100%;height:42px;min-height:42px;padding:4px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--black);font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
 .employee-directory-card .permanent-delete-employee,.vehicle-card-admin-actions .permanent-delete-vehicle,.device-delete-btn{border-color:#e2aaa4!important;background:var(--danger-bg)!important;color:var(--danger)!important}
 .employee-directory-card .employee-area-save-btn:focus-visible,.employee-directory-card .permanent-delete-employee:focus-visible{outline:3px solid rgba(200,16,46,.25);outline-offset:2px}
-.shift-test-toggle{display:inline-flex;align-items:center;gap:6px;min-height:32px;margin:7px 0 0;padding:4px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--black);font-size:12px;font-weight:800;cursor:pointer}
-.shift-test-toggle input{width:16px;height:16px;margin:0;accent-color:var(--red)}
+.shift-open-toggle{display:inline-flex;align-items:center;gap:6px;min-height:32px;margin:7px 0 0;padding:4px 9px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--black);font-size:12px;font-weight:800;cursor:pointer}
+.shift-open-toggle input{width:16px;height:16px;margin:0;accent-color:var(--red)}
 .shift-admin-toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 .shift-week-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;grid-column:1/-1}
 .shift-week-btn,.shift-status-btn{min-width:0;min-height:42px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--black);font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+.shift-status-btn{height:48px;min-height:48px;align-self:start}
 .shift-week-btn.active,.shift-status-btn.active{border-color:var(--red);background:var(--red);color:#fff;box-shadow:0 3px 9px rgba(200,16,46,.13)}
-.shift-status-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.shift-status-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;align-self:start;align-items:start}
 .shift-admin-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.shift-admin-actions button{min-height:42px;padding:7px 8px;font-size:13px}
+.shift-admin-actions button{height:48px;min-height:48px;align-self:start;padding:7px 8px;font-size:13px}
 .shift-admin-scroll{max-width:100%;margin-top:12px;overflow:auto;border:1px solid var(--line);border-radius:11px;background:#fff}
 .shift-data-table{width:100%;min-width:840px;border-collapse:separate;border-spacing:0;text-align:center;font-size:12px}
 .shift-data-table th,.shift-data-table td{padding:9px 7px;border-bottom:1px solid var(--line);vertical-align:middle}
@@ -1052,7 +1053,7 @@ button{cursor:pointer}
  .shift-admin-toolbar{grid-template-columns:minmax(200px,1fr) minmax(240px,.8fr) auto}
  .shift-week-buttons{grid-template-columns:repeat(4,minmax(0,1fr))}
  .shift-status-tabs{grid-column:2}
- .shift-admin-actions{grid-column:3;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .shift-admin-actions{grid-column:3;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
 }
 @media(max-width:699px){
  .admin-mode-page .protected-mode-actions{grid-template-columns:1fr 1fr}
@@ -1463,7 +1464,7 @@ button{cursor:pointer}
   <section class="section">
     <div class="section-title">指休管理</div>
     <div class="hint">TPLH 2.5｜第三方 ≤20%</div>
-    <label class="shift-test-toggle"><input id="shiftTestModeToggle" type="checkbox" aria-label="測試開放模式"><span>測試</span></label>
+    <label class="shift-open-toggle"><input id="shiftOpenToggle" type="checkbox" aria-label="開放指休"><span>開放</span></label>
     <div class="shift-admin-toolbar">
       <select id="shiftWeekSelect" class="search-input" aria-label="選擇指休週次" hidden></select>
       <div id="shiftWeekButtons" class="shift-week-buttons" role="group" aria-label="選擇指休週次"></div>
@@ -4906,7 +4907,7 @@ let t995ShiftRows=[];
 let t995ShiftExportRows=[];
 let t995ShiftStatusFilter="all";
 let t995ShiftTestRecordCount=0;
-let t995StaffingSettings={target_tplh:2.5,max_third_party_usage_pct:20,forecast_weeks:8,shift_test_mode:true};
+let t995StaffingSettings={target_tplh:2.5,max_third_party_usage_pct:20,forecast_weeks:8,shift_submission_open:false};
 let t995AreaMap=new Map();
 let t995AreaMapLoaded=false;
 
@@ -5043,14 +5044,14 @@ async function t995LoadShiftAdmin(){
     const [er,sr,settings]=await Promise.all([
       db.from("employee_directory").select("id,full_name,area_code,is_active").eq("is_active",true).order("area_code",{ascending:true}).order("full_name",{ascending:true}),
       db.from("weekly_shift_availability").select("id,employee_id,employee_name,employee_area_code,week_start,monday,tuesday,wednesday,thursday,friday,saturday,sunday,notes,submitted_at,is_test").eq("week_start",t995ShiftWeekSelect.value).order("submitted_at",{ascending:false}),
-      db.from("staffing_settings").select("target_tplh,max_third_party_usage_pct,forecast_weeks,shift_test_mode").eq("singleton",true).maybeSingle()
+      db.from("staffing_settings").select("target_tplh,max_third_party_usage_pct,forecast_weeks,shift_submission_open").eq("singleton",true).maybeSingle()
     ]);
     if(er.error)throw er.error;if(sr.error)throw sr.error;if(settings.error)throw settings.error;
     t995Employees=er.data||[];if(settings.data)t995StaffingSettings=settings.data;
     const latest=t995LatestShiftByEmployee(sr.data||[]);t995ShiftTestRecordCount=(sr.data||[]).filter(r=>r.is_test).length;
     t995ShiftRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
     const forecastRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
-    const testToggle=document.getElementById("shiftTestModeToggle");if(testToggle)testToggle.checked=Boolean(t995StaffingSettings.shift_test_mode);
+    const openToggle=document.getElementById("shiftOpenToggle");if(openToggle)openToggle.checked=Boolean(t995StaffingSettings.shift_submission_open);
     t995RenderShiftAdmin();await t995RenderStaffingRecommendation(t995ShiftWeekSelect.value,forecastRows);
   }catch(e){t995ShiftRows=[];t995ShiftAdminList.innerHTML=`<div class="empty">讀取失敗：${esc(e.message||"請確認權限")}</div>`;t995StaffingList.innerHTML='<div class="empty">人力資料讀取失敗</div>';}
 }
@@ -5480,7 +5481,7 @@ let t995PasswordDialogMode="unlock";
 let t995ProtectedTargetMode=null;
 let t995DeviceClaimRecords=[];
 let t995DeviceClaimFetchError="";
-const t995ShiftTestModeToggle=document.getElementById("shiftTestModeToggle");
+const t995ShiftOpenToggle=document.getElementById("shiftOpenToggle");
 
 function t995ClearPasswordDialog(){
   [t995CurrentInput,t995NewInput,t995ConfirmInput,t995UnlockInput].forEach(input=>input.value="");
@@ -5555,18 +5556,18 @@ t995ShiftBackBtn.onclick=()=>showAdminMode("home");
 document.getElementById("rosterPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","roster");
 document.getElementById("shiftPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","shift");
 
-if(t995ShiftTestModeToggle){
-  t995ShiftTestModeToggle.addEventListener("change",async()=>{
-    const requested=t995ShiftTestModeToggle.checked;
-    t995ShiftTestModeToggle.disabled=true;
+if(t995ShiftOpenToggle){
+  t995ShiftOpenToggle.addEventListener("change",async()=>{
+    const requested=t995ShiftOpenToggle.checked;
+    t995ShiftOpenToggle.disabled=true;
     try{
-      const r=await db.from("staffing_settings").update({shift_test_mode:requested,updated_at:new Date().toISOString()}).eq("singleton",true);
+      const r=await db.from("staffing_settings").update({shift_submission_open:requested,updated_at:new Date().toISOString()}).eq("singleton",true);
       if(r.error)throw r.error;
-      t995StaffingSettings={...t995StaffingSettings,shift_test_mode:requested};
-      alert(requested?"測試開放已啟用；所有提交將標記為測試資料並排除於人力可排工時。":"測試開放已關閉；前台恢復週一 10:00 至週六 10:00 的開放規則。");
+      t995StaffingSettings={...t995StaffingSettings,shift_submission_open:requested};
+      alert(requested?"指休表已開放，任何時間都可填寫；新提交會列為正式資料。":"指休表已關閉。" );
       await t995LoadShiftAdmin();
-    }catch(e){t995ShiftTestModeToggle.checked=!requested;alert(`更新測試模式失敗：${e.message||"請確認已執行 v3 SQL 並重新登入。"}`);}
-    finally{t995ShiftTestModeToggle.disabled=false;}
+    }catch(e){t995ShiftOpenToggle.checked=!requested;alert(`更新指休開放狀態失敗：${e.message||"請確認已執行開放開關 SQL 並重新登入。"}`);}
+    finally{t995ShiftOpenToggle.disabled=false;}
   });
 }
 
