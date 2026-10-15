@@ -1149,6 +1149,73 @@ button{cursor:pointer}
  .shift-admin-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
  .shift-admin-actions button:last-child:nth-child(3){grid-column:1/-1}
 }
+
+/* T995 UI consistency pass: align every admin module to vehicle-management shell. */
+.admin-mode-page [hidden]{display:none!important}
+#adminApp.page{width:100%;max-width:900px;margin:0 auto;padding:0 0 50px;box-sizing:border-box}
+#adminApp .header{width:100%;box-sizing:border-box;text-align:center}
+.admin-mode-page{width:100%;box-sizing:border-box;text-align:center}
+.admin-mode-page .mode-back-row{width:auto;max-width:none;margin:16px 16px 0;padding:0;box-sizing:border-box}
+.admin-mode-page .mode-back-row .action-btn{width:100%;min-width:0;height:48px;min-height:48px;border-radius:13px}
+.admin-mode-page .protected-mode-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-mode-page > .section{width:100%;max-width:none;margin:0;padding:22px 16px 0;box-sizing:border-box}
+.admin-mode-page .section-title{margin:0 0 14px;font-size:20px;line-height:1.35;font-weight:800;text-align:center}
+.admin-mode-page .hint{max-width:100%;text-align:center}
+.admin-mode-page .summary{width:100%;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;box-sizing:border-box}
+.admin-mode-page .summary-card{min-width:0;min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;border-radius:16px;box-sizing:border-box}
+.admin-mode-page .summary-label{line-height:1.35}
+.admin-mode-page .search-box,.admin-mode-page .staffing-panel,.admin-mode-page .claim-panel,.admin-mode-page .health-panel{width:100%;max-width:none;margin-left:auto;margin-right:auto;box-sizing:border-box;border-radius:16px}
+.admin-mode-page .search-input,.admin-mode-page input:not([type=checkbox]):not([type=file]),.admin-mode-page select{max-width:100%;box-sizing:border-box}
+.admin-mode-page .action-btn{min-height:48px;box-sizing:border-box;border-radius:12px}
+.admin-mode-page .action-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-mode-page .summary-with-refresh{grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;gap:10px}
+.admin-mode-page .summary-with-refresh .survey-summary{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.admin-mode-page .summary-refresh-btn{grid-column:1/-1;width:100%;min-height:48px;height:48px;border-radius:12px}
+.admin-mode-page .survey-card,.admin-mode-page .defensive-admin-card,.admin-mode-page .device-card,.admin-mode-page .employee-directory-card,.admin-mode-page .vehicle-card,.admin-mode-page .staffing-day-card{box-sizing:border-box}
+.admin-mode-page .device-admin-type-buttons{width:100%;max-width:620px;margin:0 auto;gap:10px}
+.admin-mode-page .device-admin-type-btn{min-height:58px;border-radius:14px}
+.admin-mode-page .employee-add-panel{width:100%;max-width:760px;margin:12px auto 0;box-sizing:border-box}
+.admin-mode-page .employee-area-tabs{width:100%;box-sizing:border-box}
+.admin-mode-page .employee-directory-summary{margin:8px auto;text-align:center}
+.admin-mode-page .survey-status-list,.admin-mode-page .survey-grid,.admin-mode-page .roster-list{width:100%;box-sizing:border-box}
+.admin-mode-page .shift-admin-toolbar{width:100%;box-sizing:border-box}
+.admin-mode-page .shift-week-btn,.admin-mode-page .shift-status-btn,.admin-mode-page .shift-admin-actions .action-btn{min-height:48px;height:48px;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:12px}
+.admin-mode-page .shift-admin-actions{grid-auto-rows:48px;align-content:start}
+.admin-mode-page .shift-admin-actions button{width:100%;min-width:0;height:48px;min-height:48px;margin:0}
+.admin-mode-page .shift-open-toggle{min-height:36px;margin:8px auto 0}
+.admin-mode-page .shift-fold{width:100%;box-sizing:border-box}
+.admin-mode-page .shift-fold>summary.section-title{min-height:44px;margin:0 auto 12px}
+.admin-mode-page .shift-fold-content{width:100%;box-sizing:border-box}
+.admin-mode-page .forecast-formula,.admin-mode-page .forecast-data-warning,.admin-mode-page .forecast-week-gap{width:100%;box-sizing:border-box}
+.admin-mode-page .staffing-day-tabs{width:100%;box-sizing:border-box}
+.admin-mode-page .forecast-day-panel{width:100%;box-sizing:border-box}
+.admin-mode-page .shift-admin-scroll{width:100%;box-sizing:border-box}
+.admin-mode-page .shift-data-table th,.admin-mode-page .shift-data-table td{text-align:center}
+@media(max-width:699px){
+ #adminApp.page{padding-bottom:32px}
+ .admin-mode-page .mode-back-row{margin:14px 12px 0}
+ .admin-mode-page > .section{padding:20px 12px 0}
+ .admin-mode-page .section-title{font-size:20px;margin-bottom:12px}
+ .admin-mode-page .summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .admin-mode-page .summary-card{min-height:82px;padding:11px 6px;border-radius:14px}
+ .admin-mode-page .summary-number{font-size:25px}
+ .admin-mode-page .action-row{gap:8px}
+ .admin-mode-page .summary-with-refresh .survey-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .admin-mode-page .summary-refresh-btn{height:46px;min-height:46px}
+ .admin-mode-page .protected-mode-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .admin-mode-page .search-box{padding:12px;border-radius:15px}
+ .admin-mode-page .device-admin-type-buttons{max-width:none}
+ .admin-mode-page .employee-add-panel{padding:11px}
+ .admin-mode-page .shift-admin-toolbar{gap:7px}
+ .admin-mode-page .shift-week-buttons{gap:6px}
+ .admin-mode-page .shift-week-btn,.admin-mode-page .shift-status-btn{font-size:12px;padding:6px 5px}
+ .admin-mode-page .shift-admin-actions{gap:7px}
+ .admin-mode-page .shift-admin-actions button{font-size:12px;padding:6px 5px}
+ .admin-mode-page .forecast-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .admin-mode-page .staffing-day-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ .admin-mode-page .forecast-area-cards{gap:7px;padding:8px}
+}
+
 </style>
 </head>
 
