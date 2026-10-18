@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- T995 V8: multi-week opening + Taipei-week rollover refresh; confirmed UI unchanged. -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -1186,6 +1187,96 @@ button{cursor:pointer}
  .shift-mini-delete{height:23px;min-height:23px;font-size:9px}
 }
 
+
+/* Verified T995/996 control grid: 3 compact rows, equal-width cells and equal heights. */
+#shiftModePage .shift-toolbar-week-row,
+#shiftModePage .shift-toolbar-status-row,
+#shiftModePage .shift-toolbar-search-row{width:100%;min-width:0;align-items:stretch}
+#shiftModePage .shift-toolbar-week-row>button,
+#shiftModePage .shift-week-btn,
+#shiftModePage .shift-status-btn,
+#shiftModePage .shift-name-search,
+#shiftModePage .shift-toolbar-search-row>button,
+#shiftModePage .shift-test-control,
+#shiftModePage .shift-open-toggle{height:48px!important;min-height:48px!important;box-sizing:border-box}
+#shiftModePage .shift-test-control{position:relative;display:flex;align-items:center;justify-content:center;min-width:0}
+#shiftModePage .shift-test-control .shift-test-toggle{width:100%;height:48px!important;min-height:48px!important;padding-right:31px;box-sizing:border-box}
+#shiftModePage .shift-mini-delete{position:absolute;right:3px;top:9px;width:30px;height:30px;min-width:30px;min-height:30px;padding:0;border:1px solid #e2aaa4;border-radius:8px;background:var(--danger-bg);color:var(--danger);font-size:14px;cursor:pointer}
+#shiftModePage .shift-mini-delete[hidden]{display:none!important}
+#shiftModePage .shift-open-toggle.is-checked,
+#shiftModePage .shift-test-toggle.is-checked{border-color:var(--red)!important;background:var(--danger-bg)!important;color:var(--danger)!important;box-shadow:0 0 0 1px rgba(200,16,46,.08)}
+#shiftModePage .shift-open-toggle input,
+#shiftModePage .shift-test-toggle input{accent-color:var(--red)}
+@media(max-width:699px){
+  #shiftModePage .shift-toolbar-week-row,
+  #shiftModePage .shift-toolbar-status-row,
+  #shiftModePage .shift-toolbar-search-row{gap:4px}
+  #shiftModePage .shift-mini-delete{right:2px;width:25px;min-width:25px;height:26px;min-height:26px;font-size:12px}
+  #shiftModePage .shift-test-control .shift-test-toggle{padding-right:26px}
+}
+
+
+/* T995 V4：週次開放勾選，維持工具列欄位等寬並讓勾選狀態紅色可辨。 */
+.shift-week-option{display:grid;grid-template-rows:minmax(0,1fr) 22px;gap:2px;min-width:0;height:66px;box-sizing:border-box}
+.shift-week-option .shift-week-btn{width:100%;height:42px!important;min-height:42px!important;padding:4px 2px!important;font-size:10px!important;white-space:nowrap}
+.shift-week-open-toggle{display:flex;align-items:center;justify-content:center;gap:3px;width:100%;height:22px!important;min-height:22px!important;margin:0;padding:1px 2px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--black);font-size:10px;font-weight:800;line-height:1;white-space:nowrap;cursor:pointer;box-sizing:border-box}
+.shift-week-open-toggle input{width:14px;height:14px;margin:0;accent-color:var(--red);flex:none}
+.shift-week-open-toggle.is-checked{border-color:var(--red)!important;background:var(--danger-bg)!important;color:var(--danger)!important;box-shadow:0 0 0 1px rgba(200,16,46,.08)}
+#shiftModePage .shift-toolbar-week-row>button{height:66px!important;min-height:66px!important}
+#shiftModePage .shift-week-btn{height:42px!important;min-height:42px!important}
+.shift-week-open-hint{display:flex;align-items:center;justify-content:center;min-width:0;height:48px;box-sizing:border-box;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--gray);font-size:11px;font-weight:800;text-align:center;line-height:1.35}
+@media(max-width:699px){.shift-week-option{height:62px}.shift-week-option .shift-week-btn{height:39px!important;min-height:39px!important;font-size:9px!important;letter-spacing:-.25px}#shiftModePage .shift-toolbar-week-row>button{height:62px!important;min-height:62px!important}.shift-week-open-toggle{font-size:9px}}
+
+/* T995 V5：保持後台控制格尺寸，只略微提高字級及可讀性。 */
+.shift-week-option .shift-week-btn{font-size:12px!important}
+.shift-week-open-toggle{font-size:11px}
+.shift-status-btn,.shift-toolbar-search-row>button,.shift-toolbar-week-row>button{font-size:13px}
+.shift-test-toggle{font-size:13px}
+.shift-week-open-hint{font-size:12px}
+.shift-admin-toolbar .shift-mini-delete{font-size:11px}
+@media(max-width:699px){
+ .shift-week-option .shift-week-btn{font-size:10px!important;letter-spacing:-.15px}
+ .shift-week-open-toggle{font-size:10px}
+ .shift-status-btn,.shift-toolbar-search-row>button,.shift-toolbar-week-row>button{font-size:11px}
+ .shift-test-toggle{font-size:11px}
+ .shift-week-open-hint{font-size:10px}
+}
+
+/* T995 V6：逐週開放勾選整合於日期卡；工具列三列固定四欄。 */
+#shiftModePage .shift-heading-tools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:0 0 8px}
+#shiftModePage .shift-heading-tools>.hint{margin:0;padding:0;line-height:1.35}
+#shiftModePage .shift-heading-tools .shift-test-toggle{width:auto;height:32px;min-height:32px;padding:4px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:12px}
+#shiftModePage .shift-heading-tools .shift-test-toggle.is-checked{border-color:var(--red)!important;background:var(--danger-bg)!important;color:var(--danger)!important}
+#shiftModePage .shift-heading-tools .shift-mini-delete[hidden]{display:none!important}
+#shiftModePage .shift-toolbar-week-row{display:block!important;grid-template-columns:none!important}
+#shiftModePage .shift-week-buttons{display:grid!important;grid-column:auto!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;width:100%;min-width:0}
+#shiftModePage .shift-week-option{display:grid;grid-template-rows:39px 24px;gap:0;height:64px!important;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff;box-sizing:border-box}
+#shiftModePage .shift-week-option .shift-week-btn{width:100%;height:39px!important;min-height:39px!important;margin:0;padding:3px 1px!important;border:0!important;border-radius:0!important;background:#fff;color:var(--black);box-shadow:none!important;font-size:11px!important;font-weight:800;white-space:nowrap;letter-spacing:-.2px}
+#shiftModePage .shift-week-option .shift-week-btn.active{background:var(--red)!important;color:#fff!important}
+#shiftModePage .shift-week-open-toggle{display:flex;align-items:center;justify-content:center;gap:4px;width:100%;height:24px!important;min-height:24px!important;margin:0;padding:1px 2px;border:0!important;border-top:1px solid #eee8e0!important;border-radius:0!important;background:transparent!important;color:var(--black);font-size:11px!important;font-weight:700;line-height:1;white-space:nowrap;box-shadow:none!important;box-sizing:border-box}
+#shiftModePage .shift-week-open-toggle input{width:14px;height:14px;margin:0;accent-color:var(--red);flex:none}
+#shiftModePage .shift-week-open-toggle.is-checked{background:var(--danger-bg)!important;color:var(--danger)!important;border-top-color:#f1c4c1!important}
+#shiftModePage .shift-toolbar-status-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+#shiftModePage .shift-status-tabs{display:grid!important;grid-column:span 3!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
+#shiftModePage .shift-status-btn,#shiftModePage .shift-name-search{width:100%;height:48px!important;min-height:48px!important;box-sizing:border-box}
+#shiftModePage .shift-toolbar-search-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+#shiftModePage .shift-toolbar-search-row>button,#shiftModePage .shift-export-week{width:100%;height:48px!important;min-height:48px!important;min-width:0;box-sizing:border-box;padding:4px 3px;font-size:12px;font-weight:800;text-align:center}
+#shiftModePage .shift-export-week{appearance:auto;background:#fff;border:1px solid var(--line);border-radius:10px;color:var(--black);font-family:inherit;white-space:nowrap}
+#shiftModePage .shift-purge-old-btn{background:var(--danger-bg);border-color:#f2b6b0;color:var(--danger);font-size:10px!important;white-space:normal;line-height:1.15}
+#shiftModePage .shift-toolbar-search-row>button:disabled{opacity:.55;cursor:wait}
+@media(max-width:699px){
+ #shiftModePage .shift-week-buttons,#shiftModePage .shift-toolbar-status-row,#shiftModePage .shift-toolbar-search-row{gap:4px!important}
+ #shiftModePage .shift-week-option{height:62px!important;grid-template-rows:37px 23px}
+ #shiftModePage .shift-week-option .shift-week-btn{height:37px!important;min-height:37px!important;font-size:10px!important;letter-spacing:-.35px}
+ #shiftModePage .shift-week-open-toggle{height:23px!important;min-height:23px!important;font-size:10px!important;gap:3px}
+ #shiftModePage .shift-week-open-toggle input{width:13px;height:13px}
+ #shiftModePage .shift-status-btn,#shiftModePage .shift-toolbar-search-row>button,#shiftModePage .shift-export-week{height:46px!important;min-height:46px!important;padding:2px 1px;font-size:10px!important;letter-spacing:-.25px}
+ #shiftModePage .shift-name-search{height:46px!important;min-height:46px!important;padding:0 3px;font-size:12px;text-align:center}
+ #shiftModePage .shift-purge-old-btn{font-size:9px!important;letter-spacing:-.45px}
+ #shiftModePage .shift-heading-tools{gap:6px;margin-bottom:7px}
+ #shiftModePage .shift-heading-tools .shift-test-toggle{height:29px;min-height:29px;font-size:11px}
+}
+
 </style>
 </head>
 
@@ -1356,7 +1447,12 @@ button{cursor:pointer}
   <section class="section">
     <div class="section-title">意向調查</div>
     <div class="search-box">
-      <input id="surveySearchInput" class="search-input" type="text" placeholder="搜尋姓名">
+      <select id="surveyRoundSelect" class="search-input" aria-label="意向調查期別">
+        <option value="M1">M1（1–6月）</option>
+        <option value="M7">M7（7–12月）</option>
+      </select>
+      <div id="surveyPeriodLabel" class="hint" style="margin-top:8px" aria-live="polite"></div>
+      <input id="surveySearchInput" class="search-input" type="text" placeholder="搜尋姓名" style="margin-top:10px">
       <div class="mode-tools">
         <button id="surveyExportBtn" class="action-btn" type="button">📊 匯出意向調查</button>
       </div>
@@ -1504,10 +1600,6 @@ button{cursor:pointer}
       </div>
     </section>
   </div>
-  <select id="surveyRoundSelect" style="display:none">
-    <option value="2027M1">2027M1</option>
-    <option value="2027M7">2027M7</option>
-  </select>
   <div id="surveyIncompleteList" style="display:none"></div>
   <div id="surveyFailedList" style="display:none"></div>
 </section>
@@ -1515,12 +1607,15 @@ button{cursor:pointer}
   <div class="mode-back-row protected-mode-actions"><button id="shiftBackBtn" class="action-btn" type="button">← 返回後台入口</button><button id="shiftPasswordChangeBtn" class="action-btn" type="button">變更共用密碼</button></div>
   <section class="section">
     <div class="section-title">指休管理</div>
-    <div class="hint">TPLH 2.5｜第三方 ≤20%</div>
+    <div class="shift-heading-tools">
+      <div class="hint">TPLH 2.5｜第三方 ≤20%</div>
+      <label class="shift-test-toggle"><input id="shiftTestModeToggle" type="checkbox" aria-label="測試模式"><span>測試</span></label>
+      <button id="shiftDeleteTestBtn" class="shift-mini-delete" type="button" hidden title="刪除所選週測試資料" aria-label="刪除所選週測試資料">🗑</button>
+    </div>
     <div class="shift-admin-toolbar">
       <select id="shiftWeekSelect" class="search-input" aria-label="選擇指休週次" hidden></select>
       <div class="shift-toolbar-week-row">
-        <div id="shiftWeekButtons" class="shift-week-buttons" role="group" aria-label="選擇指休週次"></div>
-        <button id="shiftPurgeOldBtn" class="action-btn shift-test-delete-btn" type="button" title="刪除一個月前指休資料" aria-label="刪除一個月前指休資料">刪除</button>
+        <div id="shiftWeekButtons" class="shift-week-buttons" role="group" aria-label="選擇週次並設定開放"></div>
       </div>
       <div class="shift-toolbar-status-row">
         <div id="shiftStatusTabs" class="shift-status-tabs" role="tablist" aria-label="指休提交狀態"></div>
@@ -1528,12 +1623,9 @@ button{cursor:pointer}
       </div>
       <div class="shift-toolbar-search-row">
         <button id="shiftRefreshBtn" class="action-btn" type="button">重新整理</button>
+        <select id="shiftExportWeekSelect" class="search-input shift-export-week" aria-label="選擇匯出週次"></select>
         <button id="shiftExportBtn" class="action-btn" type="button">匯出</button>
-        <div class="shift-test-control" aria-label="測試模式與測試資料管理">
-          <label class="shift-test-toggle"><input id="shiftTestModeToggle" type="checkbox" aria-label="測試模式"><span>測試</span></label>
-          <button id="shiftDeleteTestBtn" class="shift-mini-delete" type="button" title="刪除所選週測試資料">刪測試</button>
-        </div>
-        <label class="shift-open-toggle"><input id="shiftOpenToggle" type="checkbox" aria-label="開放指休"><span>開放</span></label>
+        <button id="shiftPurgeOldBtn" class="action-btn shift-purge-old-btn" type="button" title="刪除一個月前指休資料" aria-label="刪除一個月前指休資料">刪除一個月前</button>
       </div>
     </div>
     <div id="shiftAdminSummary" class="hint" style="margin-top:10px"></div>
@@ -1779,14 +1871,37 @@ const defensiveExportBtn = $("defensiveExportBtn");
 const defensiveSearchInput = $("defensiveSearchInput");
 const defensiveSummary = $("defensiveSummary");
 const defensiveAdminList = $("defensiveAdminList");
-defensiveAdminMonth.value = String(new Date().getMonth() + 1);
+defensiveAdminMonth.value = String(trainingTaipeiParts().month);
 const newVehicleFullPlate = $("newVehicleFullPlate");
 const newVehicleCenter = $("newVehicleCenter");
 const addVehicleBtn = $("addVehicleBtn");
 const addVehicleMessage = $("addVehicleMessage");
 const surveyRoundSelect = $("surveyRoundSelect");
-const SURVEY_ROUND_YEAR = 2027;
-surveyRoundSelect.value = `${SURVEY_ROUND_YEAR}M${new Date().getMonth() + 1 >= 7 ? 7 : 1}`;
+const surveyPeriodLabel = $("surveyPeriodLabel");
+function trainingTaipeiParts(date = new Date()){
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Taipei", year: "numeric", month: "numeric", day: "numeric"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return {year:Number(values.year), month:Number(values.month), day:Number(values.day)};
+}
+function surveyRoundInfo(round, year = trainingTaipeiParts().year){
+  const isM7 = round === "M7";
+  return {
+    round: isM7 ? "M7" : "M1",
+    year,
+    start: isM7 ? `${year}-07-01T00:00:00+08:00` : `${year}-01-01T00:00:00+08:00`,
+    end: isM7 ? `${year + 1}-01-01T00:00:00+08:00` : `${year}-07-01T00:00:00+08:00`,
+    label: isM7 ? `${year}/07–12` : `${year}/01–06`
+  };
+}
+function updateSurveyPeriodLabel(){
+  if(!surveyPeriodLabel) return;
+  const info = surveyRoundInfo(surveyRoundSelect.value);
+  surveyPeriodLabel.textContent = `目前檢視：${info.label}（${info.round}）`;
+}
+surveyRoundSelect.value = trainingTaipeiParts().month >= 7 ? "M7" : "M1";
+updateSurveyPeriodLabel();
 const surveyTargetNameInput = $("surveyTargetNameInput");
 const surveyTargetAddBtn = $("surveyTargetAddBtn");
 const surveyTargetMessage = $("surveyTargetMessage");
@@ -3804,31 +3919,54 @@ function renderSurveyResponses(){
 }
 
 function exportSurveyResponses(){
-  if(!surveyResponses.length){
-    alert("目前沒有可匯出的意向調查資料。");
+  const period = surveyRoundInfo(surveyRoundSelect.value);
+  const responseMap = latestSurveyResponseByName();
+  const activeNames = new Set(
+    surveyTargets.map(row => String(row.respondent_name || "").trim()).filter(Boolean)
+  );
+  const exportRow = (name, row, employeeStatus) => {
+    const hasResponse = Boolean(row);
+    const p1 = hasResponse ? parseSurveyPart(row.part1_answers) : {};
+    return {
+      調查期別: period.label,
+      員工狀態: employeeStatus,
+      提交狀態: hasResponse ? "已提交" : "未完成",
+      填寫人姓名: name,
+      違規記點: hasResponse ? (p1.violation_points ?? "") : "",
+      第一部分答案: hasResponse ? JSON.stringify(row.part1_answers ?? "") : "",
+      第一部分總分: hasResponse ? (row.part1_total ?? "") : "",
+      第一部分結果: hasResponse ? (row.part1_result || "") : "",
+      第二部分答案: hasResponse ? JSON.stringify(row.part2_answers ?? "") : "",
+      第二部分總分: hasResponse ? (row.part2_total ?? "") : "",
+      第二部分結果: hasResponse ? (row.part2_result || "") : "",
+      一年內肇事: hasResponse ? (row.accident_within_one_year === true ? "有" : row.accident_within_one_year === false ? "沒有" : "") : "",
+      肇事說明: hasResponse ? (row.accident_description || "") : "",
+      填寫時間: hasResponse ? (row.submitted_at || "") : ""
+    };
+  };
+
+  // 以所選期別的在職名單為主表，未提交者也輸出一列，讓主管可直接追蹤缺漏。
+  const rows = surveyTargets
+    .map(target => String(target.respondent_name || "").trim())
+    .filter((name, index, names) => name && names.indexOf(name) === index)
+    .map(name => exportRow(name, responseMap.get(name) || null, "在職"));
+
+  // 保留已提交、但目前不在職名單中的紀錄，避免匯出時漏掉歷史提交者。
+  const exportedNames = new Set(rows.map(row => row.填寫人姓名));
+  responseMap.forEach((response, name) => {
+    if(name && !activeNames.has(name) && !exportedNames.has(name)){
+      rows.push(exportRow(name, response, "非目前在職名單"));
+    }
+  });
+
+  if(!rows.length){
+    alert("目前所選期別沒有在職名單或已提交紀錄，無資料可匯出。");
     return;
   }
-  const rows = surveyResponses.map(row => {
-    const p1 = parseSurveyPart(row.part1_answers);
-    return {
-      id: row.id || "",
-      填寫人姓名: row.respondent_name || "",
-      違規記點: p1.violation_points ?? "",
-      第一部分答案: JSON.stringify(row.part1_answers ?? ""),
-      第一部分總分: row.part1_total ?? "",
-      第一部分結果: row.part1_result || "",
-      第二部分答案: JSON.stringify(row.part2_answers ?? ""),
-      第二部分總分: row.part2_total ?? "",
-      第二部分結果: row.part2_result || "",
-      一年內肇事: row.accident_within_one_year === true ? "有" : "沒有",
-      肇事說明: row.accident_description || "",
-      填寫時間: row.submitted_at || ""
-    };
-  });
   const wb = XLSX.utils.book_new();
   const ws = XLSX.utils.json_to_sheet(rows);
   XLSX.utils.book_append_sheet(wb, ws, "駕駛意向調查");
-  XLSX.writeFile(wb, `KFC_駕駛意向調查_${new Date().toISOString().slice(0,10)}.xlsx`);
+  XLSX.writeFile(wb, `KFC_駕駛意向調查_${period.year}_${period.round}_V2.xlsx`);
 }
 
 async function deleteSurveyResponse(id, name, submittedAt){
@@ -3899,7 +4037,7 @@ function renderSurveyRoster(){
   surveyIncompleteList.innerHTML = `
     <div class="roster-panel-title">${selectedRound} 未完成（${incomplete.length} 人）</div>
     <div class="roster-list">${incomplete.length ? incomplete.map(row => `
-      <div class="roster-item"><span>${esc(row.respondent_name)}<small style="display:block;color:var(--gray);">尚未提交問卷</small></span><button type="button" class="survey-target-delete-btn" data-name="${esc(row.respondent_name)}" data-round="${esc(row.survey_round)}">永久刪除</button></div>`).join("") : '<div class="empty">目前沒有未完成名單</div>'}</div>`;
+      <div class="roster-item"><span>${esc(row.respondent_name)}<small style="display:block;color:var(--gray);">尚未提交問卷</small></span></div>`).join("") : '<div class="empty">目前沒有未完成名單</div>'}</div>`;
   surveyFailedList.innerHTML = failed.length ? failed.map(row => `
     <button type="button" class="roster-item survey-failed-btn" data-name="${esc(row.respondent_name)}" style="width:100%;cursor:pointer;">
       <span>${esc(row.respondent_name || "未填姓名")}<small style="display:block;color:var(--danger);">第一部分：${esc(row.part1_result || "未判定")}｜第二部分：${esc(row.part2_result || "未判定")}</small></span><span>查看</span>
@@ -3907,45 +4045,11 @@ function renderSurveyRoster(){
 }
 
 async function addSurveyTarget(){
-  const name = surveyTargetNameInput.value.trim();
-  const round = surveyRoundSelect.value;
-  if(!name){ surveyTargetMessage.textContent = "請輸入姓名。"; return; }
-  surveyTargetAddBtn.disabled = true;
-  surveyTargetMessage.textContent = "確認在職名單中…";
-  try{
-    const employee = await db.from("employee_directory").select("id").eq("full_name",name).eq("is_active",true).maybeSingle();
-    if(employee.error) throw employee.error;
-    if(!employee.data){surveyTargetMessage.textContent="請先在上方新增／啟用此員工並設定區域，再加入防禦駕駛名單。";return;}
-    const existing = await db.from("driver_survey_targets").select("id").eq("respondent_name",name).limit(1);
-    if(existing.error) throw existing.error;
-    if(existing.data?.length){
-      surveyTargetMessage.textContent = `此姓名已在目前在職名單：${name}`;
-      return;
-    }
-    const result = await db.from("driver_survey_targets").insert({respondent_name:name, survey_round:round});
-    if(result.error) throw result.error;
-    surveyTargetNameInput.value = "";
-    surveyTargetMessage.textContent = `✅ 已加入目前在職名單：${name}`;
-    await loadRosterData();
-  }catch(e){
-    surveyTargetMessage.textContent = e.code === "23505" ? "此姓名已存在於此問卷批次。" : `新增失敗：${e.message || "請確認權限"}`;
-  }finally{
-    surveyTargetAddBtn.disabled = false;
-  }
+  if(surveyTargetMessage) surveyTargetMessage.textContent = "意向調查與防禦駕駛名單自動依目前在職員工，不需另行加入。";
 }
 
-async function deleteSurveyTarget(name, round){
-  if(!confirm(`確定要永久刪除「${name}」嗎？\n\n這會刪除該姓名的所有問卷名單、問卷紀錄與防禦駕駛紀錄，且無法復原。`)) return;
-  try{
-    const responseDelete = await db.from("driver_survey_responses").delete().eq("respondent_name", name);
-    if(responseDelete.error) throw responseDelete.error;
-    const defensiveDelete = await db.from("defensive_driving_responses").delete().eq("respondent_name", name);
-    if(defensiveDelete.error) throw defensiveDelete.error;
-    const targetDelete = await db.from("driver_survey_targets").delete().eq("respondent_name", name);
-    if(targetDelete.error) throw targetDelete.error;
-    alert("✅ 該姓名的名單、問卷與防禦駕駛紀錄已永久刪除。");
-    await loadRosterData();
-  }catch(e){ alert(`刪除失敗：${e.message || "請確認 DELETE 權限"}`); }
+async function deleteSurveyTarget(name){
+  alert(`「${name}」的調查／訓練資格由在職名單自動管理。請至在職員工區停用員工；既有紀錄依保留規則處理。`);
 }
 
 function renderActiveRoster(){
@@ -3960,26 +4064,26 @@ function renderActiveRoster(){
   }
   rosterList.innerHTML = rows.map(row => `
     <div class="roster-item">
-      <span>${esc(row.respondent_name)}<small style="display:block;color:var(--gray);">意向調查／防禦駕駛共用</small></span>
-      <button type="button" class="survey-target-delete-btn" data-name="${esc(row.respondent_name)}" data-round="${esc(row.survey_round || surveyRoundSelect.value)}">永久刪除</button>
+      <span>${esc(row.respondent_name)}<small style="display:block;color:var(--gray);">意向調查／防禦駕駛｜依在職名單</small></span>
     </div>
   `).join('');
 }
 
 async function loadRosterData(){
+  if(!rosterList) return;
   rosterList.innerHTML = '<div class="loading">載入在職名單中…</div>';
   try{
-    const result = await db.from("driver_survey_targets").select("*").order("created_at",{ascending:true});
+    const result = await db.from("employee_directory").select("full_name,is_active").eq("is_active",true).order("full_name",{ascending:true});
     if(result.error) throw result.error;
     const map = new Map();
     (result.data || []).forEach(row => {
-      const name = String(row.respondent_name || "").trim();
-      if(name && !map.has(name)) map.set(name, {...row, respondent_name:name});
+      const name = String(row.full_name || "").trim();
+      if(name && !map.has(name)) map.set(name, {respondent_name:name, survey_round:surveyRoundSelect.value});
     });
     surveyTargets = [...map.values()];
     renderActiveRoster();
   }catch(e){
-    rosterList.innerHTML = `<div class="empty">在職名單讀取失敗：${esc(e.message || "請確認權限")}</div>`;
+    rosterList.innerHTML = `<div class="empty">在職名單讀取失敗：${esc(e.message || "請確認員工名單權限")}</div>`;
   }
 }
 
@@ -4069,25 +4173,31 @@ async function deleteDefensiveResponse(name, monthNo, year){
 async function loadDefensiveAdminData(){
   defensiveAdminList.innerHTML = '<div class="loading">載入防禦駕駛資料中…</div>';
   const monthNo = Number(defensiveAdminMonth.value);
-  const year = new Date().getFullYear();
+  const year = trainingTaipeiParts().year;
   try{
-    const targetsResult = await db.from("driver_survey_targets").select("respondent_name");
-    if(targetsResult.error) throw targetsResult.error;
-    const uniqueNames = [...new Set((targetsResult.data || []).map(row => String(row.respondent_name || "").trim()).filter(Boolean))];
-    const responseResult = await db.from("defensive_driving_responses").select("*").eq("training_year", year).eq("month_no", monthNo);
+    const [employeeResult, responseResult] = await Promise.all([
+      db.from("employee_directory").select("full_name,is_active").eq("is_active",true).order("full_name",{ascending:true}),
+      db.from("defensive_driving_responses").select("*").eq("training_year", year).eq("month_no", monthNo)
+    ]);
+    if(employeeResult.error) throw employeeResult.error;
     if(responseResult.error) throw responseResult.error;
+    const uniqueNames = [...new Set((employeeResult.data || []).map(row => String(row.full_name || "").trim()).filter(Boolean))];
     defensiveTargets = uniqueNames;
     defensiveResponses = responseResult.data || [];
-    const completed = new Set(defensiveResponses.filter(row => row.status === "completed").map(row => row.respondent_name));
+    const activeNameSet = new Set(uniqueNames);
+    const completed = new Set(defensiveResponses
+      .filter(row => row.status === "completed")
+      .map(row => String(row.respondent_name || "").trim())
+      .filter(name => name && activeNameSet.has(name)));
     const incomplete = uniqueNames.filter(name => !completed.has(name));
     renderDefensiveSummary(uniqueNames, completed, incomplete);
   }catch(e){
-    renderDefensiveEmptySummary(`防禦駕駛資料讀取失敗：${e.message || "請確認資料表與權限"}`);
+    renderDefensiveEmptySummary(`防禦駕駛資料讀取失敗：${e.message || "請確認在職名單、資料表與權限"}`);
   }
 }
 
 function exportDefensiveResponses(){
-  const year = new Date().getFullYear();
+  const year = trainingTaipeiParts().year;
   const monthNo = Number(defensiveAdminMonth.value);
   const names = [...new Set((defensiveTargets || []).map(name => String(name || "").trim()).filter(Boolean))];
   if(!names.length){
@@ -4126,18 +4236,23 @@ function exportDefensiveResponses(){
 
 async function loadSurveyData(){
   surveyResponseList.innerHTML = '<div class="loading">載入問卷資料中…</div>';
+  updateSurveyPeriodLabel();
   try{
-    const round = surveyRoundSelect.value;
-    const [targetResult, responseResult] = await Promise.all([
-      db.from("driver_survey_targets").select("*").order("created_at",{ascending:true}),
-      db.from("driver_survey_responses").select("*").eq("survey_round", round).order("submitted_at",{ascending:false})
+    const info = surveyRoundInfo(surveyRoundSelect.value);
+    const [employeeResult, responseResult] = await Promise.all([
+      db.from("employee_directory").select("full_name,is_active").eq("is_active",true).order("full_name",{ascending:true}),
+      db.from("driver_survey_responses").select("*")
+        .eq("survey_round", info.round)
+        .gte("submitted_at", info.start)
+        .lt("submitted_at", info.end)
+        .order("submitted_at",{ascending:false})
     ]);
-    if(targetResult.error) throw targetResult.error;
+    if(employeeResult.error) throw employeeResult.error;
     if(responseResult.error) throw responseResult.error;
     const targetMap = new Map();
-    (targetResult.data || []).forEach(row => {
-      const name = String(row.respondent_name || "").trim();
-      if(name && !targetMap.has(name)) targetMap.set(name, {...row, respondent_name:name});
+    (employeeResult.data || []).forEach(row => {
+      const name = String(row.full_name || "").trim();
+      if(name && !targetMap.has(name)) targetMap.set(name, {respondent_name:name, survey_round:info.round});
     });
     surveyTargets = [...targetMap.values()];
     surveyResponses = responseResult.data || [];
@@ -4147,8 +4262,8 @@ async function loadSurveyData(){
   }catch(e){
     surveyIncompleteList.innerHTML = "";
     surveyFailedList.innerHTML = "";
-    renderSurveyEmptySummary(`問卷資料讀取失敗：${e.message || "請確認 anon SELECT 權限"}`);
-    surveyResponseList.innerHTML = `<div class="empty">問卷資料讀取失敗：${esc(e.message || "請確認 anon SELECT 權限")}</div>`;
+    renderSurveyEmptySummary(`問卷資料讀取失敗：${e.message || "請確認員工名單與問卷資料權限"}`);
+    surveyResponseList.innerHTML = `<div class="empty">問卷資料讀取失敗：${esc(e.message || "請確認員工名單與問卷資料權限")}</div>`;
   }
 }
 
@@ -4740,7 +4855,7 @@ returnedCard.onclick =
 
 addVehicleBtn.onclick = addVehicleFromAdmin;
 surveyTargetAddBtn.onclick = addSurveyTarget;
-surveyRoundSelect.onchange = loadSurveyData;
+surveyRoundSelect.onchange = () => { updateSurveyPeriodLabel(); loadSurveyData(); };
 defensiveModeBtn.onclick = () => showAdminMode("defensive");
 defensiveBackBtn.onclick = () => showAdminMode("home");
 defensiveRefreshBtn.onclick = loadDefensiveAdminData;
@@ -4968,7 +5083,8 @@ let t995ShiftRows=[];
 let t995ShiftExportRows=[];
 let t995ShiftStatusFilter="all";
 let t995ShiftTestRecordCount=0;
-let t995StaffingSettings={target_tplh:2.5,max_third_party_usage_pct:20,forecast_weeks:8,shift_submission_open:false,shift_test_mode:false};
+let t995ShiftOpenWeeks=new Set();
+let t995StaffingSettings={target_tplh:2.5,max_third_party_usage_pct:20,forecast_weeks:8,shift_test_mode:false};
 let t995AreaMap=new Map();
 let t995AreaMapLoaded=false;
 
@@ -4993,17 +5109,6 @@ function t995RenderEmployeeDirectory(){
     </article>`;
   }).join('');
 }
-async function t995SyncActiveEmployeesToSurveyTargets(employees){
-  const names=[...new Set((employees||[]).map(row=>String(row.full_name||"").trim()).filter(Boolean))];
-  if(!names.length)return;
-  const existing=await db.from("driver_survey_targets").select("respondent_name").in("respondent_name",names);
-  if(existing.error)throw existing.error;
-  const present=new Set((existing.data||[]).map(row=>String(row.respondent_name||"").trim()));
-  const missing=names.filter(name=>!present.has(name));
-  if(!missing.length)return;
-  const result=await db.from("driver_survey_targets").insert(missing.map(respondent_name=>({respondent_name,survey_round:surveyRoundSelect.value})));
-  if(result.error)throw result.error;
-}
 async function t995LoadEmployees(){
   t995EmployeeDirectoryList.innerHTML='<div class="loading">載入員工名單中…</div>';
   try{
@@ -5011,8 +5116,7 @@ async function t995LoadEmployees(){
     if(r.error)throw r.error;
     t995Employees=r.data||[];
     t995RenderEmployeeDirectory();
-    try{await t995SyncActiveEmployeesToSurveyTargets(t995Employees);await loadRosterData();}
-    catch(syncError){console.warn("在職員工同步至問卷／訓練名單失敗",syncError);t995EmployeeMessage.textContent="問卷／訓練名單同步失敗";}
+    await loadRosterData();
   }catch(e){t995EmployeeDirectoryList.innerHTML=`<div class="empty">員工名單讀取失敗：${esc(e.message||"請確認管理員權限與 SQL 更新")}</div>`;}
 }
 async function t995AddEmployee(){
@@ -5094,32 +5198,67 @@ function t995IsAllBlank(row){return ['monday','tuesday','wednesday','thursday','
 function t995LatestShiftByEmployee(rows){const map=new Map();for(const r of [...(rows||[])].sort((a,b)=>String(b.submitted_at||'').localeCompare(String(a.submitted_at||''))))if(!map.has(String(r.employee_id)))map.set(String(r.employee_id),r);return map;}
 function t995RenderShiftWeekButtons(weeks){
   const selected=t995ShiftWeekSelect.value;
-  t995ShiftWeekButtons.innerHTML=weeks.map(w=>`<button type="button" class="shift-week-btn ${w.start===selected?'active':''}" data-t995-shift-week="${w.start}" aria-pressed="${w.start===selected?'true':'false'}">${w.dateLabel}</button>`).join('');
+  t995ShiftWeekButtons.innerHTML=weeks.map(w=>{
+    const opened=t995ShiftOpenWeeks.has(w.start);
+    return `<div class="shift-week-option ${w.start===selected?'is-selected':''}">
+      <button type="button" class="shift-week-btn ${w.start===selected?'active':''}" data-t995-shift-week="${w.start}" aria-pressed="${w.start===selected?'true':'false'}">${w.dateLabel}</button>
+      <label class="shift-week-open-toggle ${opened?'is-checked':''}" title="${opened?'關閉':'開放'} ${w.dateLabel}">
+        <input type="checkbox" data-t995-open-week="${w.start}" aria-label="${opened?'關閉':'開放'}指休 ${w.dateLabel}" ${opened?'checked':''}>
+        <span>開放</span>
+      </label>
+    </div>`;
+  }).join('');
 }
 async function t995LoadShiftAdmin(){
-  const weeks=t995WeekChoices();const old=t995ShiftWeekSelect.value;
+  const weeks=t995WeekChoices();const old=t995ShiftWeekSelect.value;const oldExport=document.getElementById("shiftExportWeekSelect")?.value;
   t995ShiftWeekSelect.innerHTML=weeks.map(w=>`<option value="${w.start}">${w.label}</option>`).join('');if(weeks.some(w=>w.start===old))t995ShiftWeekSelect.value=old;
-  t995RenderShiftWeekButtons(weeks);
+  const exportSelect=document.getElementById("shiftExportWeekSelect");
+  if(exportSelect){exportSelect.innerHTML=weeks.map(w=>`<option value="${w.start}">${w.dateLabel}</option>`).join('');exportSelect.value=weeks.some(w=>w.start===oldExport)?oldExport:t995ShiftWeekSelect.value;}
   t995ShiftAdminList.innerHTML='<div class="loading">載入中…</div>';t995ShiftSummary.textContent="";t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="loading">計算中…</div>';
   try{
-    const [er,sr,settings]=await Promise.all([
+    // 初始化不存在的週次為關閉；ignoreDuplicates 保留既有勾選狀態。
+    const seed=await db.from("weekly_shift_open_weeks").upsert(weeks.map(w=>({week_start:w.start,is_open:false})),{onConflict:"week_start",ignoreDuplicates:true});
+    if(seed.error)throw seed.error;
+    const [er,sr,settings,openWeeks]=await Promise.all([
       db.from("employee_directory").select("id,full_name,area_code,is_active").eq("is_active",true).order("area_code",{ascending:true}).order("full_name",{ascending:true}),
       db.from("weekly_shift_availability").select("id,employee_id,employee_name,employee_area_code,week_start,monday,tuesday,wednesday,thursday,friday,saturday,sunday,notes,submitted_at,is_test").eq("week_start",t995ShiftWeekSelect.value).order("submitted_at",{ascending:false}),
-      db.from("staffing_settings").select("target_tplh,max_third_party_usage_pct,forecast_weeks,shift_submission_open,shift_test_mode").eq("singleton",true).maybeSingle()
+      db.from("staffing_settings").select("target_tplh,max_third_party_usage_pct,forecast_weeks,shift_test_mode").eq("singleton",true).maybeSingle(),
+      db.from("weekly_shift_open_weeks").select("week_start,is_open").in("week_start",weeks.map(w=>w.start))
     ]);
-    if(er.error)throw er.error;if(sr.error)throw sr.error;if(settings.error)throw settings.error;
+    if(er.error)throw er.error;if(sr.error)throw sr.error;if(settings.error)throw settings.error;if(openWeeks.error)throw openWeeks.error;
     t995Employees=er.data||[];if(settings.data)t995StaffingSettings=settings.data;
+    t995ShiftOpenWeeks=new Set((openWeeks.data||[]).filter(row=>row.is_open).map(row=>row.week_start));
+    t995RenderShiftWeekButtons(weeks);
     const latest=t995LatestShiftByEmployee(sr.data||[]);t995ShiftTestRecordCount=(sr.data||[]).filter(r=>r.is_test).length;
     t995ShiftRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
     const forecastRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
-    const openToggle=document.getElementById("shiftOpenToggle");if(openToggle){openToggle.checked=Boolean(t995StaffingSettings.shift_submission_open);t995SyncShiftToggleVisual(openToggle);}
     const testToggle=document.getElementById("shiftTestModeToggle");if(testToggle){testToggle.checked=Boolean(t995StaffingSettings.shift_test_mode);t995SyncShiftToggleVisual(testToggle);}
     t995RenderShiftAdmin();await t995RenderStaffingRecommendation(t995ShiftWeekSelect.value,forecastRows);
   }catch(e){t995ShiftRows=[];t995ShiftAdminList.innerHTML=`<div class="empty">讀取失敗：${esc(e.message||"請確認權限")}</div>`;t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="empty">人力資料讀取失敗</div>';}
 }
+async function t995SetShiftWeekOpen(input){
+  if(!input)return;
+  const weekStart=input.dataset.t995OpenWeek;const requested=input.checked;const previous=!requested;
+  input.disabled=true;
+  try{
+    const r=await db.from("weekly_shift_open_weeks").upsert({week_start:weekStart,is_open:requested,updated_at:new Date().toISOString()},{onConflict:"week_start"});
+    if(r.error)throw r.error;
+    if(requested)t995ShiftOpenWeeks.add(weekStart);else t995ShiftOpenWeeks.delete(weekStart);
+    await t995LoadShiftAdmin();
+  }catch(e){
+    input.checked=previous;t995SyncShiftToggleVisual(input);
+    alert(`週次開放狀態更新失敗：${e.message||"請確認已部署995 V4逐週開放SQL，且管理區密碼已解鎖。"}`);
+  }finally{if(input.isConnected)input.disabled=false;}
+}
 function t995RenderShiftAdmin(){
   const active=t995ShiftRows.length;const submitted=t995ShiftRows.filter(x=>x.shift).length;const missing=active-submitted;
-  if(t995ShiftDeleteTestBtn){const count=Number(t995ShiftTestRecordCount||0);t995ShiftDeleteTestBtn.disabled=count===0;t995ShiftDeleteTestBtn.textContent=count?`刪測試 ${count}`:"無測試";t995ShiftDeleteTestBtn.title=count?`刪除所選週 ${count} 筆測試資料`:"所選週沒有測試資料";}
+  if(t995ShiftDeleteTestBtn){
+    const count=Number(t995ShiftTestRecordCount||0);
+    t995ShiftDeleteTestBtn.hidden=true;
+    t995ShiftDeleteTestBtn.disabled=count===0;
+    t995ShiftDeleteTestBtn.title=count?`刪除所選週 ${count} 筆測試資料`:"所選週沒有測試資料";
+    t995ShiftDeleteTestBtn.setAttribute("aria-label",count?`刪除所選週 ${count} 筆測試資料`:"刪除所選週測試資料");
+  }
   const choices=[['all',`全部 ${active}`],['submitted',`已提交 ${submitted}`],['missing',`未提交 ${missing}`]];
   t995ShiftStatusTabs.innerHTML=choices.map(([key,label])=>`<button type="button" class="shift-status-btn ${t995ShiftStatusFilter===key?'active':''}" data-t995-shift-status="${key}" role="tab" aria-selected="${t995ShiftStatusFilter===key?'true':'false'}">${label}</button>`).join('');
   const weekLabel=t995ShiftWeekSelect.options[t995ShiftWeekSelect.selectedIndex]?.text||"";const term=t995ShiftNameSearch.value.trim().toLocaleLowerCase('zh-Hant');
@@ -5138,13 +5277,23 @@ function t995RenderShiftAdmin(){
   }).join('');
   t995ShiftAdminList.innerHTML=`<div class="shift-scroll-cue" aria-hidden="true">↔</div><div class="shift-admin-scroll" role="region" aria-label="指休資料，可左右滑動" tabindex="0"><table class="shift-data-table"><thead><tr><th>員工</th>${days.map(([label])=>`<th>${label}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
-function t995BuildShiftExportRows(){
+function t995BuildShiftExportRows(week,shiftRows){
   const days=[['週一','monday'],['週二','tuesday'],['週三','wednesday'],['週四','thursday'],['週五','friday'],['週六','saturday'],['週日','sunday']];
-  return t995ShiftRows.map(({employee:e,shift:r})=>({週次:t995ShiftWeekSelect.value,姓名:e.full_name,區域:e.area_code?`${e.area_code}區`:"未分類",資料類型:r?.is_test?"測試資料（納入人力建議）":"正式資料",提交狀態:!r?"未提交":r.is_test?"測試提交":t995IsAllBlank(r)?"已提交－七天皆空白":"已提交",...Object.fromEntries(days.map(([label,key])=>[label,r?.[key]||""])),備註:r?.notes||"",最後提交時間:r?.submitted_at||""}));
+  return shiftRows.map(({employee:e,shift:r})=>({週次:week,姓名:e.full_name,區域:e.area_code?`${e.area_code}區`:"未分類",資料類型:r?.is_test?"測試資料（納入人力建議）":"正式資料",提交狀態:!r?"未提交":r.is_test?"測試提交":t995IsAllBlank(r)?"已提交－七天皆空白":"已提交",...Object.fromEntries(days.map(([label,key])=>[label,r?.[key]||""])),備註:r?.notes||"",最後提交時間:r?.submitted_at||""}));
 }
-function t995ExportShiftWeek(){
-  const rows=t995BuildShiftExportRows();if(!rows.length){alert("目前沒有在職員工資料可匯出。");return;}
-  const wb=XLSX.utils.book_new();const ws=XLSX.utils.json_to_sheet(rows);if(ws["!ref"])ws["!autofilter"]={ref:ws["!ref"]};XLSX.utils.book_append_sheet(wb,ws,"指休表");XLSX.writeFile(wb,`T995_指休_${t995ShiftWeekSelect.value}.xlsx`);
+async function t995ExportShiftWeek(){
+  const week=document.getElementById("shiftExportWeekSelect")?.value||t995ShiftWeekSelect.value;
+  if(!week){alert("請先選擇匯出週次。");return;}
+  t995ShiftExportBtn.disabled=true;
+  try{
+    const result=await db.from("weekly_shift_availability").select("id,employee_id,employee_name,employee_area_code,week_start,monday,tuesday,wednesday,thursday,friday,saturday,sunday,notes,submitted_at,is_test").eq("week_start",week).order("submitted_at",{ascending:false});
+    if(result.error)throw result.error;
+    const latest=t995LatestShiftByEmployee(result.data||[]);
+    const rows=t995BuildShiftExportRows(week,t995Employees.map(employee=>({employee,shift:latest.get(String(employee.id))||null})));
+    if(!rows.length){alert("目前沒有在職員工資料可匯出。");return;}
+    const wb=XLSX.utils.book_new();const ws=XLSX.utils.json_to_sheet(rows);if(ws["!ref"])ws["!autofilter"]={ref:ws["!ref"]};XLSX.utils.book_append_sheet(wb,ws,"指休表");XLSX.writeFile(wb,`T995_指休_${week}.xlsx`);
+  }catch(e){alert(`指休匯出失敗：${e.message||"請確認資料庫權限"}`);}
+  finally{t995ShiftExportBtn.disabled=false;}
 }
 function t995TaipeiDateMonthsAgo(months=1){
   const parts=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
@@ -5453,7 +5602,26 @@ t995EmployeeAreaTabs.onclick=e=>{const b=e.target.closest("[data-t995-area-filte
 t995ShiftModeBtn.onclick=()=>showAdminMode("shift");
 t995ShiftBackBtn.onclick=()=>showAdminMode("home");
 t995ShiftWeekSelect.onchange=()=>t995LoadShiftAdmin();
-t995ShiftWeekButtons.onclick=e=>{const b=e.target.closest("[data-t995-shift-week]");if(!b)return;t995ShiftWeekSelect.value=b.dataset.t995ShiftWeek;t995LoadShiftAdmin();};
+// Refresh the rolling four-week window when this admin tab crosses Taipei Monday.
+let t995ObservedShiftMonday=t995WeekChoices()[0]?.start||'';
+let t995RolloverRefreshBusy=false;
+async function t995RefreshShiftWindowAfterRollover(){
+  if(document.visibilityState==='hidden'||t995RolloverRefreshBusy||t995ShiftModePage.style.display==='none')return;
+  const currentMonday=t995WeekChoices()[0]?.start||'';
+  if(!currentMonday||currentMonday===t995ObservedShiftMonday)return;
+  t995RolloverRefreshBusy=true;
+  try{
+    await t995LoadShiftAdmin();
+    t995ObservedShiftMonday=currentMonday;
+  }catch(e){console.warn('指休週次更新失敗',e);}
+  finally{t995RolloverRefreshBusy=false;}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')t995RefreshShiftWindowAfterRollover();});
+window.addEventListener('focus',t995RefreshShiftWindowAfterRollover);
+setInterval(t995RefreshShiftWindowAfterRollover,60000);
+
+t995ShiftWeekButtons.onclick=e=>{if(e.target.closest(".shift-week-open-toggle"))return;const b=e.target.closest("[data-t995-shift-week]");if(!b)return;t995ShiftWeekSelect.value=b.dataset.t995ShiftWeek;const exportSelect=document.getElementById("shiftExportWeekSelect");if(exportSelect)exportSelect.value=b.dataset.t995ShiftWeek;t995LoadShiftAdmin();};
+t995ShiftWeekButtons.onchange=e=>{const input=e.target.closest("[data-t995-open-week]");if(input)t995SetShiftWeekOpen(input);};
 t995ShiftNameSearch.oninput=()=>t995RenderShiftAdmin();
 t995ShiftStatusTabs.onclick=e=>{const b=e.target.closest("[data-t995-shift-status]");if(!b)return;t995ShiftStatusFilter=b.dataset.t995ShiftStatus;t995RenderShiftAdmin();};
 t995ShiftRefreshBtn.onclick=()=>t995LoadShiftAdmin();
@@ -5589,7 +5757,6 @@ let t995PasswordDialogMode="unlock";
 let t995ProtectedTargetMode=null;
 let t995DeviceClaimRecords=[];
 let t995DeviceClaimFetchError="";
-const t995ShiftOpenToggle=document.getElementById("shiftOpenToggle");
 const t995ShiftTestModeToggle=document.getElementById("shiftTestModeToggle");
 function t995SyncShiftToggleVisual(input){const label=input?.closest("label");if(label)label.classList.toggle("is-checked",Boolean(input.checked));}
 
@@ -5666,20 +5833,6 @@ t995ShiftBackBtn.onclick=()=>showAdminMode("home");
 document.getElementById("rosterPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","roster");
 document.getElementById("shiftPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","shift");
 
-if(t995ShiftOpenToggle){
-  t995ShiftOpenToggle.addEventListener("change",async()=>{
-    const requested=t995ShiftOpenToggle.checked;t995SyncShiftToggleVisual(t995ShiftOpenToggle);
-    t995ShiftOpenToggle.disabled=true;
-    try{
-      const r=await db.from("staffing_settings").update({shift_submission_open:requested,updated_at:new Date().toISOString()}).eq("singleton",true);
-      if(r.error)throw r.error;
-      t995StaffingSettings={...t995StaffingSettings,shift_submission_open:requested};
-      alert(requested?"指休表已開放，任何時間都可填寫；新提交會列為正式資料。":"指休表已關閉。" );
-      await t995LoadShiftAdmin();
-    }catch(e){t995ShiftOpenToggle.checked=!requested;t995SyncShiftToggleVisual(t995ShiftOpenToggle);alert(`更新指休開放狀態失敗：${e.message||"請確認已執行開放開關 SQL 並重新登入。"}`);}
-    finally{t995ShiftOpenToggle.disabled=false;}
-  });
-}
 if(t995ShiftTestModeToggle){
   t995ShiftTestModeToggle.addEventListener("change",async()=>{
     const requested=t995ShiftTestModeToggle.checked;t995SyncShiftToggleVisual(t995ShiftTestModeToggle);t995ShiftTestModeToggle.disabled=true;
