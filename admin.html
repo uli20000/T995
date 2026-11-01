@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- T995 V9: rolling 8 complete same-weekday TC samples (search up to 26 weeks); existing UI and TC rules preserved. -->
+<!-- T995 V8: multi-week opening + Taipei-week rollover refresh; confirmed UI unchanged. -->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -32,12 +32,14 @@ body{
   margin:0;
   background:var(--linen);
   color:var(--black);
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Helvetica Neue",Arial,sans-serif;
+  font-family:"Microsoft JhengHei","微軟正黑體",sans-serif;
   text-align:center
 }
 
 button,input,textarea{font-family:inherit}
 button{cursor:pointer}
+body,body *{font-family:"Microsoft JhengHei","微軟正黑體",sans-serif!important}
+button,[role="button"],input[type="button"],input[type="submit"],input[type="reset"]{font-weight:700!important}
 
 .page{
   max-width:900px;
@@ -911,7 +913,8 @@ button{cursor:pointer}
 
 
 /* 後台首頁與設備管理：手機優先 */
-.admin-mode-btn{min-height:84px;font-size:22px}
+.title{font-weight:900}
+.admin-mode-btn{min-height:84px;font-size:22px;font-weight:800!important}
 .admin-mode-btn .icon{font-size:34px}
 .device-admin-type-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:620px;margin:0 auto}
 .device-admin-type-btn{min-height:58px;border:2px solid var(--line);border-radius:15px;background:#fff;color:var(--black);font:inherit;font-size:18px;font-weight:800;cursor:pointer}
@@ -1277,7 +1280,14 @@ button{cursor:pointer}
  #shiftModePage .shift-heading-tools .shift-test-toggle{height:29px;min-height:29px;font-size:11px}
 }
 
+
+.ops-section h3{margin:20px 0 12px;text-align:left}.ops-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0}.ops-analysis{margin:14px 0}.ops-export-bottom{display:flex;justify-content:center;margin:18px 0 4px}.ops-export-bottom .action-btn{min-width:min(420px,100%)}.ops-analysis-tools{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}.ops-analysis-tools input{min-height:42px;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit}.ops-mini-tabs{display:flex;gap:4px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#fff}.ops-mini-tabs button{border:0;background:transparent;border-radius:8px;padding:8px 12px;font:inherit}.ops-mini-tabs button.active{background:var(--red);color:#fff}.ops-hours-input{width:80px;min-width:68px;padding:8px;border:1px solid var(--line);border-radius:8px;font:inherit;text-align:center}.ops-toggle-group{display:flex;gap:10px;align-items:center;justify-content:center}.ops-toggle{min-height:46px;min-width:120px;border:1px solid var(--line);border-radius:12px;background:#fff;font:inherit;font-weight:800}.ops-toggle.selected{background:var(--green);border-color:var(--green);color:#fff}.ops-tab{padding:12px 8px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--black);font:inherit;font-weight:800;cursor:pointer}.ops-tab.active{background:var(--red);color:#fff;border-color:var(--red)}.ops-panel{padding:12px 0}.ops-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;text-align:center}.ops-form-grid label,.ops-toolbar label{display:grid;gap:6px;font-weight:700;color:var(--black);text-align:center}.ops-form-grid input,.ops-form-grid select,.ops-form-grid textarea,.ops-toolbar input{width:100%;min-height:46px;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;color:var(--black);text-align:center}.ops-form-grid textarea{resize:vertical}.ops-wide{grid-column:1/-1}.ops-form-grid .action-btn{min-height:46px}.ops-lookup{min-height:18px;color:var(--green);font-size:13px;font-weight:700}.ops-message{min-height:24px;margin:8px 0;text-align:center;color:var(--gray)}.ops-toolbar{display:flex;align-items:end;gap:8px;margin:14px 0;text-align:left}.ops-toolbar label{min-width:145px}.ops-toolbar .action-btn{min-height:44px}.ops-table-wrap{overflow:auto;text-align:left}.ops-table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}.ops-table th,.ops-table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:center}.ops-table th{background:#f8f6f1;white-space:nowrap}.ops-status{display:inline-block;padding:4px 8px;border-radius:99px;background:#fff0ee;color:#b42318;font-weight:800;white-space:nowrap}.ops-status.done{background:#eef5f0;color:#356b4b}.ops-help{padding:12px;background:#f8f6f1;border-radius:12px;text-align:left;color:var(--gray);line-height:1.7}.ops-link-result{display:flex;gap:8px;margin-top:12px}.ops-link-result input{min-width:0;flex:1;padding:10px;border:1px solid var(--line);border-radius:10px}.ops-empty{padding:18px;color:var(--gray);text-align:center}@media(max-width:600px){.ops-form-grid{grid-template-columns:1fr}.ops-wide{grid-column:auto}.ops-tabs{grid-template-columns:1fr}.ops-toolbar{align-items:stretch;flex-direction:column}.ops-link-result{flex-direction:column}.ops-table{font-size:12px}.ops-table th,.ops-table td{padding:8px 6px}}
+.ops-score-upload{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.ops-score-file-button{display:inline-flex;align-items:center;min-height:44px;padding:9px 14px;border-radius:10px;background:#fff;border:1px solid var(--line);font-weight:800;cursor:pointer}.ops-score-file-button input{position:absolute;width:1px;height:1px;opacity:0}.ops-score-file-hint{color:var(--gray);font-size:13px}.ops-score-divider{height:1px;background:var(--line);margin:24px 0}.ops-score-history-tools{display:flex;align-items:end;gap:10px;margin:12px 0}.ops-score-history-tools label{display:grid;gap:6px;min-width:170px;color:var(--gray);font-weight:700;text-align:left}.ops-score-history-tools input,.ops-score-history-tools select{min-height:42px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit}.ops-score-detail-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}.ops-batch-link{border:0;background:transparent;color:#1683df;font:inherit;font-weight:800;cursor:pointer;text-decoration:underline}.ops-score-count{color:var(--gray);white-space:nowrap}@media(max-width:600px){.ops-score-history-tools{align-items:stretch;flex-direction:column}.ops-score-history-tools label{min-width:0}.ops-score-detail-heading{align-items:flex-start;flex-direction:column}}
+
+.ops-section{font-size:16px;line-height:1.65}.ops-section button,.ops-section input,.ops-section select,.ops-section textarea{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",sans-serif!important;font-size:16px!important}.ops-section button{font-weight:800!important}.ops-section .ops-table{font-size:15px}.ops-section .ops-message,.ops-section .ops-empty{color:#49443e;font-size:14px;font-weight:600}
+@media(max-width:600px){.ops-section .ops-table{font-size:14px}.ops-section .ops-table th,.ops-section .ops-table td{padding:9px 7px}}
 </style>
+<link rel="stylesheet" href="operations-report.css?v=20261031-ac-summary-symmetry2">
 </head>
 
 <body>
@@ -1322,31 +1332,83 @@ button{cursor:pointer}
 </header>
 
 <div id="adminModeMenu" class="admin-menu">
-  <button id="vehicleModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">🚗</span>
-    車輛管理
-  </button>
-  <button id="batteryModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">🔋</span>
-    設備管理
-  </button>
-  <button id="defensiveModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">🛡️</span>
-    防禦駕駛
-  </button>
-  <button id="surveyModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">📋</span>
-    意向調查
-  </button>
-  <button id="rosterModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">👥</span>
-    在職名單
-  </button>
-  <button id="shiftModeBtn" class="admin-mode-btn" type="button">
-    <span class="icon">🗓️</span>
-    指休管理
-  </button>
+  <button id="vehicleModeBtn" class="admin-mode-btn" type="button"><span class="icon">🚗</span>車輛管理</button>
+  <button id="opsModeBtn" class="admin-mode-btn" type="button"><span class="icon">🍽️</span>營運管理</button>
+  <button id="batteryModeBtn" class="admin-mode-btn" type="button"><span class="icon">🔋</span>設備管理</button>
+  <button id="defensiveModeBtn" class="admin-mode-btn" type="button"><span class="icon">🛡️</span>防禦駕駛</button>
+  <button id="surveyModeBtn" class="admin-mode-btn" type="button"><span class="icon">📋</span>意向調查</button>
+  <button id="shiftModeBtn" class="admin-mode-btn" type="button"><span class="icon">🗓️</span>指休管理</button>
+  <button id="rosterModeBtn" class="admin-mode-btn" type="button"><span class="icon">👥</span>在職名單</button>
 </div>
+
+
+<section id="opsModePage" class="admin-mode-page">
+  <div class="mode-back-row"><button id="opsBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
+  <section class="section ops-section">
+    <div class="section-title">營運管理</div>
+    <div id="opsGlobalDateToolbar" class="ops-entry-date-toolbar ops-global-date-toolbar">
+      <div class="ops-date-nav"><button id="opsGlobalPrev" type="button" aria-label="前一個日期區間">‹</button><input id="opsGlobalDate" type="date" aria-label="營運統計日期"><button id="opsGlobalNext" type="button" aria-label="後一個日期區間">›</button></div>
+      <div id="opsGlobalPeriodTabs" class="ops-mini-tabs"><button type="button" data-period="day" class="active">日</button><button type="button" data-period="week">週</button><button type="button" data-period="month">月</button></div>
+      <div class="ops-date-actions"><button id="opsGlobalRefresh" type="button" class="action-btn">重新整理</button><a class="action-btn" href="analysis.html" aria-label="開啟營運分析儀表板">儀表板</a></div>
+    </div>
+    <div id="opsGlobalPeriodChoices" class="ops-period-choices" hidden aria-live="polite"></div>
+    <div class="ops-tabs">
+      <button type="button" class="ops-tab active" data-ops-tab="delay">等餐紀錄</button>
+      <button type="button" class="ops-tab" data-ops-tab="line">劃線／簽名</button>
+      <button type="button" class="ops-tab" data-ops-tab="scores">當日成績</button>
+      <button type="button" class="ops-tab" data-ops-tab="summary">匯總資料</button>
+    </div>
+    <div id="opsDelayPanel" class="ops-panel">
+      <div class="ops-form-grid ops-entry-row ops-delay-entry-row">
+        
+        <label>店號<input id="opsDelayStore" type="text" inputmode="numeric" maxlength="3" placeholder="輸入店號" autocomplete="off"><span id="opsDelayStoreName" class="ops-lookup" aria-live="polite"></span><div id="opsDelayStoreChoices" class="ops-store-choices"></div></label>
+        <label>編號<input id="opsDelayOrder" type="text" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="4 碼"></label>
+        <button id="opsDelaySave" type="button" class="action-btn primary">新增</button>
+        <label>餐廳查詢<input id="opsDelaySearch" type="search" placeholder="輸入店號或餐廳名稱"></label>
+      </div>
+      <div id="opsDelayMessage" class="ops-message" role="status"></div>
+      <h3 id="opsDelayListTitle">當日紀錄</h3>
+      <div id="opsDelayList" class="ops-table-wrap"></div>
+    </div>
+    <div id="opsLinePanel" class="ops-panel" hidden>
+      <div class="ops-line-toolbar-row">
+        <div id="opsLineStats" class="ops-line-stats"></div>
+        <label class="ops-line-search"><input id="opsLineSearch" type="search" aria-label="餐廳查詢" placeholder="輸入店號或餐廳名稱"></label>
+      </div>
+      <div class="ops-form-grid ops-entry-row">
+        
+        <label>店號<input id="opsLineStore" type="text" inputmode="numeric" maxlength="3" placeholder="輸入店號" autocomplete="off"><span id="opsLineStoreName" class="ops-lookup" aria-live="polite"></span><div id="opsLineStoreChoices" class="ops-store-choices"></div></label>
+        <div class="ops-line-control"><span>劃線／簽名</span><div class="ops-toggle-group"><button type="button" id="opsLineMark" class="ops-toggle" aria-pressed="false">劃線</button><button type="button" id="opsSignMark" class="ops-toggle" aria-pressed="false">簽名</button></div></div>
+        <input id="opsSigner" type="hidden">
+        <input id="opsLineNote" type="hidden">
+        <button id="opsLineSave" type="button" class="action-btn primary">新增</button>
+      </div>
+      <div id="opsLineMessage" class="ops-message" role="status"></div>
+      <h3 id="opsLineListTitle">餐廳狀態</h3><div id="opsLineList" class="ops-table-wrap"></div>
+    </div>
+    <div id="opsScoresPanel" class="ops-panel" hidden>
+      <div class="ops-upload-block"><h3>匯入當日成績</h3><div class="ops-score-upload"><label class="ops-score-file-button">選擇兩個 Excel<input id="opsScoreFiles" type="file" accept=".xlsx,.xls,.xlsm" multiple></label></div><div id="opsScorePreview" class="ops-table-wrap"></div><button id="opsScoreImport" type="button" class="action-btn primary" disabled>匯入當日成績</button><div id="opsScoreMessage" class="ops-message" role="status"></div></div>
+      <div id="opsFileStatus" class="ops-file-status"></div><h3 id="opsPeriodLabel">區域成績</h3>
+      <div id="opsReportWarnings" class="ops-report-warnings" hidden></div>
+      <div id="opsAnalysisSummary"></div>
+      <section class="ops-report-card"><h3>區域成績與工時</h3><div id="opsAnalysisTable"></div><div id="opsLaborAdjustments"></div></section><section class="ops-report-card"><h3>新竹／桃園天氣</h3><div id="opsWeather" aria-live="polite"></div></section><section class="ops-report-card"><h3>每日成績</h3><div id="opsDayList" class="ops-table-wrap"></div></section>
+      <div id="opsReportStatus" class="ops-report-status" role="status"></div>
+      <details class="ops-month-fold"><summary>各區每日／整月工時</summary><div id="opsMonthHours"></div></details>
+    </div>
+    <div id="opsSummaryPanel" class="ops-panel" hidden>
+      <div id="opsSummaryWarnings" class="ops-report-warnings" hidden></div>
+      <div id="opsSummaryMetrics"></div>
+      <div class="ops-ranking-grid">
+        <section class="ops-report-card"><h3>等餐</h3><h4>AC 排名</h4><div id="opsDelayAcSummary"></div><h4>待改善餐廳</h4><div id="opsDelayRank"></div></section>
+        <section class="ops-report-card"><h3>劃線簽名</h3><h4>AC 排名</h4><div id="opsLineAcSummary"></div><h4>待改善餐廳</h4><div id="opsLineRank"></div></section>
+      </div>
+      <section class="ops-report-card"><h3>新竹／桃園天氣</h3><div id="opsSummaryWeather" aria-live="polite"></div></section>
+      <div id="opsSummaryStatus" class="ops-report-status" role="status"></div>
+      <div class="ops-export-bottom"><button id="opsExportDay" type="button" class="action-btn primary">每日匯出</button><button id="opsExportWeek" type="button" class="action-btn">每週匯出</button><button id="opsExportMonth" type="button" class="action-btn">每月匯出</button><button id="opsLinkCreate" type="button" class="action-btn">產生等餐連結</button></div>
+      <div id="opsLinksPanel" class="ops-shared-link"><div id="opsLinkMessage" class="ops-message" role="status"></div><div id="opsLinkResult" class="ops-link-result" hidden><input id="opsLinkUrl" type="text" readonly><button id="opsLinkCopy" type="button" class="action-btn">複製連結</button></div></div>
+    </div>
+  </section>
+</section>
 
 <section id="vehicleModePage" class="admin-mode-page">
 
@@ -1505,7 +1567,7 @@ button{cursor:pointer}
             <option value="133">新竹新豐（133）</option><option value="203">新竹湖口（203）</option><option value="562">新竹竹北（562）</option>
             <option value="144">竹北自強（144）</option><option value="587">新竹民生（587）</option><option value="066">新竹竹東（066）</option>
             <option value="214">新竹中正（214）</option><option value="594">新竹亞太（594）</option><option value="235">竹北中華（235）</option>
-            <option value="025">苗栗中正（025）</option><option value="173">苗栗竹南（173）</option><option value="142">桃園桃營（142）</option>
+            <option value="025">苗栗中正（025）</option><option value="173">苗栗竹南（173）</option><option value="142">桃園桃鶯（142）</option>
             <option value="182">桃園萬壽（182）</option><option value="167">桃園介壽（167）</option><option value="165">桃園南平（165）</option>
             <option value="179">桃園大竹（179）</option><option value="190">桃園大溪（190）</option><option value="098">桃園大興西（098）</option>
             <option value="183">桃園中山二（183）</option><option value="013">新竹光復（013）</option>
@@ -1634,25 +1696,12 @@ button{cursor:pointer}
     <details class="shift-fold">
       <summary class="section-title">下週人力建議</summary>
       <div class="shift-fold-content">
-        <div class="hint forecast-formula">預估 TC＝最多回看 26 週，取最近 8 個完整同星期「實際外送 TC」樣本平均 × 1.2（各區無條件進位）｜需求工時＝預估 TC ÷ 2.5｜第三方提醒＝預估 TC × 20%</div>
+        <div class="hint forecast-formula">預估 TC＝前 8 週同星期「實際外送 TC」平均 × 1.2（各區無條件進位）｜需求工時＝預估 TC ÷ 2.5｜第三方提醒＝預估 TC × 20%</div>
         <div id="staffingRecommendationSummary" class="summary forecast-summary-grid"></div>
         <div id="staffingForecastDataWarning" class="forecast-data-warning" hidden role="status" aria-live="polite"></div>
         <div id="staffingWeekGap" class="forecast-week-gap" hidden></div>
         <div id="staffingDayTabs" class="staffing-day-tabs" role="tablist" aria-label="選擇預測日期"></div>
         <div id="staffingRecommendationList" class="staffing-results"><div class="loading">載入歷史資料與指休資料中…</div></div>
-      </div>
-    </details>
-  </section>
-  <section class="section">
-    <details class="shift-fold">
-      <summary class="section-title">每日成績原始檔</summary>
-      <div class="shift-fold-content">
-        <div class="staffing-panel t995-score-source-panel" style="width:100%">
-          <label class="staffing-file-picker" for="t995ScoreSourceFiles"><span id="t995ScoreSourceFilesLabel">選擇 ByDate 與 ByOrder Excel</span><input id="t995ScoreSourceFiles" type="file" accept=".xlsx,.xls,.xlsm" multiple aria-label="選擇 ByDate 與 ByOrder 成績 Excel"></label>
-          <div id="t995ScoreSourcePreview" class="staffing-upload-preview" role="status" aria-live="polite"></div>
-          <button id="t995ScoreSourceImport" class="action-btn" type="button" style="width:100%;margin-top:9px" disabled>封存原始檔並匯入成績</button>
-          <div id="t995ScoreSourceMessage" class="staffing-upload-preview" role="status" aria-live="polite"></div>
-        </div>
       </div>
     </details>
   </section>
@@ -4981,6 +5030,8 @@ function lockAdmin(message=""){
 async function unlockAdmin(session){
   if(!session?.user?.email){ lockAdmin(); return; }
   const email = String(session.user.email).trim().toLowerCase();
+  if(adminApp.style.display==='block'&&adminSessionEmail.textContent===`已登入：${email}`)return;
+  const isEnteringAdmin=adminApp.style.display!=='block';
   const allow = await db.from("admin_allowlist").select("email").ilike("email", email).eq("active", true).maybeSingle();
   if(allow.error){
     await db.auth.signOut();
@@ -4997,7 +5048,7 @@ async function unlockAdmin(session){
   adminSessionBar.style.display = "flex";
   adminSessionEmail.textContent = `已登入：${email}`;
   showAuthMessage("", true);
-  showAdminMode("home");
+  if(isEnteringAdmin)showAdminMode("home");
 }
 
 authPasswordToggle.onclick = () => {
@@ -5352,13 +5403,13 @@ async function t995LoadAllPaged(table,select,fromDate,toDate,periodCode,orderCol
   }return out;
 }
 function t995MapAdd(map,key,value){map.set(key,(map.get(key)||0)+Number(value||0));}
-function t995SampleAverage(map,area,weekStart,dayOffset,weeks,expectedStores,lookbackWeeks=26){
+function t995SampleAverage(map,area,weekStart,dayOffset,weeks,expectedStores){
   const vals=[];
-  // 由最近的同星期日期往回找；缺資料或區域不完整時跳過，最多回看 26 週以補足 8 個有效樣本。
-  for(let w=1;w<=lookbackWeeks&&vals.length<weeks;w++){
+  for(let w=1;w<=weeks;w++){
     const date=t995DateAdd(weekStart,dayOffset-7*w);
     const cell=map.get(`${area}|${date}`);
     if(!cell)continue;
+    // 僅採用當日該區所有有效餐廳均有資料的完整樣本，避免缺店資料拉低平均。
     if(expectedStores>0&&cell.stores.size<expectedStores)continue;
     if(Number.isFinite(cell.totalTc)&&cell.totalTc>=0)vals.push(cell.totalTc);
   }
@@ -5371,8 +5422,7 @@ function t995ForecastTcFromAverage(average,growthRate=0.20){
 async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   if(!t995AreaMapLoaded)await t995LoadAreaMap();
   const weeks=8;
-  const lookbackWeeks=26;
-  const first=t995DateAdd(weekStart,-7*lookbackWeeks);
+  const first=t995DateAdd(weekStart,-7*weeks);
   const importedFullRows=await t995LoadAllPaged("staffing_tc_history","record_date,restaurant_name,area_code,total_tc,period_code",first,weekStart,"full_day");
   const fullRows=importedFullRows.filter(r=>t995AreaMap.get(String(r.restaurant_name||"").trim())===r.area_code);
   const areaOrder=['A','B','C','D','E','F','G','H','I','J','K'];
@@ -5399,7 +5449,7 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   const dayNames=['週一','週二','週三','週四','週五','週六','週日'];
   const output=areas.map(area=>({area,days:dayNames.map((day,offset)=>{
     const date=t995DateAdd(weekStart,offset);
-    const sample=t995SampleAverage(fullByAreaDate,area,weekStart,offset,weeks,expectedStoresByArea.get(area)||0,lookbackWeeks);
+    const sample=t995SampleAverage(fullByAreaDate,area,weekStart,offset,weeks,expectedStoresByArea.get(area)||0);
     const averageTc=sample.average;
     // 順序固定：同星期歷史平均 → 成長 20% → 區域 TC 無條件進位 → 除以 TPLH 2.5。
     const totalTc=t995ForecastTcFromAverage(averageTc,growthRate);
@@ -5424,7 +5474,7 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   if(partialHistory.length){
     const examples=partialHistory.slice(0,4).map(d=>`${d.day}${output.find(a=>a.days.includes(d))?.area||''}區 ${d.historyWeeks}/${weeks}週`).join('、');
     const more=partialHistory.length>4?` 等 ${partialHistory.length} 組`:` 共 ${partialHistory.length} 組`;
-    t995StaffingForecastDataWarning.textContent=`最多回看 ${lookbackWeeks} 週後，完整同星期歷史樣本仍未滿 ${weeks} 週：${examples}${more}；按各區／星期可用完整樣本平均。`;
+    t995StaffingForecastDataWarning.textContent=`歷史資料未滿 ${weeks} 週：${examples}${more}；按各區／星期可用完整週數平均。`;
     t995StaffingForecastDataWarning.hidden=false;
   }else{t995StaffingForecastDataWarning.textContent="";t995StaffingForecastDataWarning.hidden=true;}
   if(completeWeek){
@@ -5454,7 +5504,7 @@ function t995RenderStaffingDay(){
   const totalPeople=dayData.reduce((sum,d)=>sum+d.people,0);const totalAvailable=dayData.reduce((sum,d)=>sum+d.availableHours,0);
   const totalGap=totalNeeded===null?null:totalAvailable-totalNeeded;const totalDelta=gap(totalGap);
   const totalText=(value,digits=1)=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:digits,maximumFractionDigits:digits});
-  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜各區最近 8 個完整同星期實際外送 TC 樣本平均 ×1.2 後無條件進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
+  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜各區前 8 週同星期實際外送 TC 平均 ×1.2 後無條件進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
   const rows=areas.map(({area,days})=>{const d=days[offset];const delta=gap(d.gap);const tc=fmtTc(d.totalTc);const needed=fmtHours(d.recommended);const third=fmtTc(d.thirdPartyCap);const availability=`${d.people} 人／${d.availableHours.toFixed(1)} 小時`;const history=`${d.historyWeeks}/${d.targetWeeks}週`;
     return {area,tc,needed,third,availability,delta,history};
   });
@@ -5943,11 +5993,183 @@ vehicleList.addEventListener("click",event=>{
   event.preventDefault();event.stopPropagation();t995DeleteVehiclePermanently(button.dataset.t995VehicleDelete,button);
 },true);
 
+
+/* T995 營運管理：延遲訂單、月度餐廳回覆連結與劃線／簽名。 */
+/* 營運管理共用介面。分頁與登記邏輯位於 operations-entry.js。 */
+const opsToday=()=>new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+function opsEscape(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const opsSetToggle=(id,on)=>{const b=$(id);b.classList.toggle("selected",on);b.setAttribute("aria-pressed",String(on));};
+
+/* 每日成績報表：辨識 ByDate／ByOrder，排除不必要個資欄位後寫入歷史資料表。 */
+const opsScoreFileInput=$("opsScoreFiles");
+let opsPreparedScoreFiles=[];
+const opsByDateColumns=["訂單號碼","ID（門市名稱／代號）","訂單日期","指派時間","QT","留店時間","外送時間（去）","外送達成時間（D30)","外出時間 (車程)","完成整張外送時間","距離"];
+const opsByOrderColumns=["reg order id","RC","AC","ID","訂單","自動/手動","落單時間","預計送達時間","原預計送達時間","指派時間","門市到達時間","外送出發","到達時間","到店時間","外送員留店時間","遲到時間","Quote Time","配送費","餐點金額","結算金額","距離","外送員","D7","D25"];
+function opsXlsxValue(value){
+  if(value instanceof Date){const d=new Date(value.getTime()-value.getTimezoneOffset()*60000);return d.toISOString().slice(0,19).replace("T"," ");}
+  return value;
+}
+function opsDateIso(value){
+  if(value instanceof Date&&!Number.isNaN(value.getTime())){const d=new Date(value.getTime()-value.getTimezoneOffset()*60000);return d.toISOString().slice(0,10);}
+  if(typeof value==="number"&&window.XLSX?.SSF?.parse_date_code){const d=XLSX.SSF.parse_date_code(value);if(d?.y&&d?.m&&d?.d)return String(d.y).padStart(4,"0")+"-"+String(d.m).padStart(2,"0")+"-"+String(d.d).padStart(2,"0");}
+  const text=String(value??"").trim();let m=text.match(/^(20\d{2})[./-](\d{1,2})[./-](\d{1,2})/);
+  if(m)return opsValidIsoDate(Number(m[1]),Number(m[2]),Number(m[3]));
+  m=text.match(/^(\d{1,2})[./-](\d{1,2})[./-](20\d{2})/);
+  if(m)return opsValidIsoDate(Number(m[3]),Number(m[1]),Number(m[2]));
+  return "";
+}
+function opsValidIsoDate(y,m,d){const value=new Date(Date.UTC(y,m-1,d));return value.getUTCFullYear()===y&&value.getUTCMonth()===m-1&&value.getUTCDate()===d?String(y).padStart(4,"0")+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"):"";}
+function opsScorePair(){
+  if(opsPreparedScoreFiles.length!==2)return null;
+  const byType=Object.fromEntries(opsPreparedScoreFiles.map(x=>[x.type,x]));if(!byType.ByDate||!byType.ByOrder)return null;
+  const a=byType.ByDate.dates,b=byType.ByOrder.dates;if(a.length!==b.length||a.some((d,i)=>d!==b[i]))return null;
+  return {byType,dates:a};
+}
+async function opsParseScoreFile(file){
+  if(!window.XLSX)throw new Error("Excel 元件尚未載入，請重新整理後再試。");
+  const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:true});
+  const sheetName=wb.SheetNames[0];if(!sheetName)throw new Error("檔案沒有工作表。");
+  const matrix=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:"",raw:true});
+  if(!matrix.length)throw new Error("工作表沒有資料。");
+  const headers=matrix[0].map(v=>String(v??"").trim());
+  const lower=headers.map(v=>v.toLowerCase());
+  let type="";
+  if(headers.includes("訂單號碼")&&headers.some(v=>v.includes("門市名稱／代號"))&&headers.includes("QT"))type="ByDate";
+  else if(lower.includes("reg order id")&&headers.includes("落單時間")&&headers.includes("D25"))type="ByOrder";
+  else throw new Error("無法辨識報表格式；請選 ByDate 或 ByOrder Excel 檔。");
+  const allowed=type==="ByDate"?opsByDateColumns:opsByOrderColumns;
+  const indices=allowed.map(name=>headers.indexOf(name));
+  const orderHeader=type==="ByDate"?"訂單號碼":"reg order id";
+  const dateHeader=type==="ByDate"?"訂單日期":"落單時間";
+  const restaurantHeader=type==="ByDate"?"ID（門市名稱／代號）":"ID";
+  const fileDates=[...new Set([...String(file.name).matchAll(/20\d{2}[.-]\d{2}[.-]\d{2}/g)].map(x=>x[0]))],fileDate=fileDates.length===1?opsDateIso(fileDates[0]):"";
+  const rows=[];
+  matrix.slice(1).forEach((cells,index)=>{
+    if(!cells.some(v=>v!==""&&v!==null&&v!==undefined))return;
+    const payload={};
+    indices.forEach((column,i)=>{if(column<0)return;const value=cells[column];if(value===""||value===null||value===undefined)return;payload[allowed[i]]=opsXlsxValue(value);});
+    const orderNo=String(payload[orderHeader]??"").trim();
+    const restaurantRaw=String(payload[restaurantHeader]??"").trim();
+    const codeMatch=(type==="ByDate"?restaurantRaw:orderNo).match(/(?:TWI|TWB)(\d{3})/i);
+    const storeCode=codeMatch?codeMatch[1]:"";
+    const restaurantName=type==="ByDate"?restaurantRaw.split(/[/／]/)[0].trim():restaurantRaw;
+    const dateValue=cells[headers.indexOf(dateHeader)],dateText=opsDateIso(dateValue)||fileDate;
+    rows.push({row_number:index+2,record_date:dateText,store_code:storeCode,restaurant_name:restaurantName,order_number:orderNo,payload});
+  });
+  if(type==="ByOrder"){
+    const courierIds=new Map(),courierOrders=new Map(),dispatchWaves=new Map();
+    for(const row of rows){
+      const payload=row.payload||{},courierName=String(payload["外送員"]??"").trim(),assigned=String(payload["指派時間"]??"").trim().replace("T"," ").slice(0,19);
+      delete payload["外送員"];
+      if(!courierName||String(payload["自動/手動"]||"").trim()==="第三方")continue;
+      const courierKey=row.record_date+"|"+courierName.toLocaleLowerCase();
+      if(!courierIds.has(courierKey))courierIds.set(courierKey,window.crypto?.randomUUID?.()||("courier-"+(courierIds.size+1)));
+      const courierId=courierIds.get(courierKey);payload._courier_day_id=courierId;
+      const riderOrders=courierOrders.get(courierId)||[];riderOrders.push(row);courierOrders.set(courierId,riderOrders);
+      if(assigned){const waveKey=row.record_date+"|"+courierId+"|"+assigned,wave=dispatchWaves.get(waveKey)||[];wave.push(row);dispatchWaves.set(waveKey,wave);}
+    }
+    for(const riderOrders of courierOrders.values()){
+      const storeCount=new Set(riderOrders.map(row=>row.store_code).filter(Boolean)).size;
+      for(const row of riderOrders)row.payload._courier_day_store_count=storeCount;
+    }
+    for(const wave of dispatchWaves.values()){
+      const storeCount=new Set(wave.map(row=>row.store_code).filter(Boolean)).size;
+      for(const row of wave){row.payload._dispatch_wave_size=wave.length;row.payload._dispatch_wave_store_count=storeCount;}
+    }
+  }
+  if(!rows.length)throw new Error("報表沒有可匯入的訂單資料列。");
+  if(rows.some(r=>!r.record_date))throw new Error("有訂單列沒有可辨識的日期；請使用含日期欄的報表。");
+  const dates=[...new Set(rows.map(r=>r.record_date))].sort();
+  return {file,type,dates,rows};
+}
+function opsRenderPreparedScoreFiles(errors=[]){
+  const data=opsPreparedScoreFiles.map(x=>({file:x.file.name,type:x.type,date:x.dates.length===1?x.dates[0]:x.dates[0]+"～"+x.dates.at(-1)+"（"+x.dates.length+"天）",count:x.rows.length,status:"待匯入"}));
+  const failed=errors.map(x=>({file:x.file,type:"—",date:"—",count:"—",status:x.error}));
+  const all=[...data,...failed];
+  $("opsScorePreview").innerHTML=all.length
+    ?'<table class="ops-table"><thead><tr><th>檔案</th><th>報表類型</th><th>日期</th><th>資料筆數</th><th>狀態</th></tr></thead><tbody>'+all.map(x=>'<tr><td>'+opsEscape(x.file)+'</td><td>'+opsEscape(x.type)+'</td><td>'+opsEscape(x.date)+'</td><td>'+opsEscape(x.count)+'</td><td>'+opsEscape(x.status)+'</td></tr>').join("")+'</tbody></table>'
+    :"";
+  $("opsScoreImport").disabled=!opsScorePair();
+}
+opsScoreFileInput.addEventListener("change",async()=>{
+  opsPreparedScoreFiles=[];$("opsScoreImport").disabled=true;$("opsScoreMessage").textContent="讀取與辨識檔案中…";
+  const errors=[];
+  for(const file of [...(opsScoreFileInput.files||[])]){
+    try{opsPreparedScoreFiles.push(await opsParseScoreFile(file));}
+    catch(e){errors.push({file:file.name,error:e.message||"檔案無法讀取"});}
+  }
+  opsRenderPreparedScoreFiles(errors);
+  const pair=opsScorePair();$("opsScoreMessage").textContent=errors.length?"辨識完成；"+errors.length+" 個檔案格式不符或無法讀取。":pair?"兩份檔案日期一致，共 "+pair.dates.length+" 天，可匯入。":"請選擇一份 ByDate 與一份 ByOrder 檔案，且兩份檔案的日期範圍需一致。";
+});
+$("opsScoreImport").onclick=async()=>{
+  const pair=opsScorePair();if(!pair){$("opsScoreMessage").textContent="請選擇一份 ByDate 與一份 ByOrder 檔案，且兩份檔案的日期範圍需一致。";return;}
+  $("opsScoreImport").disabled=true;$("opsScoreMessage").textContent="封存原始 Excel 至 Supabase…";
+  const importedDate=pair.dates.at(-1);let completed=0,archiveIds=[],importedCalls=0;
+  try{
+    archiveIds=await opsArchiveScoreSourceFiles(pair);
+    $("opsScoreMessage").textContent="原始檔已存入 Supabase；開始整理成績…";
+    for(const date of pair.dates){
+      const results=await Promise.all(Object.values(pair.byType).map(item=>db.rpc("t995_import_score_batch",{p_report_date:date,p_report_type:item.type,p_source_file:item.file.name,p_rows:item.rows.filter(row=>row.record_date===date)})));
+      importedCalls+=results.filter(r=>!r.error).length;const failed=results.find(r=>r.error);if(failed)throw new Error("已完成 "+completed+"／"+pair.dates.length+" 天；日期 "+date+"："+failed.error.message);
+      completed++;$("opsScoreMessage").textContent="匯入中… "+completed+"／"+pair.dates.length+" 天";
+    }
+    const marked=await db.from("t995_score_source_archives").update({import_status:"imported",imported_at:new Date().toISOString(),import_note:null}).in("id",archiveIds);
+    if(marked.error)throw new Error("成績已匯入，但原檔封存狀態未能更新："+marked.error.message);
+    $("opsScoreMessage").textContent="完成匯入 "+pair.dates.length+" 天；ByDate／ByOrder 原始 Excel 已封存至 Supabase。";
+    opsPreparedScoreFiles=[];opsScoreFileInput.value="";opsRenderPreparedScoreFiles();
+    window.OpsDateControl?.set(importedDate||opsToday(),"day",false);
+    await opsLoadDailyAnalytics();
+  }catch(e){
+    const detail=e.message||"請檢查登入狀態與 Supabase 設定";
+    if(archiveIds.length){
+      const status=importedCalls?"partial":"archived";
+      await db.from("t995_score_source_archives").update({import_status:status,import_note:detail}).in("id",archiveIds);
+      $("opsScoreMessage").textContent="原始 Excel 已保存在 Supabase；成績匯入中止："+detail;
+    }else $("opsScoreMessage").textContent="匯入中止："+detail;
+  }
+  finally{$("opsScoreImport").disabled=!opsScorePair();}
+};
+
+async function opsArchiveScoreSourceFiles(pair){
+  const bucket="t995-score-source-archive",userResult=await db.auth.getUser(),user=userResult?.data?.user;
+  if(!user)throw new Error("請先登入管理後台。");
+  const items=Object.values(pair.byType),uploaded=[],metadata=[];
+  try{
+    for(const item of items){
+      const originalName=String(item.file.name||"source.xlsx"),extension=originalName.split(".").pop().toLowerCase();
+      const contentTypes={xlsx:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",xls:"application/vnd.ms-excel",xlsm:"application/vnd.ms-excel.sheet.macroEnabled.12"};
+      if(!contentTypes[extension])throw new Error("只接受 .xlsx、.xls 或 .xlsm Excel 檔案。");
+      if(item.file.size<=0||item.file.size>50*1024*1024)throw new Error("每個原始檔案需大於 0 且不超過 50 MB。");
+      const id=window.crypto?.randomUUID?.()||("archive-"+Date.now()+"-"+Math.random().toString(16).slice(2));
+      const safeName=originalName.normalize("NFKC").replace(/[^A-Za-z0-9._-]+/g,"_").slice(-120)||("source."+extension);
+      const storagePath="995/"+item.type+"/"+pair.dates[0]+"/"+id+"-"+safeName;
+      const bytes=await item.file.arrayBuffer();
+      const sha256=Array.from(new Uint8Array(await window.crypto.subtle.digest("SHA-256",bytes)),b=>b.toString(16).padStart(2,"0")).join("");
+      const stored=await db.storage.from(bucket).upload(storagePath,item.file,{contentType:contentTypes[extension],upsert:false});
+      if(stored.error)throw new Error("原始 Excel 上傳 Supabase Storage 失敗："+stored.error.message);
+      uploaded.push(storagePath);
+      metadata.push({id,report_type:item.type,source_file:originalName,storage_path:storagePath,file_size_bytes:item.file.size,sha256,period_start:pair.dates[0],period_end:pair.dates.at(-1),row_count:item.rows.length,uploaded_by:user.id,import_status:"archived"});
+    }
+    const saved=await db.from("t995_score_source_archives").insert(metadata);
+    if(saved.error)throw new Error("檔案已上傳，但封存索引建立失敗："+saved.error.message);
+    return metadata.map(x=>x.id);
+  }catch(error){
+    if(uploaded.length)await db.storage.from(bucket).remove(uploaded);
+    throw error;
+  }
+}
+
 </script>
 
 
 
 
-<script src="score-source-upload.js?v=20261101a"></script>
+<script src="operations-metrics.js?v=20261029-ops-align3"></script>
+<script src="operations-summary.js?v=20261029-ops-align3"></script>
+<script src="operations-report.js?v=20261031-ac-summary-symmetry2"></script>
+<script src="operations-entry.js?v=20261030-date-chooser1"></script>
 </body>
 </html>
+
+
+
