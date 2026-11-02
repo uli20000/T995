@@ -1289,7 +1289,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 .ops-section{font-size:16px;line-height:1.65}.ops-section button,.ops-section input,.ops-section select,.ops-section textarea{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",sans-serif!important;font-size:16px!important}.ops-section button{font-weight:800!important}.ops-section .ops-table{font-size:15px}.ops-section .ops-message,.ops-section .ops-empty{color:#49443e;font-size:14px;font-weight:600}
 @media(max-width:600px){.ops-section .ops-table{font-size:14px}.ops-section .ops-table th,.ops-section .ops-table td{padding:9px 7px}}
 </style>
-<link rel="stylesheet" href="operations-report.css?v=20261102-month-reply1">
+<link rel="stylesheet" href="operations-report.css?v=20261102-export-row1">
 <link rel="stylesheet" href="display-mode.css?v=20261102-toggle3">
 </head>
 
@@ -1407,8 +1407,16 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
       </div>
       <section class="ops-report-card"><h3>新竹／桃園天氣</h3><div id="opsSummaryWeather" aria-live="polite"></div></section>
       <div id="opsSummaryStatus" class="ops-report-status" role="status"></div>
-      <div class="ops-export-bottom"><button id="opsExportDay" type="button" class="action-btn primary">每日匯出</button><button id="opsExportWeek" type="button" class="action-btn">每週匯出</button><button id="opsExportMonth" type="button" class="action-btn">每月匯出</button></div>
-      <div id="opsLinksPanel" class="ops-shared-link"><div class="ops-link-month-toolbar"><label for="opsLinkMonth">等餐回覆月份<input id="opsLinkMonth" type="month" aria-describedby="opsLinkMonthPreview opsLinkMonthHelp"><span id="opsLinkMonthPreview" aria-live="polite"></span></label><button id="opsLinkCreate" type="button" class="action-btn">產生指定月份連結</button></div><p id="opsLinkMonthHelp" class="ops-link-month-help">不同月份連結可並存；同月重發只撤銷該月前一個新制連結。既有舊連結不受影響，維持當月行為。新制連結沒有固定到期日。</p><div id="opsLinkMessage" class="ops-message" role="status"></div><div id="opsLinkResult" class="ops-link-result" hidden><strong id="opsLinkMonthLabel"></strong><input id="opsLinkUrl" type="text" readonly><button id="opsLinkCopy" type="button" class="action-btn">複製連結</button></div></div>
+      <div id="opsLinksPanel" class="ops-shared-link ops-compact-actions">
+        <div class="ops-export-link-row">
+          <div class="ops-export-bottom"><button id="opsExportSelected" type="button" class="action-btn primary" title="匯出上方日期控制所選期間">匯出報表</button></div>
+          <input id="opsLinkMonth" type="month" aria-label="等餐回覆連結月份" aria-describedby="opsLinkMonthPreview" title="等餐回覆連結月份">
+          <button id="opsLinkCreate" type="button" class="action-btn" title="產生所選月份的等餐回覆連結">產生月份連結</button>
+        </div>
+        <span id="opsLinkMonthPreview" class="ops-sr-only" aria-live="polite"></span>
+        <div id="opsLinkMessage" class="ops-message" role="status"></div>
+        <div id="opsLinkResult" class="ops-link-result" hidden><strong id="opsLinkMonthLabel"></strong><input id="opsLinkUrl" type="text" readonly><button id="opsLinkCopy" type="button" class="action-btn">複製連結</button></div>
+      </div>
     </div>
   </section>
 </section>
@@ -6169,7 +6177,7 @@ async function opsArchiveScoreSourceFiles(pair){
 
 <script src="operations-metrics.js?v=20261029-ops-align3"></script>
 <script src="operations-summary.js?v=20261029-ops-align3"></script>
-<script src="operations-report.js?v=20261031-ac-summary-symmetry2"></script>
+<script src="operations-report.js?v=20261102-export-row1"></script>
 <script src="operations-entry.js?v=20261102-allow-neither"></script>
 </body>
 </html>

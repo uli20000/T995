@@ -203,7 +203,7 @@
   }
   window.opsFindRestaurant=findRestaurant;
   for(const id of ['opsDelayStore','opsLineStore'])E(id).oninput=async()=>{if(id==='opsLineStore'){opsSetToggle('opsLineMark',false);opsSetToggle('opsSignMark',false);}try{const store=await findRestaurant(id);if(store&&id==='opsLineStore')await fillLineState(store.store_code);}catch(e){E(id+'Name').textContent=e.message;}};
-  for(const [id,p] of [['opsExportDay','day'],['opsExportWeek','week'],['opsExportMonth','month']])E(id).onclick=()=>exportCombined(p);
+  E('opsExportSelected').onclick=()=>exportCombined(period());
   window.opsLoadDailyAnalytics=()=>{state.context='scores';return refresh(true);};
   window.OpsReport={readRows:paged,directory:loadDirectory,fillLineState,open:(context,force=true)=>{state.context=context;return refresh(force);}};
 })();
