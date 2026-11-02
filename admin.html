@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="normal">
-<script src="display-mode.js?v=20261102-light2"></script>
+<script src="display-mode.js?v=20261102-toggle3"></script>
 <meta name="theme-color" content="#f4f0e8">
 <title>KFC｜桃園-T995 巡檢後台</title>
 
@@ -1290,6 +1290,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 @media(max-width:600px){.ops-section .ops-table{font-size:14px}.ops-section .ops-table th,.ops-section .ops-table td{padding:9px 7px}}
 </style>
 <link rel="stylesheet" href="operations-report.css?v=20261102-month-reply1">
+<link rel="stylesheet" href="display-mode.css?v=20261102-toggle3">
 </head>
 
 <body>
@@ -1351,7 +1352,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <div id="opsGlobalDateToolbar" class="ops-entry-date-toolbar ops-global-date-toolbar">
       <div class="ops-date-nav"><button id="opsGlobalPrev" type="button" aria-label="前一個日期區間">‹</button><input id="opsGlobalDate" type="date" aria-label="營運統計日期"><button id="opsGlobalNext" type="button" aria-label="後一個日期區間">›</button></div>
       <div id="opsGlobalPeriodTabs" class="ops-mini-tabs"><button type="button" data-period="day" class="active">日</button><button type="button" data-period="week">週</button><button type="button" data-period="month">月</button></div>
-      <div class="ops-date-actions"><button type="button" class="action-btn" data-display-mode-toggle aria-pressed="false">日間模式</button><button id="opsGlobalRefresh" type="button" class="action-btn">重新整理</button><a class="action-btn" href="analysis.html" aria-label="開啟營運分析儀表板">儀表板</a></div>
+      <div class="ops-date-actions"><button id="opsGlobalRefresh" type="button" class="action-btn">重新整理</button><a class="action-btn" href="analysis.html" aria-label="開啟營運分析儀表板">儀表板</a><button type="button" class="action-btn" data-display-mode-toggle aria-pressed="false">☀️</button></div>
     </div>
     <div id="opsGlobalPeriodChoices" class="ops-period-choices" hidden aria-live="polite"></div>
     <div class="ops-tabs">
