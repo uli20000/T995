@@ -35,7 +35,7 @@
   }
   async function loadRange(r,force=false){
     const parts=await Promise.all(S.months(r.start,r.end).map(d=>loadMonth(d,force))),data={};
-    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);return data;
+    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);return M.scopeData(data);
   }
   function model(date,p,data=state.cache){return M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...S.range(date,p)});}
   function metricsRows(s){return [
@@ -77,7 +77,7 @@
     const p=period(),day=v.days.get(date),isDay=p==='day',s=v.summary,hasScores=[...v.days.values()].some(d=>d.types.has('ByOrder'));
     E('opsPeriodLabel').textContent='區域成績　'+periodTitle(date,p);
     E('opsFileStatus').innerHTML=['ByDate','ByOrder'].map(type=>{const b=state.cache.batches.find(x=>x.report_date===date&&x.report_type===type);return '<div class="ops-file-card '+(b?'ready':'')+'"><b>'+type+'</b><span>'+date+'</span><strong>'+(b?'已匯入 '+fmt(b.row_count)+' 筆':'尚未匯入')+'</strong></div>';}).join('');
-    const areaRows=[...M.AREAS,...(v.areas.has('?')?[['?','未分類']]:[])];
+    const areaRows=[...M.areasForDate(selectedDate()),...(v.areas.has('?')?[['?','未分類']]:[])];
     const cells=x=>'<td data-label="TC">'+(hasScores?fmt(x.tc):'—')+'</td><td data-label="FA">'+(hasScores?fmt(x.fa):'—')+'</td><td data-label="第三方佔比">'+pct(x.faShare)+'</td><td data-label="D7">'+pct(x.d7)+'</td><td data-label="D25">'+pct(x.d25)+'</td>';
     E('opsAnalysisTable').innerHTML='<table class="ops-area-table"><thead><tr><th>區域</th><th>TC</th><th>FA</th><th>第三方佔比</th><th>D7</th><th>D25</th><th>總工時</th></tr></thead><tbody>'+areaRows.map(([a,label])=>{const hours=isDay?M.number(day?.report?.area_hours?.[a]):v.hourTotals.get(a)?.count?v.hourTotals.get(a).hours:null;return '<tr><th>'+label+'</th>'+cells(v.areas.get(a))+'<td data-label="總工時">'+(isDay&&a!=='?'?valueInput(a,date,hours):fmt(hours,2))+'</td></tr>';}).join('')+'</tbody><tfoot><tr><th>合計</th>'+cells(s)+'<td data-label="總工時">'+fmt(s.totalHours,2)+'</td></tr></tfoot></table>';
     const report=day?.report;
@@ -90,22 +90,22 @@
   function renderSummary(date,v){
     const p=period(),r=S.range(date,p);
     renderMetrics(v);
-    const acStoreCodes=new Set(M.AC_ASSIGNMENTS.flatMap(ac=>ac.stores).filter(code=>!M.NON_DELIVERY_STORES.has(code)));
+    const acStoreCodes=new Set(M.acAssignmentsForDate(r.start).flatMap(ac=>ac.stores).filter(code=>!M.NON_DELIVERY_STORES.has(code)));
     const eligibleDelay=state.records.delay.filter(x=>acStoreCodes.has(String(x.store_code)));
     const delayTop=S.delayRanking(eligibleDelay,r.start,r.end).top;
     E('opsDelayRank').innerHTML=renderPriorityRestaurants(delayTop,x=>x.count+' 筆',x=>'待回覆 '+x.pending+' 筆','本期沒有等餐紀錄');
     renderAcWaitSummary(state.records.delay,r);renderAcLineSummary(state.records.line,r);periodRecords(date,p,v);
   }
   function renderAcWaitSummary(records,r){
-    const acByStore=new Map();for(const ac of M.AC_ASSIGNMENTS)for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
-    const counts=new Map(M.AC_ASSIGNMENTS.map(ac=>[ac.name,0]));
+    const acByStore=new Map();for(const ac of M.acAssignmentsForDate(r.start))for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
+    const counts=new Map(M.acAssignmentsForDate(r.start).map(ac=>[ac.name,0]));
     for(const row of records){if(row.record_date<r.start||row.record_date>r.end||M.NON_DELIVERY_STORES.has(String(row.store_code)))continue;const name=acByStore.get(String(row.store_code));if(name)counts.set(name,(counts.get(name)||0)+1);}
     const ranked=[...counts].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
     E('opsDelayAcSummary').innerHTML='<ul class="ops-ac-summary-grid">'+ranked.map(([name,count])=>'<li><strong>'+escape(name)+'</strong><b>'+count+' 筆</b></li>').join('')+'</ul>';
   }
   function renderAcLineSummary(records,r){
-    const acByStore=new Map();for(const ac of M.AC_ASSIGNMENTS)for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
-    const acStats=new Map(M.AC_ASSIGNMENTS.map(ac=>[ac.name,{count:0,done:0}])),storeStats=new Map();
+    const acByStore=new Map();for(const ac of M.acAssignmentsForDate(r.start))for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
+    const acStats=new Map(M.acAssignmentsForDate(r.start).map(ac=>[ac.name,{count:0,done:0}])),storeStats=new Map();
     for(const row of records){if(row.record_date<r.start||row.record_date>r.end||M.NON_DELIVERY_STORES.has(String(row.store_code)))continue;const code=String(row.store_code),name=acByStore.get(code);if(!name)continue;const done=Number(!!row.line_completed)+Number(!!row.signature_completed),a=acStats.get(name);a.count++;a.done+=done;const s=storeStats.get(code)||{store_code:code,restaurant_name:row.restaurant_name,count:0,done:0};s.count++;s.done+=done;storeStats.set(code,s);}
     const acRates=[...acStats].map(([name,x])=>({name,rate:x.count?x.done/(x.count*2):null})).sort((a,b)=>a.rate===null?(b.rate===null?a.name.localeCompare(b.name):1):b.rate===null?-1:a.rate-b.rate||a.name.localeCompare(b.name));
     E('opsLineAcSummary').innerHTML='<ul class="ops-ac-summary-grid">'+acRates.map(x=>'<li><strong>'+escape(x.name)+'</strong><b>'+(x.rate===null?'—':(x.rate*100).toFixed(1)+'%')+'</b></li>').join('')+'</ul>';
@@ -120,9 +120,9 @@
     if(state.context==='summary')renderSummary(d,v);else renderScores(d,v);renderWeather();
   }
   function monthHourRows(date,data=state.cache){
-    const v=model(date,'month',data),rows=[['日期',...M.AREAS.map(([,n])=>n+'工時'),'合計總工時','調出工時','調入工時','實際工時']];
-    for(const d of v.days.values())rows.push([d.date,...M.AREAS.map(([a])=>M.number(d.report?.area_hours?.[a])),d.hours,d.report?Number(d.report.transfer_out_hours):null,d.report?Number(d.report.transfer_in_hours):null,d.actualHours]);
-    rows.push(['月合計',...M.AREAS.map(([a])=>v.hourTotals.get(a).count?v.hourTotals.get(a).hours:null),v.summary.totalHours,v.summary.transferOut,v.summary.transferIn,v.summary.actualHours]);return rows;
+    const v=model(date,'month',data),rows=[['日期',...M.areasForDate(selectedDate()).map(([,n])=>n+'工時'),'合計總工時','調出工時','調入工時','實際工時']];
+    for(const d of v.days.values())rows.push([d.date,...M.areasForDate(selectedDate()).map(([a])=>M.number(d.report?.area_hours?.[a])),d.hours,d.report?Number(d.report.transfer_out_hours):null,d.report?Number(d.report.transfer_in_hours):null,d.actualHours]);
+    rows.push(['月合計',...M.areasForDate(selectedDate()).map(([a])=>v.hourTotals.get(a).count?v.hourTotals.get(a).hours:null),v.summary.totalHours,v.summary.transferOut,v.summary.transferIn,v.summary.actualHours]);return rows;
   }
   function renderMonthHours(date){const rows=monthHourRows(date);E('opsMonthHours').innerHTML='<h3>'+date.slice(0,7)+' 各區工時</h3><div class="ops-table-wrap"><table class="ops-month-hours"><thead><tr>'+rows[0].map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.slice(1).map(row=>'<tr><th>'+row[0]+'</th>'+row.slice(1).map(x=>'<td>'+fmt(x,2)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
   function renderDayList(r){
@@ -141,7 +141,7 @@
       notify('已儲存','scores');const focused=document.activeElement,key=focused?.dataset.area,id=focused?.id,value=focused?.value;render();const next=key?E('opsAnalysisTable').querySelector('[data-area="'+key+'"]'):(['opsTransferOut','opsTransferIn'].includes(id)?E(id):null);if(next&&state.context==='scores'){next.value=value;next.focus();}
     }).catch(e=>{state.saveError=e;notify('儲存失敗：'+e.message,'scores');});return state.saveQueue;
   }
-  async function loadRecords(r){const [delay,line]=await Promise.all([paged('t995_delay_orders','*',q=>q.gte('record_date',r.start).lte('record_date',r.end)),paged('t995_line_signature_records','*',q=>q.gte('record_date',r.start).lte('record_date',r.end))]);return {delay,line};}
+  async function loadRecords(r){const [delay,line]=await Promise.all([paged('t995_delay_orders','*',q=>q.gte('record_date',r.start).lte('record_date',r.end)),paged('t995_line_signature_records','*',q=>q.gte('record_date',r.start).lte('record_date',r.end))]);return M.scopeData({delay,line});}
   async function refresh(force=false){
     const id=++state.request,d=selectedDate(),r=S.range(d,period()),context=state.context;notify('讀取中…',context);
     try{const [data,records]=await Promise.all([loadRange(r,force),context==='summary'?loadRecords(r):Promise.resolve(state.records)]);if(id!==state.request)return;state.cache=data;state.records=records;notify('',context);render();loadWeatherRange(r,force).then(()=>{if(id===state.request)renderWeather();});}catch(e){if(id===state.request)notify(e.message,context);throw e;}
@@ -170,7 +170,7 @@
     for(const date of S.dates(r.start,r.end)){
       const v=model(date,'day',data),d=v.days.get(date),s=v.summary,active=d.types.has('ByOrder')&&!d.scoreExcluded;
       daily.push({日期:date,週次:S.week(date).year+'-'+S.weekLabel(date),不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',去年單:s.forecast===null?null:s.prior,預估單:s.forecast,實際單:active?s.tc:null,FA:active?s.fa:null,SSTG:active?s.sstg:null,預估達成率:active?s.tcAchievement:null,合計工時:d.scoreExcluded?null:s.totalHours,調出工時:d.scoreExcluded?null:s.transferOut,調入工時:d.scoreExcluded?null:s.transferIn,實際工時:d.scoreExcluded?null:s.actualHours,TPLH:active?s.tplh:null,第三方佔比:active?s.faShare:null,D7:active?s.d7:null,D25:active?s.d25:null,D7達成單:active?s.d7Y:null,D7有效單:active?s.d7Y+s.d7N:null,D25達成單:active?s.d25Y:null,D25有效單:active?s.d25Y+s.d25N:null,ByDate已匯入:d.types.has('ByDate')?'是':'否',ByOrder已匯入:d.types.has('ByOrder')?'是':'否',工時完整:d.scoreExcluded?'不計':d.actualHours!==null?'是':'否',去年單完整:d.baselineComplete?'是':'否'});
-      for(const [a,label] of [...M.AREAS,...(v.areas.has('?')?[['?','未分類']]:[])]){const x=v.areas.get(a);areas.push({日期:date,不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',區域代碼:a,區域:label,TC:active?x.tc:null,FA:active?x.fa:null,FA佔比:active?x.faShare:null,D7:active?x.d7:null,D25:active?x.d25:null,區域工時:d.scoreExcluded?null:M.number(d.report?.area_hours?.[a]),D7達成單:active?x.d7Y:null,D7有效單:active?x.d7Y+x.d7N:null,D25達成單:active?x.d25Y:null,D25有效單:active?x.d25Y+x.d25N:null});}
+      for(const [a,label] of [...M.areasForDate(date),...(v.areas.has('?')?[['?','未分類']]:[])]){const x=v.areas.get(a);areas.push({日期:date,不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',區域代碼:a,區域:label,TC:active?x.tc:null,FA:active?x.fa:null,FA佔比:active?x.faShare:null,D7:active?x.d7:null,D25:active?x.d25:null,區域工時:d.scoreExcluded?null:M.number(d.report?.area_hours?.[a]),D7達成單:active?x.d7Y:null,D7有效單:active?x.d7Y+x.d7N:null,D25達成單:active?x.d25Y:null,D25有效單:active?x.d25Y+x.d25N:null});}
     }
     appendTable(wb,'每日成績',daily,['日期','週次','不計成績','特殊事項','去年單','預估單','實際單','FA','SSTG','預估達成率','合計工時','調出工時','調入工時','實際工時','TPLH','第三方佔比','D7','D25','D7達成單','D7有效單','D25達成單','D25有效單','ByDate已匯入','ByOrder已匯入','工時完整','去年單完整'],['SSTG','預估達成率','第三方佔比','D7','D25']);
     appendTable(wb,'區域每日成績',areas,['日期','不計成績','特殊事項','區域代碼','區域','TC','FA','FA佔比','D7','D25','區域工時','D7達成單','D7有效單','D25達成單','D25有效單'],['FA佔比','D7','D25']);
@@ -193,7 +193,7 @@
   async function findRestaurant(inputId,chooseUnique=true){
     await loadDirectory();const input=E(inputId),code=input.value.trim().replace(/\D/g,'').slice(0,3),list=E(inputId+'Choices'),name=E(inputId+'Name');input.value=code;
     if(!code){name.textContent='';list.replaceChildren();return null;}
-    const matches=state.stores.filter(s=>s.store_code.startsWith(code)),selected=matches.find(s=>s.store_code===code)||(chooseUnique&&matches.length===1?matches[0]:null);
+    const matches=state.stores.filter(s=>M.storeInScope(s.store_code,opsToday(),s.restaurant_name)&&s.store_code.startsWith(code)),selected=matches.find(s=>s.store_code===code)||(chooseUnique&&matches.length===1?matches[0]:null);
     if(selected){input.value=selected.store_code;name.textContent=selected.restaurant_name;list.replaceChildren();return selected;}
     name.textContent=matches.length?'請選擇餐廳':'查無此店號';list.innerHTML=matches.map(s=>'<button type="button" data-store-code="'+s.store_code+'">'+s.store_code+'　'+escape(s.restaurant_name)+'</button>').join('');
     list.querySelectorAll('button').forEach(b=>b.onclick=async()=>{input.value=b.dataset.storeCode;await findRestaurant(inputId);if(inputId==='opsLineStore')await fillLineState(input.value);});return null;

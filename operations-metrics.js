@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const AREAS=[['A','新竹'],['B','竹北'],['C','竹東'],['D','中壢'],['E','桃園'],['F','楊梅'],['G','大園'],['H','大溪'],['I','林口'],['J','大竹'],['K','苗栗']];
-  const AC_ASSIGNMENTS=[
+  const HISTORICAL_AC_ASSIGNMENTS=[
     {name:'Abby',stores:['133','144','203']},
     {name:'Avery',stores:['025','173','066','214','587','594','235','562']},
     {name:'Chance',stores:['095','209','099','018','093','137','062','154','201']},
@@ -9,6 +9,21 @@
     {name:'Renee',stores:['041','161','227','516','544','084','242','248','580']}
   ];
   const NON_DELIVERY_STORES=new Set(['201','203']);
+  const SCOPE_EFFECTIVE_DATE='2026-11-01';
+  const REMOVED_STORES=new Set(['025','173','580']);
+  const REMOVED_NAMES=new Set(['苗栗中正','苗栗竹南','苗栗頭份']);
+  const storeInScope=(code,date,name='')=>!date||date<SCOPE_EFFECTIVE_DATE||!(REMOVED_STORES.has(String(code||'').padStart(3,'0'))||REMOVED_NAMES.has(String(name||'').normalize('NFKC').replace(/\s+/g,'')));
+  const areasForDate=date=>AREAS.filter(([code])=>date<SCOPE_EFFECTIVE_DATE||code!=='K');
+  const acAssignmentsForDate=date=>HISTORICAL_AC_ASSIGNMENTS.map(ac=>({...ac,stores:ac.stores.filter(code=>storeInScope(code,date))}));
+  const AC_ASSIGNMENTS=acAssignmentsForDate(SCOPE_EFFECTIVE_DATE);
+  function scopeData(data){
+    const byBatch=new Map((data.batches||[]).map(b=>[b.id,b]));
+    const out={...data};
+    if(data.rows)out.rows=data.rows.filter(row=>storeInScope(row.store_code,byBatch.get(row.batch_id)?.report_date,row.restaurant_name));
+    for(const key of ['delays','line','delay','feedback'])if(data[key])out[key]=data[key].filter(row=>storeInScope(row.store_code,row.record_date||row.period_start,row.restaurant_name));
+    return out;
+  }
+
   // 23:00 回饋範本：L3=L5*1.04，L7=L3/2，L10=L4/L5-1。
   const GROWTH=0.04,FORECAST_TPLH=2;
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
@@ -42,7 +57,9 @@
   function add(target,source){for(const k of Object.keys(empty()))target[k]+=source[k]||0;return target;}
   function derived(x){const nonfa=x.tc-x.fa,forecast=x.priorN?x.prior*(1+GROWTH):null;return {...x,nonfa,forecast,forecastHours:forecast===null?null:forecast/FORECAST_TPLH,faShare:ratio(x.fa,x.tc),sstg:x.priorN&&x.prior>0?x.tc/x.prior-1:null,sstgExFA:x.priorN&&x.prior>0?nonfa/x.prior-1:null,tcAchievement:ratio(x.tc,forecast),d7:ratio(x.d7Y,x.d7Y+x.d7N),d25:ratio(x.d25Y,x.d25Y+x.d25N),qt:ratio(x.qtSum,x.qtN),d7Avg:ratio(x.d7Seconds,x.d7TimeN),d25Avg:ratio(x.d25Seconds,x.d25TimeN)};}
   function build({rows,batches,history,mapping,catalog,reports,start,end}){
-    const days=new Map(dates(start,end).map(date=>[date,{date,areas:new Map(AREAS.map(([a])=>[a,empty()])),types:new Set(),orders:[],raw:[],report:reports.find(x=>x.record_date===date)||null}]));
+    rows=scopeData({rows,batches}).rows;
+    const rangeAreas=areasForDate(start);
+    const days=new Map(dates(start,end).map(date=>[date,{date,areas:new Map(areasForDate(date).map(([a])=>[a,empty()])),types:new Set(),orders:[],raw:[],report:reports.find(x=>x.record_date===date)||null}]));
     const byBatch=new Map(batches.map(b=>[b.id,b]));
     const seen=new Set();
     for(const row of rows){const b=byBatch.get(row.batch_id);if(!b||!days.has(b.report_date))continue;const day=days.get(b.report_date);day.types.add(b.report_type);const key=b.report_date+'|'+b.report_type+'|'+(row.order_number||row.row_number);if(seen.has(key))continue;seen.add(key);const code=areaFor(row,mapping,catalog);if(!day.areas.has(code))day.areas.set(code,empty());const a=day.areas.get(code),p=row.payload||{};day.raw.push({...row,report_date:b.report_date,report_type:b.report_type,area_code:code});
@@ -62,18 +79,18 @@
       const priorDate=(Number(day.date.slice(0,4))-1)+day.date.slice(4);
       const hs=exact.length?exact:[...hmap.values()].filter(h=>h.record_date===priorDate);
       const covered=new Set();
-      for(const h of hs){const name=clean(h.restaurant_name),aCode=mapping.get(name);if(!aCode||!day.areas.has(aCode))continue;const val=number(exact.length?h.prior_year_tc:h.total_tc);if(val===null)continue;const a=day.areas.get(aCode);a.prior+=val;a.priorN++;covered.add(name);}
-      day.baselineCount=covered.size;day.baselineComplete=covered.size>=mapping.size&&mapping.size>0;
+      for(const h of hs){const name=clean(h.restaurant_name),aCode=mapping.get(name);if(!storeInScope(h.store_code,day.date,h.restaurant_name))continue;if(!aCode||!day.areas.has(aCode))continue;const val=number(exact.length?h.prior_year_tc:h.total_tc);if(val===null)continue;const a=day.areas.get(aCode);a.prior+=val;a.priorN++;covered.add(name);}
+      day.baselineCount=covered.size;day.baselineComplete=covered.size>=[...mapping.keys()].filter(name=>storeInScope('',day.date,name)).length&&[...mapping.keys()].some(name=>storeInScope('',day.date,name));
     }
-    const areas=new Map(AREAS.map(([a])=>[a,empty()]));if([...days.values()].some(d=>d.areas.has('?')))areas.set('?',empty());
-    const total=empty(),hourTotals=new Map(AREAS.map(([a])=>[a,{hours:0,count:0}]));let totalHours=0,transferOut=0,transferIn=0,completeHours=true,hasHours=false;
+    const areas=new Map(rangeAreas.map(([a])=>[a,empty()]));if([...days.values()].some(d=>d.areas.has('?')))areas.set('?',empty());
+    const total=empty(),hourTotals=new Map(rangeAreas.map(([a])=>[a,{hours:0,count:0}]));let totalHours=0,transferOut=0,transferIn=0,completeHours=true,hasHours=false;
     const missingPairs=[],missingHourDays=[],missingBaselineDays=[],hoursWithoutScores=[],invalidHourDays=[];
     for(const day of days.values()){
       day.scoreExcluded=!!day.report?.score_excluded;const active=day.types.has('ByOrder')&&!day.scoreExcluded;if(day.types.size&&day.types.size<2&&!day.scoreExcluded)missingPairs.push(day.date);
       day.metrics=empty();for(const [code,x] of day.areas){if(!day.scoreExcluded&&(active||start===end)){add(total,x);add(day.metrics,x);if(!areas.has(code))areas.set(code,empty());add(areas.get(code),x);}}
       day.metrics=derived(day.metrics);day.hours=null;day.actualHours=null;
       const saved=day.report?.area_hours||{};let sum=0,entered=0,missing=0;
-      for(const [a] of AREAS){const n=number(saved[a]);if(n!==null){sum+=n;entered++;if(!day.scoreExcluded){const x=hourTotals.get(a);x.hours+=n;x.count++;}}else if((day.areas.get(a)?.tc||0)>0)missing++;}
+      for(const [a] of areasForDate(day.date)){const n=number(saved[a]);if(n!==null){sum+=n;entered++;if(!day.scoreExcluded){const x=hourTotals.get(a);x.hours+=n;x.count++;}}else if((day.areas.get(a)?.tc||0)>0)missing++;}
       if((day.areas.get('?')?.tc||0)>0)missing++;
       if(entered){day.hours=sum;if(!day.scoreExcluded){hasHours=true;totalHours+=sum;}}
       if(entered&&!active&&!day.scoreExcluded)hoursWithoutScores.push(day.date);
@@ -87,6 +104,6 @@
     if(missingBaselineDays.length){summary.forecast=null;summary.forecastHours=null;summary.sstg=null;summary.sstgExFA=null;summary.tcAchievement=null;}
     return {days,areas:new Map([...areas].map(([a,x])=>[a,derived(x)])),summary:{...summary,totalHours:hasHours?totalHours:null,transferOut,transferIn,actualHours,tplh:hoursWithoutScores.length?null:ratio(summary.nonfa,actualHours),hoursAchievement:hoursWithoutScores.length?null:ratio(actualHours,summary.forecastHours)},hourTotals,missingPairs,missingHourDays,missingBaselineDays,hoursWithoutScores,invalidHourDays};
   }
-  const api={AREAS,AC_ASSIGNMENTS,NON_DELIVERY_STORES,GROWTH,FORECAST_TPLH,number,ratio,clean,duration,addDays,range,dates,weeks,latestBatches,areaFor,build};
+  const api={AREAS,AC_ASSIGNMENTS,HISTORICAL_AC_ASSIGNMENTS,SCOPE_EFFECTIVE_DATE,REMOVED_STORES,storeInScope,areasForDate,acAssignmentsForDate,scopeData,NON_DELIVERY_STORES,GROWTH,FORECAST_TPLH,number,ratio,clean,duration,addDays,range,dates,weeks,latestBatches,areaFor,build};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsMetrics=api;
 })(typeof window!=='undefined'?window:globalThis);

@@ -41,7 +41,7 @@
   }
   async function loadDelay(){
     const request=++state.delayRequest,r=periodRange();E('opsDelayList').innerHTML='<div class="ops-empty">讀取中…</div>';
-    try{const rows=await R.readRows('t995_delay_orders','*',q=>q.gte('record_date',r.start).lte('record_date',r.end));if(request!==state.delayRequest)return;state.delay=rows.sort((a,b)=>b.record_date.localeCompare(a.record_date)||b.created_at.localeCompare(a.created_at));renderDelay();}catch(e){if(request===state.delayRequest){state.delay=[];E('opsDelayList').textContent='讀取失敗：'+e.message;}}
+    try{const rows=await R.readRows('t995_delay_orders','*',q=>q.gte('record_date',r.start).lte('record_date',r.end));if(request!==state.delayRequest)return;state.delay=window.OpsMetrics.scopeData({delay:rows}).delay.sort((a,b)=>b.record_date.localeCompare(a.record_date)||b.created_at.localeCompare(a.created_at));renderDelay();}catch(e){if(request===state.delayRequest){state.delay=[];E('opsDelayList').textContent='讀取失敗：'+e.message;}}
   }
   function renderDelay(){
     const search=E('opsDelaySearch').value.trim().toLowerCase(),rows=state.delay.filter(x=>!search||[x.store_code,x.restaurant_name].some(v=>String(v).toLowerCase().includes(search)));
@@ -51,7 +51,7 @@
   async function loadLine(){
     const request=++state.lineRequest;E('opsLineList').innerHTML='<div class="ops-empty">讀取中…</div>';
     const r=periodRange();
-    try{const [rows,stores]=await Promise.all([R.readRows('t995_line_signature_records','id,record_date,store_code,restaurant_name,line_completed,signature_completed',q=>q.gte('record_date',r.start).lte('record_date',r.end)),R.directory()]);if(request!==state.lineRequest)return;state.line=rows.filter(x=>!window.OpsMetrics.NON_DELIVERY_STORES.has(String(x.store_code)));state.stores=stores;renderLine();}catch(e){if(request===state.lineRequest){state.line=[];E('opsLineList').textContent='讀取失敗：'+e.message;}}
+    try{const [rows,stores]=await Promise.all([R.readRows('t995_line_signature_records','id,record_date,store_code,restaurant_name,line_completed,signature_completed',q=>q.gte('record_date',r.start).lte('record_date',r.end)),R.directory()]);if(request!==state.lineRequest)return;state.line=window.OpsMetrics.scopeData({line:rows}).line.filter(x=>!window.OpsMetrics.NON_DELIVERY_STORES.has(String(x.store_code)));state.stores=stores.filter(x=>window.OpsMetrics.storeInScope(x.store_code,r.start,x.restaurant_name));renderLine();}catch(e){if(request===state.lineRequest){state.line=[];E('opsLineList').textContent='讀取失敗：'+e.message;}}
   }
   function renderLine(){
     const search=E('opsLineSearch').value.trim().toLocaleLowerCase('zh-Hant'),nonDelivery=window.OpsMetrics.NON_DELIVERY_STORES;

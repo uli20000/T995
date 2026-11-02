@@ -27,9 +27,10 @@
     });return rank(result,'missing');
   }
   function lineExport(stores,rows,start,end,today){
+    const inScope=(s,d)=>root.OpsMetrics?root.OpsMetrics.storeInScope(s.store_code,d,s.restaurant_name):!(d>='2026-11-01'&&['025','173','580'].includes(String(s.store_code).padStart(3,'0')));
     const catalog=new Map(stores.map(s=>[s.store_code,s]));for(const row of rows)if(!catalog.has(row.store_code))catalog.set(row.store_code,{store_code:row.store_code,restaurant_name:row.restaurant_name});
     const byKey=new Map(rows.map(r=>[r.record_date+'|'+r.store_code,r]));
-    return dates(start,end<today?end:today).flatMap(d=>[...catalog.values()].sort((a,b)=>a.store_code.localeCompare(b.store_code)).map(s=>{const row=byKey.get(d+'|'+s.store_code);return {日期:d,店號:s.store_code,餐廳:row?.restaurant_name||s.restaurant_name,是否登記:row?'是':'否',劃線:row?.line_completed?'完成':'未完成',簽名:row?.signature_completed?'完成':'未完成',登記時間:row?.created_at||'',更新時間:row?.updated_at||''};}));
+    return dates(start,end<today?end:today).flatMap(d=>[...catalog.values()].filter(s=>inScope(s,d)).sort((a,b)=>a.store_code.localeCompare(b.store_code)).map(s=>{const row=byKey.get(d+'|'+s.store_code);return {日期:d,店號:s.store_code,餐廳:row?.restaurant_name||s.restaurant_name,是否登記:row?'是':'否',劃線:row?.line_completed?'完成':'未完成',簽名:row?.signature_completed?'完成':'未完成',登記時間:row?.created_at||'',更新時間:row?.updated_at||''};}));
   }
   const api={addDays,dates,range,week,weekLabel,monthWeeks,months,delayRanking,lineRanking,lineExport};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsSummary=api;
