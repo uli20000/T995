@@ -291,3 +291,10 @@
 .ops-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(max-width:600px){.ops-export-link-row{gap:6px;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr) minmax(0,1fr)}.ops-export-link-row .action-btn,.ops-export-link-row .ops-export-bottom .action-btn,.ops-export-link-row input{font-size:12px;padding:6px 3px}}
 .ops-compact-actions .ops-link-result[hidden]{display:none!important}
+
+/* Equal export/month/link cells; scoped to the summary action row. */
+#opsSummaryPanel .ops-export-link-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+#opsSummaryPanel .ops-export-link-row>.ops-export-bottom{display:block;margin:0;padding:0;min-width:0;grid-template-columns:none}
+#opsSummaryPanel .ops-export-link-row :is(#opsExportSelected,#opsLinkMonth,#opsLinkCreate){box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:100%;min-width:0;height:46px;min-height:46px;max-height:46px;margin:0;padding:8px;border-radius:10px;text-align:center}
+@media(max-width:600px){#opsSummaryPanel .ops-export-link-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#opsSummaryPanel .ops-export-link-row :is(#opsExportSelected,#opsLinkMonth,#opsLinkCreate){font-size:12px!important;padding:6px 3px}#opsSummaryPanel .ops-export-link-row #opsLinkMonth{padding:6px 0}#opsSummaryPanel .ops-export-link-row #opsLinkMonth::-webkit-datetime-edit{padding:0}#opsSummaryPanel .ops-export-link-row #opsLinkMonth::-webkit-calendar-picker-indicator{margin:0;padding:0;width:12px}}
+@media(max-width:360px){#opsSummaryPanel .ops-export-link-row :is(#opsExportSelected,#opsLinkMonth,#opsLinkCreate){font-size:11px!important}#opsSummaryPanel .ops-export-link-row #opsLinkMonth::-webkit-calendar-picker-indicator{width:10px}}
