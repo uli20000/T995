@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="normal">
+<script src="display-mode.js?v=20261102-light1"></script>
 <meta name="theme-color" content="#f4f0e8">
 <title>T995｜營運分析儀表板</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -59,7 +61,7 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",Arial,sans
   <div class="period-toolbar dashboard-date-toolbar">
     <div class="period-nav" aria-label="統計日期"><button id="periodPrev" type="button" aria-label="前一個日期區間">‹</button><input id="periodDate" type="date" aria-label="統計日期"><button id="periodNext" type="button" aria-label="後一個日期區間">›</button></div>
     <div class="periods" role="group" aria-label="報表週期"><button type="button" data-period="day" class="active" aria-pressed="true">日</button><button type="button" data-period="week" aria-pressed="false">週</button><button type="button" data-period="month" aria-pressed="false">月</button></div>
-    <div class="date-actions"><button id="refresh" class="secondary" type="button">重新整理</button><button id="export" class="primary" type="button">匯出 Excel</button></div>
+    <div class="date-actions"><button type="button" class="secondary" data-display-mode-toggle aria-pressed="false">日間模式</button><button id="refresh" class="secondary" type="button">重新整理</button><button id="export" class="primary" type="button">匯出 Excel</button></div>
   </div>
   <div id="periodPicker" class="period-picker hidden" aria-live="polite"><div id="periodChoices" class="period-choices"></div></div>
   <div id="status" class="period-status" role="status"></div>
