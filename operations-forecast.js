@@ -1,14 +1,14 @@
 (function(root){
   'use strict';
   const C=typeof module!=='undefined'&&module.exports?require('./operations-calendar.js'):root.OpsCalendar;
-  const SETTINGS=Object.freeze({weeks:8,growth:0.20,tplh:2.5,thirdParty:0.20});
+  const SETTINGS=Object.freeze({weeks:8,growth:0.10,tplh:2.5,thirdParty:0.20});
   const clean=s=>String(s||'').normalize('NFKC').replace(/\s+/g,'').trim();
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
   const addDays=(date,n)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
   const weekStart=date=>addDays(date,-((new Date(date+'T12:00:00Z').getUTCDay()+6)%7));
   const dates=(start,end)=>{const out=[];for(let d=start;d<=end;d=addDays(d,1))out.push(d);return out;};
   const sampleStart=start=>addDays(weekStart(start),-SETTINGS.weeks*7);
-  const FORMULA='Power BI TC｜前8週同星期完整樣本平均 ×1.2（平日排除國定假日、補假及停班課），各區進位；需求工時 ÷2.5；第三方20%僅為提醒';
+  const FORMULA='Power BI TC｜前8週同星期完整樣本平均 ×1.1（平日排除國定假日、補假及停班課），各區進位；需求工時 ÷2.5；第三方20%僅為提醒';
   function prepare({history=[],mapping=[],catalog=new Map(),batches=[],reports=[],inScope=()=>true}){
     const mapped=Array.isArray(mapping)?mapping:[...mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));
     const directory=new Map([...catalog.values()].map(s=>[clean(s.restaurant_name),String(s.store_code)]));

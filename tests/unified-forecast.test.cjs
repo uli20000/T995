@@ -9,7 +9,7 @@ function fixture(start='2026-11-02',end=start){
 test('same weekday/week anchor, area ceiling before summing, and target TPLH 2.5',()=>{
  const data=fixture();data.powerbiData.history.forEach(x=>x.total_tc=10.1);
  const f=F.prepare({...data.powerbiData,mapping,catalog}).forecast(data.start);
- assert.equal(f.length,2);assert.equal(f[0].historyWeeks,6);assert.equal(f[0].totalTc,13);assert.equal(f[0].recommended,5.2);
+ assert.equal(f.length,2);assert.equal(f[0].historyWeeks,6);assert.equal(f[0].totalTc,12);assert.equal(f[0].recommended,4.8);
  assert.ok(f[0].samples.every(x=>new Date(x.date+'T12:00Z').getUTCDay()===1));
  assert.ok(f[0].samples.every(x=>x.date<'2026-11-02'));
 });
@@ -24,10 +24,10 @@ test('cohort follows target date; removed stores do not contaminate current eigh
  const map=new Map([['測試甲','A'],['苗栗中正','K']]),hist=[];
  for(const date of F.dates('2026-09-01','2026-11-02')){hist.push(h(date,'測試甲',10),h(date,'苗栗中正',100));}
  const p=F.prepare({history:hist,mapping:map,inScope:M.storeInScope});
- assert.ok(p.forecast('2026-10-31').some(x=>x.area==='K'));assert.ok(!p.forecast('2026-11-01').some(x=>x.area==='K'));assert.equal(p.forecast('2026-11-02')[0].totalTc,12);
+ assert.ok(p.forecast('2026-10-31').some(x=>x.area==='K'));assert.ok(!p.forecast('2026-11-01').some(x=>x.area==='K'));assert.equal(p.forecast('2026-11-02')[0].totalTc,11);
 });
 test('duplicate equal rows do not double count, conflicting duplicates are incomplete',()=>{
- const data=fixture();data.powerbiData.history.push({...data.powerbiData.history[0]});const p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].totalTc,12);
+ const data=fixture();data.powerbiData.history.push({...data.powerbiData.history[0]});const p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].totalTc,11);
  data.powerbiData.history.push({...data.powerbiData.history[0],total_tc:40});const conflict=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(conflict.conflicts.size,1);assert.equal(conflict.forecast(data.start)[0].historyWeeks,5);
 });
 test('staffing renderer and report model use identical weekly forecasts without direct history access',async()=>{
