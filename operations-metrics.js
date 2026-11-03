@@ -56,7 +56,7 @@
   function empty(){return {tc:0,fa:0,d7Y:0,d7N:0,d25Y:0,d25N:0,qtSum:0,qtN:0,d7Seconds:0,d7TimeN:0,d25Seconds:0,d25TimeN:0,prior:0,priorN:0};}
   function add(target,source){for(const k of Object.keys(empty()))target[k]+=source[k]||0;return target;}
   function derived(x){const nonfa=x.tc-x.fa,forecast=null;return {...x,nonfa,forecast,forecastHours:forecast===null?null:forecast/FORECAST_TPLH,faShare:ratio(x.fa,x.tc),sstg:x.priorN&&x.prior>0?x.tc/x.prior-1:null,sstgExFA:x.priorN&&x.prior>0?nonfa/x.prior-1:null,tcAchievement:ratio(x.tc,forecast),d7:ratio(x.d7Y,x.d7Y+x.d7N),d25:ratio(x.d25Y,x.d25Y+x.d25N),qt:ratio(x.qtSum,x.qtN),d7Avg:ratio(x.d7Seconds,x.d7TimeN),d25Avg:ratio(x.d25Seconds,x.d25TimeN)};}
-  function buildOrders({rows,batches,history,mapping,catalog,reports,start,end}){
+  function buildOrders({rows,batches,history,mapping,catalog,reports,start,end,powerbiData}){
     rows=scopeData({rows,batches}).rows;
     const rangeAreas=areasForDate(start);
     const days=new Map(dates(start,end).map(date=>[date,{date,areas:new Map(areasForDate(date).map(([a])=>[a,empty()])),types:new Set(),orders:[],raw:[],report:reports.find(x=>x.record_date===date)||null}]));
@@ -72,15 +72,18 @@
         if(qt!==null&&qt>=0){a.qtSum+=qt;a.qtN++;}if(t7!==null){a.d7Seconds+=t7;a.d7TimeN++;}if(t25!==null){a.d25Seconds+=t25;a.d25TimeN++;}
       }
     }
-    // Baselines are keyed by report date + restaurant. Full-day history must not be summed with meal periods.
-    const hmap=new Map();for(const h of history){if(h.period_code!=='full_day')continue;const key=h.record_date+'|'+clean(h.restaurant_name);if(!hmap.has(key))hmap.set(key,h);}
+    // Actual DMS orders stay unchanged; comparisons share the forecast's target-date cohort and prior-week source.
+    const priorSource=F.prepare({history:powerbiData?.history||history,mapping,catalog,batches:powerbiData?.batches||batches,reports:powerbiData?.reports||reports,inScope:storeInScope});
     for(const day of days.values()){
-      const exact=[...hmap.values()].filter(h=>h.record_date===day.date);
-      const priorDate=(Number(day.date.slice(0,4))-1)+day.date.slice(4);
-      const hs=exact.length?exact:[...hmap.values()].filter(h=>h.record_date===priorDate);
-      const covered=new Set();
-      for(const h of hs){const name=clean(h.restaurant_name),aCode=mapping.get(name);if(!storeInScope(h.store_code,day.date,h.restaurant_name))continue;if(!aCode||!day.areas.has(aCode))continue;const val=number(exact.length?h.prior_year_tc:h.total_tc);if(val===null)continue;const a=day.areas.get(aCode);a.prior+=val;a.priorN++;covered.add(name);}
-      day.baselineCount=covered.size;day.baselineComplete=covered.size>=[...mapping.keys()].filter(name=>storeInScope('',day.date,name)).length&&[...mapping.keys()].some(name=>storeInScope('',day.date,name));
+      const eligible=priorSource.eligible(day.date),covered=new Set();
+      day.baselineDate=F.comparisonDate(day.date);day.baselineMissingAreas=new Set();
+      for(const store of eligible){
+        const a=day.areas.get(store.area);if(!a)continue;
+        const value=priorSource.priorYear(store.name,day.date);
+        if(value===null){day.baselineMissingAreas.add(store.area);continue;}
+        a.prior+=value;a.priorN++;covered.add(store.name);
+      }
+      day.baselineCount=covered.size;day.baselineComplete=eligible.length>0&&covered.size===eligible.length;
     }
     const areas=new Map(rangeAreas.map(([a])=>[a,empty()]));if([...days.values()].some(d=>d.areas.has('?')))areas.set('?',empty());
     const total=empty(),hourTotals=new Map(rangeAreas.map(([a])=>[a,{hours:0,count:0}]));let totalHours=0,transferOut=0,transferIn=0,completeHours=true,hasHours=false;
@@ -88,7 +91,7 @@
     for(const day of days.values()){
       day.scoreExcluded=!!day.report?.score_excluded;const active=day.types.has('ByOrder')&&!day.scoreExcluded;if(day.types.size&&day.types.size<2&&!day.scoreExcluded)missingPairs.push(day.date);
       day.metrics=empty();for(const [code,x] of day.areas){if(!day.scoreExcluded&&(active||start===end)){add(total,x);add(day.metrics,x);if(!areas.has(code))areas.set(code,empty());add(areas.get(code),x);}}
-      day.metrics=derived(day.metrics);day.hours=null;day.actualHours=null;
+      day.metrics=derived(day.metrics);if(!day.baselineComplete){day.metrics.prior=null;day.metrics.sstg=null;day.metrics.sstgExFA=null;}day.hours=null;day.actualHours=null;
       const saved=day.report?.area_hours||{};let sum=0,entered=0,missing=0;
       for(const [a] of areasForDate(day.date)){const n=number(saved[a]);if(n!==null){sum+=n;entered++;if(!day.scoreExcluded){const x=hourTotals.get(a);x.hours+=n;x.count++;}}else if((day.areas.get(a)?.tc||0)>0)missing++;}
       if((day.areas.get('?')?.tc||0)>0)missing++;
@@ -101,12 +104,12 @@
       day.missingAreas=missing;
     }
     const summary=derived(total),actualHours=hasHours&&completeHours?totalHours-transferOut+transferIn:null;
-    if(missingBaselineDays.length){summary.forecast=null;summary.forecastHours=null;summary.sstg=null;summary.sstgExFA=null;summary.tcAchievement=null;}
-    return {days,areas:new Map([...areas].map(([a,x])=>[a,derived(x)])),summary:{...summary,totalHours:hasHours?totalHours:null,transferOut,transferIn,actualHours,tplh:hoursWithoutScores.length?null:ratio(summary.nonfa,actualHours),hoursAchievement:hoursWithoutScores.length?null:ratio(actualHours,summary.forecastHours)},hourTotals,missingPairs,missingHourDays,missingBaselineDays,hoursWithoutScores,invalidHourDays};
+    if(missingBaselineDays.length){summary.forecast=null;summary.forecastHours=null;summary.prior=null;summary.sstg=null;summary.sstgExFA=null;summary.tcAchievement=null;}
+    return {priorSource,days,areas:new Map([...areas].map(([a,x])=>{const value=derived(x);if([...days.values()].some(d=>!d.scoreExcluded&&(d.types.has('ByOrder')||start===end)&&d.baselineMissingAreas.has(a))){value.prior=null;value.sstg=null;value.sstgExFA=null;}return [a,value];})),summary:{...summary,totalHours:hasHours?totalHours:null,transferOut,transferIn,actualHours,tplh:hoursWithoutScores.length?null:ratio(summary.nonfa,actualHours),hoursAchievement:hoursWithoutScores.length?null:ratio(actualHours,summary.forecastHours)},hourTotals,missingPairs,missingHourDays,missingBaselineDays,hoursWithoutScores,invalidHourDays};
   }
   function build(args){
     const v=buildOrders(args),{start,end,mapping,catalog}=args;
-    const prepared=F.prepare({history:args.powerbiData?.history||args.history,mapping,catalog,batches:args.powerbiData?.batches||args.batches,reports:args.powerbiData?.reports||args.reports,inScope:storeInScope});
+    const prepared=v.priorSource;
     const forecastDetails=[];
     const sumForecast=rows=>rows.length&&rows.every(x=>x.totalTc!==null)?rows.reduce((n,x)=>n+x.totalTc,0):null;
     const decorate=(base,forecasts)=>{
@@ -120,7 +123,7 @@
       day.tcComplete=day.types.has('ByOrder')&&!day.scoreExcluded;
       day.metrics=decorate(day.metrics,f);
       day.metrics.hoursAchievement=ratio(day.actualHours,day.metrics.forecastHours);
-      for(const [area,base] of day.areas)day.areas.set(area,decorate(base,f.filter(x=>x.area===area)));
+      for(const [area,base] of day.areas){const value=derived(base);if(day.baselineMissingAreas.has(area)){value.prior=null;value.sstg=null;value.sstgExFA=null;}day.areas.set(area,decorate(value,f.filter(x=>x.area===area)));}
     }
     const includedForecasts=forecastDetails.filter(x=>!x.excluded);
     v.summary=decorate(v.summary,includedForecasts);
