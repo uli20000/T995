@@ -48,5 +48,5 @@ test('562 export preserves completed-zero record once and both consumers refresh
   assert.equal(result[0].是否登記,'是');
   assert.equal(result[0].劃線,'未完成');
   assert.equal(result[0].簽名,'未完成');
-  for(const name of ['admin.html','analysis.html'])assert.match(fs.readFileSync(path.join(__dirname,'..',name),'utf8'),/operations-metrics\.js\?v=20261103-week106/);
+  for(const name of ['admin.html','analysis.html'])assert.match(fs.readFileSync(path.join(__dirname,'..',name),'utf8'),/operations-metrics\.js\?v=20261103-sstg-week/);
 });
