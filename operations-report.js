@@ -62,7 +62,7 @@
     const days=[...v.days.values()],notes=days.filter(d=>String(d.report?.special_notes||'').trim()),excluded=days.filter(d=>d.report?.score_excluded);
     const list='<div class="ops-context-list">'+(excluded.length?'<div><b>不計成績</b>　'+excluded.map(d=>d.date.slice(5).replace('-','/')+(d.report?.special_notes?' '+escape(d.report.special_notes):'')).join('、')+'</div>':'')+(notes.length?notes.filter(d=>!d.report?.score_excluded).map(d=>'<div><b>'+d.date.slice(5).replace('-','/')+' 特殊事項</b>　'+escape(d.report.special_notes)+'</div>').join(''):'')+(!excluded.length&&!notes.length?'<div>本期尚無特殊事項</div>':'')+'</div>';
     if(state.context==='summary'){
-      let target=E('opsSummaryContext');if(!target){target=document.createElement('section');target.id='opsSummaryContext';target.className='ops-report-card';E('opsSummaryWarnings').after(target);}target.innerHTML='<h3>特殊事項</h3>'+list+'<div>'+escape(window.OpsForecast.FORMULA)+'</div>';return;
+      let target=E('opsSummaryContext');if(!target){target=document.createElement('section');target.id='opsSummaryContext';target.className='ops-report-card';E('opsSummaryWarnings').after(target);}target.innerHTML='<h3>特殊事項</h3>'+list;return;
     }
     const target=E('opsAnalysisSummary');if(!target)return;
     if(p!=='day'){target.innerHTML='<section class="ops-report-card"><h3>週期特殊事項</h3>'+list+'</section>';return;}
