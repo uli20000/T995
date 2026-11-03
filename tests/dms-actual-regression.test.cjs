@@ -13,10 +13,11 @@ function fixture(start,end){
  }
  return {start,end,rows,batches,reports,history,mapping,catalog,powerbiData:{history,batches}};
 }
-const actualKeys=['tc','fa','nonfa','prior','sstg','sstgExFA','d7','d25','qt','d7Avg','d25Avg','actualHours','totalHours','tplh'];
-for(const [label,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026-10-26','2026-11-01'],['month','2026-10-01','2026-10-31']])test(label+' actuals exactly match pre-change DMS, forecasts sum daily Power BI',()=>{
+const actualKeys=['tc','fa','nonfa','d7','d25','qt','d7Avg','d25Avg','actualHours','totalHours','tplh'];
+for(const [label,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026-10-26','2026-11-01'],['month','2026-10-01','2026-10-31']])test(label+' actuals exactly match pre-change DMS, aligned baselines and forecasts sum daily Power BI',()=>{
  const d=fixture(start,end),before=old.build(d),after=M.build(d);for(const key of actualKeys)assert.equal(after.summary[key],before.summary[key],key);
  for(const [area,value] of before.areas)for(const key of actualKeys.filter(k=>!['actualHours','totalHours','tplh'].includes(k)))assert.equal(after.areas.get(area)[key],value[key],area+key);
+ assert.equal(after.summary.prior,200*F.dates(start,end).length);assert.equal(after.summary.sstg,after.summary.tc/after.summary.prior-1);
  assert.equal(after.summary.forecast,[...after.days.values()].reduce((n,x)=>n+x.metrics.forecast,0));assert.equal(after.summary.forecastHours,after.summary.forecast/2.5);
  const snapshot=JSON.stringify(d);d.powerbiData={history:d.history.filter(x=>x.record_date<start),batches:[]};const missing=M.build(d);assert.equal(missing.summary.tc,before.summary.tc);assert.equal(missing.summary.forecast,after.summary.forecast);assert.ok(!missing.forecastWarnings.some(x=>x.includes('Power BI實際TC尚缺')));
 });
@@ -35,7 +36,9 @@ for(const [period,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026
 test('analysis ranking and export use DMS while preview keeps Power BI forecast',()=>{
  const d=fixture('2026-11-02','2026-11-02');d.powerbiData.history=d.history.filter(x=>x.record_date<d.start);d.mapping=[...d.mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));Object.assign(d,{delays:[],feedback:[],campaigns:[],weeklyNotes:[],monthReports:[]});
  const els=new Map(),get=id=>{if(!els.has(id))els.set(id,{innerHTML:'',textContent:'',dataset:{},classList:{add(){},remove(){}},querySelectorAll(){return [];},addEventListener(){}});return els.get(id);};const sheets=new Map(),XLSX={utils:{book_new(){return {};},json_to_sheet(rows){return {rows};},book_append_sheet(wb,ws,name){sheets.set(name,ws.rows);}},writeFile(){}};const window={OpsMetrics:M,OpsSummary:S,OpsForecast:F,supabase:{createClient(){return {};}}};let src=fs.readFileSync(require('node:path').join(__dirname,'../analysis-dashboard.js'),'utf8');src=src.slice(0,src.indexOf("  document.querySelectorAll('[data-period]').forEach(b=>b.onclick="))+'window.__test={state,storeAnalytics,renderExport};})();';vm.runInNewContext(src,{window,document:{getElementById:get},XLSX});window.__test.state.catalog=d.catalog;window.__test.state.date=d.start;
- const rows=window.__test.storeAnalytics(d,{start:d.start,end:d.end});assert.equal(rows.reduce((n,x)=>n+x.tc,0),3);window.__test.renderExport(d,rows,{start:d.start,end:d.end});const sum=sheets.get('營運摘要')[0];assert.equal(sum.TC,3);assert.equal(sum.FA,1);assert.equal(sum.預估TC,212);assert.equal(sum.預估工時,84.8);assert.equal(sum.TC來源,'DMS（ByOrder／ByDate）');
+ const rows=window.__test.storeAnalytics(d,{start:d.start,end:d.end});assert.equal(rows.reduce((n,x)=>n+x.tc,0),3);assert.equal(rows.reduce((n,x)=>n+x.prior,0),200);assert.ok(rows.every(x=>x.sstg===x.tc/x.prior-1));window.__test.renderExport(d,rows,{start:d.start,end:d.end});const sum=sheets.get('營運摘要')[0];assert.equal(sum.TC,3);assert.equal(sum.去年同期TC,200);assert.equal(sum.SSTG,3/200-1);assert.equal(sum.FA,1);assert.equal(sum.預估TC,212);assert.equal(sum.預估工時,84.8);assert.equal(sum.TC來源,'DMS（ByOrder／ByDate）');
+ const two=fixture('2026-11-02','2026-11-03');Object.assign(two,{mapping:d.mapping,delays:[]});two.rows=two.rows.filter(x=>!(x.store_code==='002'&&x.batch_id==='2026-11-03ByOrder'));const ranked=window.__test.storeAnalytics(two,{start:two.start,end:two.end});assert.equal(ranked.reduce((n,x)=>n+x.prior,0),400);assert.equal(ranked.find(x=>x.code==='002').prior,200);assert.equal(ranked.find(x=>x.code==='002').sstg,1/200-1);
+ const one={...d,rows:d.rows.filter(x=>x.store_code!=='002')};const zeros=window.__test.storeAnalytics(one,{start:d.start,end:d.end});assert.equal(zeros.length,2);assert.equal(zeros.find(x=>x.code==='002').tc,0);assert.equal(zeros.find(x=>x.code==='002').sstg,-1);
 });
 test('day/week/month exports disclose prior-year selection independently of DMS actuals',()=>{
  for(const [period,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026-10-26','2026-11-01'],['month','2026-10-01','2026-10-31']]){

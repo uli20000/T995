@@ -5,6 +5,7 @@
   const clean=s=>String(s||'').normalize('NFKC').replace(/\s+/g,'').trim();
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
   const addDays=(date,n)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
+  const comparisonDate=date=>addDays(date,-364);
   const weekStart=date=>addDays(date,-((new Date(date+'T12:00:00Z').getUTCDay()+6)%7));
   const dates=(start,end)=>{const out=[];for(let d=start;d<=end;d=addDays(d,1))out.push(d);return out;};
   const sampleStart=start=>addDays(weekStart(start),-SETTINGS.weeks*7);
@@ -21,7 +22,7 @@
     for(const date of dmsDates){const list=eligible(date);if(list.length&&list.every(s=>{const h=index.get(date+'|'+s.name);return h&&number(h.total_tc)===0;}))suspectDates.add(date);}
     function actual(name,date){const key=date+'|'+clean(name),h=index.get(key);if(!h||conflicts.has(key)||suspectDates.has(date))return null;const tc=number(h.total_tc),self=number(h.tc_ex_third_party);return tc===null||tc<0?null:{tc,self:self!==null&&self>=0&&self<=tc?self:null,fa:self!==null&&self>=0&&self<=tc?tc-self:null,row:h};}
     function priorYear(name,date){
-      const previous=addDays(date,-364),value=actual(name,previous);
+      const previous=comparisonDate(date),value=actual(name,previous);
       return value?value.tc:null;
     }
     const reportMap=new Map(reports.map(r=>[String(r.record_date).slice(0,10),r]));
@@ -47,7 +48,7 @@
         const method=baseline!==null?'prior_year':'missing';
         const selected=baseline;
         const tc=selected===null?null:Math.max(0,Math.ceil(selected*(1+SETTINGS.growth)-1e-9));
-        return {date,area,totalTc:tc,averageTc:average,baselineTc:baseline,baselineDate:addDays(date,-364),recentGrowth,method,switchThreshold:SETTINGS.switchThreshold,recommended:tc===null?null:tc/SETTINGS.tplh,thirdPartyCap:tc===null?null:tc*SETTINGS.thirdParty,historyWeeks:samples.length,targetWeeks:SETTINGS.weeks,samples,excludedSamples,excluded:!!reportMap.get(date)?.score_excluded};
+        return {date,area,totalTc:tc,averageTc:average,baselineTc:baseline,baselineDate:comparisonDate(date),recentGrowth,method,switchThreshold:SETTINGS.switchThreshold,recommended:tc===null?null:tc/SETTINGS.tplh,thirdPartyCap:tc===null?null:tc*SETTINGS.thirdParty,historyWeeks:samples.length,targetWeeks:SETTINGS.weeks,samples,excludedSamples,excluded:!!reportMap.get(date)?.score_excluded};
       });
     }
     return {stores,index,eligible,actual,priorYear,forecast,suspectDates,conflicts};
@@ -62,6 +63,6 @@
     for(let offset=0;;offset+=1000){const r=await db.from('t995_operations_daily_reports').select('record_date,score_excluded,special_notes').gte('record_date',first).lte('record_date',end).order('record_date').range(offset,offset+999);if(r.error)throw r.error;reports.push(...(r.data||[]));if((r.data||[]).length<1000)break;}
     return {history,batches,reports};
   }
-  const api={SETTINGS,FORMULA,clean,number,addDays,weekStart,dates,sampleStart,prepare,load};
+  const api={SETTINGS,FORMULA,clean,number,addDays,comparisonDate,weekStart,dates,sampleStart,prepare,load};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsForecast=api;
 })(typeof window!=='undefined'?window:globalThis);
