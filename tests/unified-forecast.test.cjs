@@ -7,7 +7,7 @@ function fixture(start='2026-11-02',end=start){
  return {rows:[],batches:[],history:history.filter(x=>x.record_date>=start),powerbiData:{history,batches:[]},mapping,catalog,reports:[],start,end,today:'2026-12-31'};
 }
 test('same weekday/week anchor, area ceiling before summing, and target TPLH 2.5',()=>{
- const data=fixture();data.powerbiData.history.forEach(x=>x.total_tc=10.1);
+ const data=fixture();data.powerbiData.history.forEach(x=>{x.total_tc=10.1;x.prior_year_tc=1;});
  const f=F.prepare({...data.powerbiData,mapping,catalog}).forecast(data.start);
  assert.equal(f.length,2);assert.equal(f[0].historyWeeks,6);assert.equal(f[0].totalTc,12);assert.equal(f[0].recommended,4.8);
  assert.ok(f[0].samples.every(x=>new Date(x.date+'T12:00Z').getUTCDay()===1));
@@ -18,7 +18,7 @@ test('real zero is valid, blank/missing stores are not; all-zero vs positive DMS
  let p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].historyWeeks,6);assert.equal(p.actual('測試甲',zeroDate).tc,0);
  data.powerbiData.batches=[{report_type:'ByOrder',report_date:zeroDate,row_count:10}];
  const snapshot=JSON.stringify(data.powerbiData.history);p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.actual('測試甲',zeroDate),null);assert.equal(p.forecast(data.start)[0].historyWeeks,5);assert.ok(p.suspectDates.has(zeroDate));assert.equal(JSON.stringify(data.powerbiData.history),snapshot);
- const empty=fixture();empty.powerbiData.history.forEach(x=>{if(x.record_date<empty.start)x.total_tc=null;});assert.equal(F.prepare({...empty.powerbiData,mapping,catalog}).forecast(empty.start)[0].totalTc,null);
+ const empty=fixture();empty.powerbiData.history.forEach(x=>{if(x.record_date<empty.start)x.total_tc=null;});assert.equal(F.prepare({...empty.powerbiData,mapping,catalog}).forecast(empty.start)[0].totalTc,11);
 });
 test('cohort follows target date; removed stores do not contaminate current eight-week samples',()=>{
  const map=new Map([['測試甲','A'],['苗栗中正','K']]),hist=[];

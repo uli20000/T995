@@ -1707,7 +1707,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <details class="shift-fold">
       <summary class="section-title">下週人力建議</summary>
       <div class="shift-fold-content">
-        <div class="hint forecast-formula">Power BI 預估 TC＝前 8 週同星期「實際外送 TC」完整樣本平均 × 1.1（各區無條件進位）｜需求工時＝預估 TC ÷ 2.5｜第三方提醒＝預估 TC × 20%</div>
+        <div class="hint forecast-formula">Power BI預估：優先去年TC×1.1；前8週平均較去年成長超過1.5%才改用8週平均×1.1｜各區進位｜需求工時÷2.5｜第三方提醒20%</div>
         <div id="staffingRecommendationSummary" class="summary forecast-summary-grid"></div>
         <div id="staffingForecastDataWarning" class="forecast-data-warning" hidden role="status" aria-live="polite"></div>
         <div id="staffingWeekGap" class="forecast-week-gap" hidden></div>
@@ -5480,7 +5480,7 @@ function t995RenderStaffingDay(){
   const totalPeople=dayData.reduce((sum,d)=>sum+d.people,0);const totalAvailable=dayData.reduce((sum,d)=>sum+d.availableHours,0);
   const totalGap=totalNeeded===null?null:totalAvailable-totalNeeded;const totalDelta=gap(totalGap);
   const totalText=(value,digits=1)=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:digits,maximumFractionDigits:digits});
-  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜各區前 8 週同星期實際外送 TC 平均 ×1.1 後無條件進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
+  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜各區去年TC優先，8週成長超過1.5%時切換，×1.1後進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
   const rows=areas.map(({area,days})=>{const d=days[offset];const delta=gap(d.gap);const tc=d.excluded?'不適用':fmtTc(d.totalTc);const needed=d.excluded?'不適用':fmtHours(d.recommended);const third=d.excluded?'不適用':fmtTc(d.thirdPartyCap);const availability=`${d.people} 人／${d.availableHours.toFixed(1)} 小時`;const history=`${d.historyWeeks}/${d.targetWeeks}週`;
     return {area,tc,needed,third,availability,delta,history};
   });
@@ -6147,10 +6147,10 @@ async function opsArchiveScoreSourceFiles(pair){
 
 
 <script src="operations-calendar.js?v=20261103-holidays"></script>
-<script src="operations-forecast.js?v=20261103-growth10"></script>
+<script src="operations-forecast.js?v=20261103-prior-first"></script>
 <script src="operations-metrics.js?v=20261103-holidays"></script>
 <script src="operations-summary.js?v=20261102-scope-effective1101"></script>
-<script src="operations-report.js?v=20261103-holidays"></script>
+<script src="operations-report.js?v=20261103-prior-first"></script>
 <script src="operations-entry.js?v=20261102-scope-effective1101"></script>
 </body>
 </html>
