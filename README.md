@@ -9,3 +9,5 @@ Power BI未上傳、缺店或資料衝突時顯示待更新／待核對，不以
 DMS仍供訂單明細、D7／D25、QT、等餐配對與配送因子分析；這些有效分母不改用Power BI TC。`t995_get_operations_reference`沿用原管理員權限，migration僅補傳`tc_ex_third_party`欄位，未更新／刪除歷史列或改動RLS。11/1起苗栗三店排除規則與10月歷史保留；562仍歸Abby。
 
 驗證：`node --test tests/*.test.cjs`。
+
+2026/11/3 修正：實際成績 TC／FA、SSTG、TPLH、排名及日週月匯出恢復 DMS（ByOrder／ByDate）原計算；Power BI 僅供預估，沿用指休共用前8週同星期完整樣本平均×1.2、各區進位、需求工時÷2.5。未刪除或重匯任何來源資料。

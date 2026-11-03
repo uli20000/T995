@@ -107,46 +107,29 @@
   function build(args){
     const v=buildOrders(args),{start,end,mapping,catalog}=args;
     const prepared=F.prepare({history:args.powerbiData?.history||args.history,mapping,catalog,batches:args.powerbiData?.batches||args.batches,inScope:storeInScope});
-    const today=args.today||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-    const missingTcDays=[],forecastDetails=[],areaDaily=new Map(),actualDaily=[];let powerbiHoursComplete=true;
-    const sumNullable=(rows,key)=>rows.length&&rows.every(x=>x[key]!==null&&x[key]!==undefined)?rows.reduce((n,x)=>n+x[key],0):null;
-    const decorate=(base,rows,forecasts,hours)=>{
-      const tc=sumNullable(rows,'tc'),fa=sumNullable(rows,'fa'),nonfa=sumNullable(rows,'nonfa'),prior=sumNullable(rows,'prior');
-      const forecast=sumNullable(forecasts,'totalTc'),forecastHours=forecast===null?null:forecast/FORECAST_TPLH;
-      return {...base,dmsTc:base.tc,dmsFa:base.fa,tc,fa,nonfa,prior,forecast,forecastHours,faShare:ratio(fa,tc),sstg:tc!==null&&prior>0?tc/prior-1:null,sstgExFA:nonfa!==null&&prior>0?nonfa/prior-1:null,tcAchievement:ratio(tc,forecast),tplh:ratio(nonfa,hours),hoursAchievement:ratio(hours,forecastHours)};
+    const forecastDetails=[];
+    const sumForecast=rows=>rows.length&&rows.every(x=>x.totalTc!==null)?rows.reduce((n,x)=>n+x.totalTc,0):null;
+    const decorate=(base,forecasts)=>{
+      const forecast=sumForecast(forecasts),forecastHours=forecast===null?null:forecast/FORECAST_TPLH;
+      return {...base,forecast,forecastHours,tcAchievement:ratio(base.tc,forecast)};
     };
     for(const day of v.days.values()){
-      const f=prepared.forecast(day.date);forecastDetails.push(...f);
-      const byArea=new Map();for(const store of prepared.eligible(day.date)){if(!byArea.has(store.area))byArea.set(store.area,[]);byArea.get(store.area).push(store);}
-      const current=[];
-      for(const [area,stores] of byArea){
-        const values=stores.map(store=>prepared.actual(store.name,day.date));
-        const raw=day.areas.get(area)||empty();
-        const valid=values.every(Boolean),tc=valid?values.reduce((n,x)=>n+x.tc,0):null;
-        const nonfa=valid&&values.every(x=>x.self!==null)?values.reduce((n,x)=>n+x.self,0):null;
-        const fa=tc!==null&&nonfa!==null?tc-nonfa:null;
-        const prior=raw.priorN>=stores.length?raw.prior:null;
-        const row={date:day.date,area,tc,nonfa,fa,prior};current.push(row);
-        if(!areaDaily.has(area))areaDaily.set(area,[]);
-        if(day.date<=today&&!day.scoreExcluded)areaDaily.get(area).push(row);
-        day.areas.set(area,{...raw,tc,fa,nonfa,prior,forecast:f.find(x=>x.area===area)?.totalTc??null});
-      }
-      day.tcComplete=current.length>0&&current.every(x=>x.tc!==null);
-      if(day.date<=today&&!day.scoreExcluded){actualDaily.push(...current);if(!day.tcComplete)missingTcDays.push(day.date);}
-      const requiredMissing=current.filter(x=>x.tc>0&&number(day.report?.area_hours?.[x.area])===null).length;
-      if(day.date<=today&&!day.scoreExcluded&&requiredMissing){powerbiHoursComplete=false;day.actualHours=null;day.missingAreas=Math.max(day.missingAreas,requiredMissing);if(!v.missingHourDays.includes(day.date))v.missingHourDays.push(day.date);}
-      day.metrics=decorate(day.metrics,current,f,day.actualHours);
-      if(day.scoreExcluded){for(const x of f){x.excluded=true;}}
+      const f=prepared.forecast(day.date);
+      if(day.scoreExcluded)for(const x of f)x.excluded=true;
+      forecastDetails.push(...f);
+      day.tcComplete=day.types.has('ByOrder')&&!day.scoreExcluded;
+      day.metrics=decorate(day.metrics,f);
+      day.metrics.hoursAchievement=ratio(day.actualHours,day.metrics.forecastHours);
+      for(const [area,base] of day.areas)day.areas.set(area,decorate(base,f.filter(x=>x.area===area)));
     }
     const includedForecasts=forecastDetails.filter(x=>!x.excluded);
-    if(!powerbiHoursComplete)v.summary.actualHours=null;
-    v.summary=decorate(v.summary,actualDaily,includedForecasts,v.summary.actualHours);
-    for(const [area,base] of v.areas){const values=areaDaily.get(area)||[],forecasts=includedForecasts.filter(x=>x.area===area);v.areas.set(area,decorate(base,values,forecasts,v.hourTotals.get(area)?.count&&values.every(x=>x.tc===null||x.tc===0||number(v.days.get(x.date)?.report?.area_hours?.[area])!==null)?v.hourTotals.get(area).hours:null));}
-    v.forecastDetails=forecastDetails;v.missingTcDays=missingTcDays;v.powerbi=prepared;
+    v.summary=decorate(v.summary,includedForecasts);
+    v.summary.hoursAchievement=v.hoursWithoutScores.length?null:ratio(v.summary.actualHours,v.summary.forecastHours);
+    for(const [area,base] of v.areas)v.areas.set(area,decorate(base,includedForecasts.filter(x=>x.area===area)));
+    v.forecastDetails=forecastDetails;v.missingTcDays=[];v.powerbi=prepared;
     v.forecastWarnings=[];
     const partial=includedForecasts.filter(x=>x.historyWeeks<F.SETTINGS.weeks),missing=includedForecasts.filter(x=>x.totalTc===null);
     if(partial.length)v.forecastWarnings.push('預估採Power BI前8週同星期；'+partial.length+'組區域／日期不足8週完整樣本'+(missing.length?'，其中'+missing.length+'組無法預估':''));
-    if(missingTcDays.length)v.forecastWarnings.push('Power BI實際TC尚缺或待核對：'+missingTcDays.join('、'));
     if(prepared.suspectDates.size)v.forecastWarnings.push('Power BI全區TC為0但DMS有訂單，已排除預估樣本、未改原值：'+[...prepared.suspectDates].sort().join('、'));
     if(prepared.conflicts.size)v.forecastWarnings.push('Power BI重複鍵內容衝突：'+prepared.conflicts.size+'筆，待核對');
     return v;
