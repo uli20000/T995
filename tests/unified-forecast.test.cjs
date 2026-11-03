@@ -9,15 +9,15 @@ function fixture(start='2026-11-02',end=start){
 test('same weekday/week anchor, area ceiling before summing, and target TPLH 2.5',()=>{
  const data=fixture();data.powerbiData.history.forEach(x=>x.total_tc=10.1);
  const f=F.prepare({...data.powerbiData,mapping,catalog}).forecast(data.start);
- assert.equal(f.length,2);assert.equal(f[0].historyWeeks,8);assert.equal(f[0].totalTc,13);assert.equal(f[0].recommended,5.2);
+ assert.equal(f.length,2);assert.equal(f[0].historyWeeks,6);assert.equal(f[0].totalTc,13);assert.equal(f[0].recommended,5.2);
  assert.ok(f[0].samples.every(x=>new Date(x.date+'T12:00Z').getUTCDay()===1));
  assert.ok(f[0].samples.every(x=>x.date<'2026-11-02'));
 });
 test('real zero is valid, blank/missing stores are not; all-zero vs positive DMS is flagged without changing source',()=>{
- const data=fixture();const zeroDate='2026-10-26';for(const x of data.powerbiData.history)if(x.record_date===zeroDate){x.total_tc=0;x.tc_ex_third_party=0;}
- let p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].historyWeeks,8);assert.equal(p.actual('測試甲',zeroDate).tc,0);
+ const data=fixture();const zeroDate='2026-10-19';for(const x of data.powerbiData.history)if(x.record_date===zeroDate){x.total_tc=0;x.tc_ex_third_party=0;}
+ let p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].historyWeeks,6);assert.equal(p.actual('測試甲',zeroDate).tc,0);
  data.powerbiData.batches=[{report_type:'ByOrder',report_date:zeroDate,row_count:10}];
- const snapshot=JSON.stringify(data.powerbiData.history);p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.actual('測試甲',zeroDate),null);assert.equal(p.forecast(data.start)[0].historyWeeks,7);assert.ok(p.suspectDates.has(zeroDate));assert.equal(JSON.stringify(data.powerbiData.history),snapshot);
+ const snapshot=JSON.stringify(data.powerbiData.history);p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.actual('測試甲',zeroDate),null);assert.equal(p.forecast(data.start)[0].historyWeeks,5);assert.ok(p.suspectDates.has(zeroDate));assert.equal(JSON.stringify(data.powerbiData.history),snapshot);
  const empty=fixture();empty.powerbiData.history.forEach(x=>{if(x.record_date<empty.start)x.total_tc=null;});assert.equal(F.prepare({...empty.powerbiData,mapping,catalog}).forecast(empty.start)[0].totalTc,null);
 });
 test('cohort follows target date; removed stores do not contaminate current eight-week samples',()=>{
@@ -28,20 +28,20 @@ test('cohort follows target date; removed stores do not contaminate current eigh
 });
 test('duplicate equal rows do not double count, conflicting duplicates are incomplete',()=>{
  const data=fixture();data.powerbiData.history.push({...data.powerbiData.history[0]});const p=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(p.forecast(data.start)[0].totalTc,12);
- data.powerbiData.history.push({...data.powerbiData.history[0],total_tc:40});const conflict=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(conflict.conflicts.size,1);assert.equal(conflict.forecast(data.start)[0].historyWeeks,7);
+ data.powerbiData.history.push({...data.powerbiData.history[0],total_tc:40});const conflict=F.prepare({...data.powerbiData,mapping,catalog});assert.equal(conflict.conflicts.size,1);assert.equal(conflict.forecast(data.start)[0].historyWeeks,5);
 });
 test('staffing renderer and report model use identical weekly forecasts without direct history access',async()=>{
- const fs=require('node:fs'),vm=require('node:vm');const data=fixture('2026-11-02','2026-11-08');
+ const fs=require('node:fs'),vm=require('node:vm');const data=fixture('2026-11-02','2026-11-08');data.powerbiData.reports=[{record_date:'2026-11-04',score_excluded:true}];data.reports=data.powerbiData.reports;
  const html=fs.readFileSync(require('node:path').join(__dirname,'../admin.html'),'utf8');
  const source=html.slice(html.indexOf('async function t995RenderStaffingRecommendation('),html.indexOf('function t995RenderStaffingDay()'));
  const ctx={db:{},window:{OpsForecast:{...F,load:async()=>data.powerbiData},OpsMetrics:M},t995AreaMapLoaded:true,t995AreaMap:mapping,t995DateAdd:F.addDays,t995StaffingDayOffset:0,t995RenderStaffingDay(){}};
  for(const name of ['Summary','WeekGap','ForecastDataWarning','DayTabs','List'])ctx['t995Staffing'+name]={};
  vm.createContext(ctx);vm.runInContext(source,ctx);await ctx.t995RenderStaffingRecommendation('2026-11-02',[]);
- const total=ctx.t995StaffingForecastData.flatMap(x=>x.days).reduce((n,d)=>n+d.totalTc,0);
+ const total=ctx.t995StaffingForecastData.flatMap(x=>x.days).filter(x=>!x.excluded).reduce((n,d)=>n+d.totalTc,0);
  assert.equal(total,M.build(data).summary.forecast);assert.match(ctx.t995StaffingSummary.innerHTML,/預估需求工時（÷2.5）/);
 });
 test('reference loader uses existing admin RPC for all eight-week months, never locked history table',async()=>{
  const calls=[],q={select(){return this;},gte(){return this;},lte(){return this;},eq(){return this;},order(){return this;},async range(){return {data:[]};}};
- const db={async rpc(name,args){calls.push([name,args.p_month]);return {data:{history:[]}};},from(name){assert.equal(name,'t995_score_import_batches');return q;}};
+ const db={async rpc(name,args){calls.push([name,args.p_month]);return {data:{history:[]}};},from(name){assert.ok(['t995_score_import_batches','t995_operations_daily_reports'].includes(name));return q;}};
  await F.load(db,'2026-11-03','2026-11-03');assert.deepEqual(calls.map(x=>x[1]),['2026-09-01','2026-10-01','2026-11-01']);assert.ok(calls.every(x=>x[0]==='t995_get_operations_reference'));
 });

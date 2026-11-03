@@ -5432,16 +5432,16 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
     let availableHours=0,people=0;
     for(const x of byArea.get(area)||[]){if(!x.shift)continue;const key=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][offset],intervals=t995ParseRanges(x.shift[key]);if(intervals===null||!intervals.length)continue;people++;availableHours+=intervals.reduce((sum,[a,b])=>sum+(b-a)/60,0);}
     const value=forecast||{totalTc:0,averageTc:null,recommended:0,thirdPartyCap:0,historyWeeks:weeks,targetWeeks:weeks,excluded:true};
-    return {...value,day,date,availableHours,people,gap:value.recommended===null?null:availableHours-value.recommended};
+    return {...value,day,date,availableHours,people,gap:value.excluded||value.recommended===null?null:availableHours-value.recommended};
   })}));
-  const allDays=output.flatMap(x=>x.days);
-  const missingForecasts=allDays.filter(d=>d.totalTc===null);
-  const partialHistory=allDays.filter(d=>d.historyWeeks<weeks);
-  const completeWeek=missingForecasts.length===0;
-  const weeklyTc=completeWeek?allDays.reduce((sum,d)=>sum+d.totalTc,0):null;
-  const weeklyNeeded=completeWeek?allDays.reduce((sum,d)=>sum+d.recommended,0):null;
+  const allDays=output.flatMap(x=>x.days),forecastDays=allDays.filter(d=>!d.excluded);
+  const missingForecasts=forecastDays.filter(d=>d.totalTc===null);
+  const partialHistory=forecastDays.filter(d=>d.historyWeeks<weeks);
+  const completeWeek=forecastDays.length>0&&missingForecasts.length===0;
+  const weeklyTc=completeWeek?forecastDays.reduce((sum,d)=>sum+d.totalTc,0):null;
+  const weeklyNeeded=completeWeek?forecastDays.reduce((sum,d)=>sum+d.recommended,0):null;
   const weeklyAvailable=allDays.reduce((sum,d)=>sum+d.availableHours,0);
-  const weeklyThirdParty=completeWeek?allDays.reduce((sum,d)=>sum+d.thirdPartyCap,0):null;
+  const weeklyThirdParty=completeWeek?forecastDays.reduce((sum,d)=>sum+d.thirdPartyCap,0):null;
   const weeklyGap=completeWeek?weeklyAvailable-weeklyNeeded:null;
   const fmtTc=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{maximumFractionDigits:1});
   const fmtHours=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:1,maximumFractionDigits:1});
@@ -5472,10 +5472,11 @@ function t995RenderStaffingDay(){
   const fmtTc=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{maximumFractionDigits:1});
   const fmtHours=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:1,maximumFractionDigits:1});
   const dayData=areas.map(x=>x.days[offset]);
-  const completeDay=dayData.every(d=>d.totalTc!==null);
-  const totalTc=completeDay?dayData.reduce((sum,d)=>sum+d.totalTc,0):null;
-  const totalNeeded=completeDay?dayData.reduce((sum,d)=>sum+d.recommended,0):null;
-  const totalThird=completeDay?dayData.reduce((sum,d)=>sum+d.thirdPartyCap,0):null;
+  const includedDay=dayData.filter(d=>!d.excluded);
+  const completeDay=includedDay.length>0&&includedDay.every(d=>d.totalTc!==null);
+  const totalTc=completeDay?includedDay.reduce((sum,d)=>sum+d.totalTc,0):null;
+  const totalNeeded=completeDay?includedDay.reduce((sum,d)=>sum+d.recommended,0):null;
+  const totalThird=completeDay?includedDay.reduce((sum,d)=>sum+d.thirdPartyCap,0):null;
   const totalPeople=dayData.reduce((sum,d)=>sum+d.people,0);const totalAvailable=dayData.reduce((sum,d)=>sum+d.availableHours,0);
   const totalGap=totalNeeded===null?null:totalAvailable-totalNeeded;const totalDelta=gap(totalGap);
   const totalText=(value,digits=1)=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:digits,maximumFractionDigits:digits});
@@ -6145,10 +6146,11 @@ async function opsArchiveScoreSourceFiles(pair){
 
 
 
-<script src="operations-forecast.js?v=20261103-unified"></script>
-<script src="operations-metrics.js?v=20261103-dms-actual"></script>
+<script src="operations-calendar.js?v=20261103-holidays"></script>
+<script src="operations-forecast.js?v=20261103-holidays"></script>
+<script src="operations-metrics.js?v=20261103-holidays"></script>
 <script src="operations-summary.js?v=20261102-scope-effective1101"></script>
-<script src="operations-report.js?v=20261103-dms-actual"></script>
+<script src="operations-report.js?v=20261103-holidays"></script>
 <script src="operations-entry.js?v=20261102-scope-effective1101"></script>
 </body>
 </html>

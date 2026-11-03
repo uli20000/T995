@@ -36,7 +36,7 @@
   }
   async function loadRange(r,force=false){
     const parts=await Promise.all(S.months(r.start,r.end).map(d=>loadMonth(d,force))),data={};
-    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);data.powerbiData={history:parts.flatMap(p=>p.powerbiData.history),batches:parts.flatMap(p=>p.powerbiData.batches)};return M.scopeData(data);
+    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);data.powerbiData={history:parts.flatMap(p=>p.powerbiData.history),batches:parts.flatMap(p=>p.powerbiData.batches),reports:parts.flatMap(p=>p.powerbiData.reports||[])};return M.scopeData(data);
   }
   function model(date,p,data=state.cache){return M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...S.range(date,p)});}
   function metricsRows(s){return [
@@ -171,11 +171,11 @@
     const daily=[],areas=[],forecastRows=[];
     for(const date of S.dates(r.start,r.end)){
       const v=model(date,'day',data),d=v.days.get(date),s=v.summary,active=d.tcComplete&&!d.scoreExcluded;
-      forecastRows.push(...v.forecastDetails.map(x=>({日期:x.date,區域:x.area,預估TC:x.totalTc,需求工時:x.recommended,有效週數:x.historyWeeks,目標週數:x.targetWeeks})));
+      forecastRows.push(...v.forecastDetails.map(x=>({日期:x.date,區域:x.area,預估TC:x.excluded?null:x.totalTc,需求工時:x.excluded?null:x.recommended,不計成績:x.excluded?"是":"否",有效週數:x.historyWeeks,目標週數:x.targetWeeks,採用日期:x.samples.map(s=>s.date).join("、"),排除日期:x.excludedSamples.map(s=>s.date+" "+s.reason).join("、")})));
       daily.push({TC來源:'DMS（ByOrder／ByDate）',預估工時:s.forecastHours,預估工時達成率:s.hoursAchievement,日期:date,週次:S.week(date).year+'-'+S.weekLabel(date),不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',去年單:s.prior,預估單:s.forecast,實際單:active?s.tc:null,FA:active?s.fa:null,SSTG:active?s.sstg:null,預估達成率:active?s.tcAchievement:null,合計工時:d.scoreExcluded?null:s.totalHours,調出工時:d.scoreExcluded?null:s.transferOut,調入工時:d.scoreExcluded?null:s.transferIn,實際工時:d.scoreExcluded?null:s.actualHours,TPLH:active?s.tplh:null,第三方佔比:active?s.faShare:null,D7:!d.scoreExcluded?s.d7:null,D25:!d.scoreExcluded?s.d25:null,D7達成單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d7Y:null,D7有效單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d7Y+s.d7N:null,D25達成單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d25Y:null,D25有效單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d25Y+s.d25N:null,ByDate已匯入:d.types.has('ByDate')?'是':'否',ByOrder已匯入:d.types.has('ByOrder')?'是':'否',工時完整:d.scoreExcluded?'不計':d.actualHours!==null?'是':'否',去年單完整:d.baselineComplete?'是':'否'});
       for(const [a,label] of [...M.areasForDate(date),...(v.areas.has('?')?[['?','未分類']]:[])]){const x=v.areas.get(a);areas.push({日期:date,不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',區域代碼:a,區域:label,TC:active?x.tc:null,FA:active?x.fa:null,FA佔比:!d.scoreExcluded?x.faShare:null,D7:!d.scoreExcluded?x.d7:null,D25:!d.scoreExcluded?x.d25:null,區域工時:d.scoreExcluded?null:M.number(d.report?.area_hours?.[a]),D7達成單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d7Y:null,D7有效單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d7Y+x.d7N:null,D25達成單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d25Y:null,D25有效單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d25Y+x.d25N:null});}
     }
-    appendTable(wb,'預估樣本',forecastRows,['日期','區域','預估TC','需求工時','有效週數','目標週數']);
+    appendTable(wb,'預估樣本',forecastRows,['日期','區域','預估TC','需求工時','有效週數','目標週數','不計成績','採用日期','排除日期']);
     appendTable(wb,'每日成績',daily,['TC來源','日期','週次','不計成績','特殊事項','去年單','預估單','預估工時','預估工時達成率','實際單','FA','SSTG','預估達成率','合計工時','調出工時','調入工時','實際工時','TPLH','第三方佔比','D7','D25','D7達成單','D7有效單','D25達成單','D25有效單','ByDate已匯入','ByOrder已匯入','工時完整','去年單完整'],['SSTG','預估達成率','預估工時達成率','第三方佔比','D7','D25']);
     appendTable(wb,'區域每日成績',areas,['日期','不計成績','特殊事項','區域代碼','區域','TC','FA','FA佔比','D7','D25','區域工時','D7達成單','D7有效單','D25達成單','D25有效單'],['FA佔比','D7','D25']);
   }

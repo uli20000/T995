@@ -106,7 +106,7 @@
   }
   function build(args){
     const v=buildOrders(args),{start,end,mapping,catalog}=args;
-    const prepared=F.prepare({history:args.powerbiData?.history||args.history,mapping,catalog,batches:args.powerbiData?.batches||args.batches,inScope:storeInScope});
+    const prepared=F.prepare({history:args.powerbiData?.history||args.history,mapping,catalog,batches:args.powerbiData?.batches||args.batches,reports:args.powerbiData?.reports||args.reports,inScope:storeInScope});
     const forecastDetails=[];
     const sumForecast=rows=>rows.length&&rows.every(x=>x.totalTc!==null)?rows.reduce((n,x)=>n+x.totalTc,0):null;
     const decorate=(base,forecasts)=>{
