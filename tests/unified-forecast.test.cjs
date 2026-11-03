@@ -90,10 +90,11 @@ test('analysis store rankings and export use Power BI TC and the shared forecast
  const els=new Map(),get=id=>{if(!els.has(id))els.set(id,{innerHTML:'',textContent:'',dataset:{},classList:{add(){},remove(){}},querySelectorAll(){return [];},addEventListener(){}});return els.get(id);};
  const sheets=new Map(),XLSX={utils:{book_new(){return {};},json_to_sheet(rows){return {rows};},book_append_sheet(wb,ws,name){sheets.set(name,ws.rows);}},writeFile(){}};
  const window={OpsMetrics:M,OpsSummary:S,OpsForecast:F,supabase:{createClient(){return {};}}};
- let source=fs.readFileSync(path.join(__dirname,'../analysis-dashboard.js'),'utf8');source=source.slice(0,source.indexOf("  document.querySelectorAll('[data-period]').forEach(b=>b.onclick="))+ 'window.__test={state,storeAnalytics,renderExport};})();';
+ let source=fs.readFileSync(path.join(__dirname,'../analysis-dashboard.js'),'utf8');source=source.slice(0,source.indexOf("  document.querySelectorAll('[data-period]').forEach(b=>b.onclick="))+ 'window.__test={state,storeAnalytics,renderExport,workflowProblem};})();';
  vm.runInNewContext(source,{window,document:{getElementById:get},XLSX});window.__test.state.catalog=catalog;window.__test.state.date=data.start;window.__test.state.month=data.start.slice(0,7);
  const rows=window.__test.storeAnalytics(data,{start:data.start,end:data.end});assert.equal(rows.length,2);assert.equal(rows.reduce((n,x)=>n+x.tc,0),20);assert.equal(rows[0].d7,null);
  window.__test.renderExport(data,rows,{start:data.start,end:data.end});const summary=sheets.get('營運摘要')[0];assert.equal(summary.TC,20);assert.equal(summary.預估TC,24);assert.equal(summary.預估工時,9.6);assert.equal(summary.TC來源,'Power BI');
+ data.powerbiData.history=data.powerbiData.history.filter(x=>x.record_date<data.start);const missingRows=window.__test.storeAnalytics(data,{start:data.start,end:data.end});const finding=window.__test.workflowProblem(missingRows,'sstg',{start:data.start,end:data.end},data);assert.match(finding.evidence,/Power BI實際TC尚缺或待核對/);assert.match(finding.evidence,/去年同期 20/);
 });
 test('Power BI positive TC requires complete area hours even without DMS; real zero does not invent hours',()=>{
  const data=fixture();data.reports=[{record_date:data.start,area_hours:{A:5}}];const v=M.build(data);assert.equal(v.summary.tc,20);assert.equal(v.summary.actualHours,null);assert.equal(v.summary.tplh,null);assert.equal(v.days.get(data.start).actualHours,null);assert.ok(v.missingHourDays.includes(data.start));assert.equal(v.areas.get('B').tplh,null);

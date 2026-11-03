@@ -170,8 +170,8 @@
     }
     const title=metric==='fa'?'FA／TPLH':metric==='waiting'?'等餐':metric.toUpperCase(),eligible=metric==='waiting'?rows.filter(x=>x.wait>0):rows,ordered=worstFor(eligible,metric),focus=ordered[0],ranked=ordered.slice(0,5),summary=data?model(data,r).summary:null;
     if(metric==='sstg'){
-      const target=.042,rate=summary?.sstg,issue=!focus?'本期沒有可用的 SSTG 餐廳資料。':rate===null||rate===undefined?`${focus.name} SSTG 資料可用，但去年同期涵蓋不足，暫無法判定整體目標。`:rate<target?`${focus.name} SSTG 最低；整體 SSTG 未達 +4.2% 目標。`:`${focus.name} 為最低 SSTG；整體已達 +4.2% 目標。`;
-      const evidence=focus?`${periodLabel(r)}：整體 SSTG ${pct(rate)}（TC ${fmt(summary.tc)}、去年同期 ${fmt(summary.prior)}）；${focus.name} SSTG ${pct(focus.sstg)}（TC ${fmt(focus.tc)}、去年同期 ${fmt(focus.prior)}）。`:`${periodLabel(r)}：沒有可比較的去年同期單數，無法計算 SSTG。`;
+      const target=.042,rate=summary?.sstg,issue=!focus?(summary?.tc===null?'Power BI實際TC尚缺或待核對，暫無法計算SSTG。':'本期沒有可用的 SSTG 餐廳資料。'):rate===null||rate===undefined?(summary?.tc===null?`${focus.name} 有可用資料，但Power BI實際TC涵蓋不足，暫無法判定整體目標。`:`${focus.name} SSTG 資料可用，但去年同期涵蓋不足，暫無法判定整體目標。`):rate<target?`${focus.name} SSTG 最低；整體 SSTG 未達 +4.2% 目標。`:`${focus.name} 為最低 SSTG；整體已達 +4.2% 目標。`;
+      const evidence=focus?`${periodLabel(r)}：整體 SSTG ${pct(rate)}（TC ${fmt(summary.tc)}、去年同期 ${fmt(summary.prior)}）；${focus.name} SSTG ${pct(focus.sstg)}（TC ${fmt(focus.tc)}、去年同期 ${fmt(focus.prior)}）。`:(summary?.tc===null?`${periodLabel(r)}：Power BI實際TC尚缺或待核對；去年同期 ${fmt(summary.prior)} 單，暫無法計算SSTG。`:`${periodLabel(r)}：沒有可比較的去年同期單數，無法計算 SSTG。`);
       return {issue,evidence};
     }
     if(metric==='fa'){
