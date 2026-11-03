@@ -1,1 +1,11 @@
 # kfc-bike-maintenance
+
+## 995 共用預估（2026-11-03）
+
+TC 以 Power BI 逐餐廳／逐日整天資料為主。`operations-forecast.js` 集中計算：目標週之前8週同星期完整樣本平均 ×1.2，各區無條件進位；需求工時為預估總 TC ÷2.5；第三方20%僅提醒、不另扣需求工時。指休、每日成績、週月彙總、分析及匯出共用同一結果；TPLH績效目標維持2.0。
+
+Power BI未上傳、缺店或資料衝突時顯示待更新／待核對，不以DMS代填。全區整日Power BI為0但DMS批次有訂單時，標示待核對並排除預估樣本，來源值保留；真正的0仍是有效資料。來源已存在的零值無法單憑檔名或較新的同名Excel自動覆寫。未來Power BI匯入的空白／無效TC會阻擋匯入，不再補0。
+
+DMS仍供訂單明細、D7／D25、QT、等餐配對與配送因子分析；這些有效分母不改用Power BI TC。`t995_get_operations_reference`沿用原管理員權限，migration僅補傳`tc_ex_third_party`欄位，未更新／刪除歷史列或改動RLS。11/1起苗栗三店排除規則與10月歷史保留；562仍歸Abby。
+
+驗證：`node --test tests/*.test.cjs`。

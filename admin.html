@@ -1707,7 +1707,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <details class="shift-fold">
       <summary class="section-title">下週人力建議</summary>
       <div class="shift-fold-content">
-        <div class="hint forecast-formula">預估 TC＝前 8 週同星期「實際外送 TC」平均 × 1.2（各區無條件進位）｜需求工時＝預估 TC ÷ 2.5｜第三方提醒＝預估 TC × 20%</div>
+        <div class="hint forecast-formula">Power BI 預估 TC＝前 8 週同星期「實際外送 TC」完整樣本平均 × 1.2（各區無條件進位）｜需求工時＝預估 TC ÷ 2.5｜第三方提醒＝預估 TC × 20%</div>
         <div id="staffingRecommendationSummary" class="summary forecast-summary-grid"></div>
         <div id="staffingForecastDataWarning" class="forecast-data-warning" hidden role="status" aria-live="polite"></div>
         <div id="staffingWeekGap" class="forecast-week-gap" hidden></div>
@@ -5414,61 +5414,25 @@ async function t995LoadAllPaged(table,select,fromDate,toDate,periodCode,orderCol
   }return out;
 }
 function t995MapAdd(map,key,value){map.set(key,(map.get(key)||0)+Number(value||0));}
-function t995SampleAverage(map,area,weekStart,dayOffset,weeks,expectedStores){
-  const vals=[];
-  for(let w=1;w<=weeks;w++){
-    const date=t995DateAdd(weekStart,dayOffset-7*w);
-    const cell=map.get(`${area}|${date}`);
-    if(!cell)continue;
-    // 僅採用當日該區所有有效餐廳均有資料的完整樣本，避免缺店資料拉低平均。
-    if(expectedStores>0&&cell.stores.size<expectedStores)continue;
-    if(Number.isFinite(cell.totalTc)&&cell.totalTc>=0)vals.push(cell.totalTc);
-  }
-  return {average:vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null,sampleWeeks:vals.length};
-}
-function t995ForecastTcFromAverage(average,growthRate=0.20){
-  if(average===null||average===undefined||!Number.isFinite(Number(average)))return null;
-  return Math.ceil(Number(average)*(1+growthRate)-1e-9);
-}
 async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   if(!t995AreaMapLoaded)await t995LoadAreaMap();
-  const weeks=8;
-  const first=t995DateAdd(weekStart,-7*weeks);
-  const importedFullRows=await t995LoadAllPaged("staffing_tc_history","record_date,restaurant_name,area_code,total_tc,period_code",first,weekStart,"full_day");
-  const fullRows=importedFullRows.filter(r=>t995AreaMap.get(String(r.restaurant_name||"").trim())===r.area_code);
-  const areaOrder=['A','B','C','D','E','F','G','H','I','J','K'];
-  const mappedAreas=[...new Set(t995AreaMap.values())].sort((a,b)=>areaOrder.indexOf(a)-areaOrder.indexOf(b));
-  t995StaffingForecastData=[];
-  if(!mappedAreas.length){t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="shift-admin-empty">尚未設定桃園餐廳區域對照表。</div>';return;}
-  if(!fullRows.length){t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="shift-admin-empty">尚未匯入實際外送 TC，無法預測。</div>';return;}
-  const fullByAreaDate=new Map();
-  for(const r of fullRows){
-    const date=String(r.record_date).slice(0,10),store=String(r.restaurant_name||"").trim(),key=`${r.area_code}|${date}`;
-    let cell=fullByAreaDate.get(key);if(!cell){cell={totalTc:0,stores:new Set()};fullByAreaDate.set(key,cell);}
-    // 同餐廳同日只計一次，避免重複資料意外放大預估。
-    if(!cell.stores.has(store)){cell.stores.add(store);const tc=Number(r.total_tc);cell.totalTc+=Number.isFinite(tc)&&tc>=0?tc:0;}
-  }
-  const expectedStoresByArea=new Map();
-  for(const area of t995AreaMap.values())expectedStoresByArea.set(area,(expectedStoresByArea.get(area)||0)+1);
-  const byArea=new Map();
-  for(const {employee,shift} of shiftRows){const area=employee.area_code;if(!area)continue;if(!byArea.has(area))byArea.set(area,[]);byArea.get(area).push({employee,shift});}
-  const areas=mappedAreas;
-  // 使用固定營運目標，確保畫面公式與工時計算一致。
-  const target=2.5;
-  const cap=20;
-  const growthRate=0.20;
+  const F=window.OpsForecast,weeks=F.SETTINGS.weeks;
+  const powerbiData=await F.load(db,weekStart,t995DateAdd(weekStart,6));
+  const prepared=F.prepare({...powerbiData,mapping:t995AreaMap,inScope:window.OpsMetrics.storeInScope});
   const dayNames=['週一','週二','週三','週四','週五','週六','週日'];
+  const dayForecasts=dayNames.map((day,offset)=>prepared.forecast(t995DateAdd(weekStart,offset)));
+  const areaOrder=window.OpsMetrics.AREAS.map(([a])=>a);
+  const areas=[...new Set(dayForecasts.flatMap(xs=>xs.map(x=>x.area)))].sort((a,b)=>areaOrder.indexOf(a)-areaOrder.indexOf(b));
+  const byArea=new Map();
+  for(const {employee,shift} of shiftRows){if(!employee.area_code)continue;if(!byArea.has(employee.area_code))byArea.set(employee.area_code,[]);byArea.get(employee.area_code).push({employee,shift});}
+  t995StaffingForecastData=[];
+  if(!areas.length){t995StaffingSummary.innerHTML='';t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML='';t995StaffingList.innerHTML='<div class="empty">尚未設定有效餐廳區域對照表。</div>';return;}
   const output=areas.map(area=>({area,days:dayNames.map((day,offset)=>{
-    const date=t995DateAdd(weekStart,offset);
-    const sample=t995SampleAverage(fullByAreaDate,area,weekStart,offset,weeks,expectedStoresByArea.get(area)||0);
-    const averageTc=sample.average;
-    // 順序固定：同星期歷史平均 → 成長 20% → 區域 TC 無條件進位 → 除以 TPLH 2.5。
-    const totalTc=t995ForecastTcFromAverage(averageTc,growthRate);
-    const recommended=totalTc===null?null:totalTc/target;
-    const thirdPartyCap=totalTc===null?null:totalTc*cap/100;
+    const date=t995DateAdd(weekStart,offset),forecast=dayForecasts[offset].find(x=>x.area===area);
     let availableHours=0,people=0;
-    for(const x of byArea.get(area)||[]){if(!x.shift)continue;const key=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][offset];const intervals=t995ParseRanges(x.shift[key]);if(intervals===null||!intervals.length)continue;people++;availableHours+=intervals.reduce((sum,[a,b])=>sum+(b-a)/60,0);}
-    return {day,date,averageTc,totalTc,recommended,thirdPartyCap,availableHours,people,gap:recommended===null?null:availableHours-recommended,historyWeeks:sample.sampleWeeks,targetWeeks:weeks};
+    for(const x of byArea.get(area)||[]){if(!x.shift)continue;const key=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'][offset],intervals=t995ParseRanges(x.shift[key]);if(intervals===null||!intervals.length)continue;people++;availableHours+=intervals.reduce((sum,[a,b])=>sum+(b-a)/60,0);}
+    const value=forecast||{totalTc:0,averageTc:null,recommended:0,thirdPartyCap:0,historyWeeks:weeks,targetWeeks:weeks,excluded:true};
+    return {...value,day,date,availableHours,people,gap:value.recommended===null?null:availableHours-value.recommended};
   })}));
   const allDays=output.flatMap(x=>x.days);
   const missingForecasts=allDays.filter(d=>d.totalTc===null);
@@ -5482,10 +5446,10 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   const fmtTc=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{maximumFractionDigits:1});
   const fmtHours=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:1,maximumFractionDigits:1});
   t995StaffingSummary.innerHTML=`<div class="summary-card"><div class="summary-label">成長後預估整週 TC</div><div class="summary-number">${fmtTc(weeklyTc)}</div></div><div class="summary-card"><div class="summary-label">預估需求工時（÷2.5）</div><div class="summary-number">${fmtHours(weeklyNeeded)}</div></div><div class="summary-card"><div class="summary-label">可安排工時</div><div class="summary-number">${fmtHours(weeklyAvailable)}</div></div><div class="summary-card"><div class="summary-label">第三方 TC 提醒值（20%）</div><div class="summary-number">${fmtTc(weeklyThirdParty)}</div></div>`;
-  if(partialHistory.length){
+  if(partialHistory.length||prepared.suspectDates.size){
     const examples=partialHistory.slice(0,4).map(d=>`${d.day}${output.find(a=>a.days.includes(d))?.area||''}區 ${d.historyWeeks}/${weeks}週`).join('、');
     const more=partialHistory.length>4?` 等 ${partialHistory.length} 組`:` 共 ${partialHistory.length} 組`;
-    t995StaffingForecastDataWarning.textContent=`歷史資料未滿 ${weeks} 週：${examples}${more}；按各區／星期可用完整週數平均。`;
+    t995StaffingForecastDataWarning.textContent=(partialHistory.length?`歷史資料未滿 ${weeks} 週：${examples}${more}；按各區／星期可用完整週數平均。`:'')+(prepared.suspectDates.size?' Power BI全區TC為0但DMS有訂單，樣本待核對：'+[...prepared.suspectDates].sort().join('、'):'');
     t995StaffingForecastDataWarning.hidden=false;
   }else{t995StaffingForecastDataWarning.textContent="";t995StaffingForecastDataWarning.hidden=true;}
   if(completeWeek){
@@ -5516,7 +5480,7 @@ function t995RenderStaffingDay(){
   const totalGap=totalNeeded===null?null:totalAvailable-totalNeeded;const totalDelta=gap(totalGap);
   const totalText=(value,digits=1)=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:digits,maximumFractionDigits:digits});
   const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜各區前 8 週同星期實際外送 TC 平均 ×1.2 後無條件進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
-  const rows=areas.map(({area,days})=>{const d=days[offset];const delta=gap(d.gap);const tc=fmtTc(d.totalTc);const needed=fmtHours(d.recommended);const third=fmtTc(d.thirdPartyCap);const availability=`${d.people} 人／${d.availableHours.toFixed(1)} 小時`;const history=`${d.historyWeeks}/${d.targetWeeks}週`;
+  const rows=areas.map(({area,days})=>{const d=days[offset];const delta=gap(d.gap);const tc=d.excluded?'不適用':fmtTc(d.totalTc);const needed=d.excluded?'不適用':fmtHours(d.recommended);const third=d.excluded?'不適用':fmtTc(d.thirdPartyCap);const availability=`${d.people} 人／${d.availableHours.toFixed(1)} 小時`;const history=`${d.historyWeeks}/${d.targetWeeks}週`;
     return {area,tc,needed,third,availability,delta,history};
   });
   t995StaffingList.innerHTML=`<div class="forecast-day-panel"><div class="forecast-day-heading">${day.day}｜${day.date}</div>${totals}<div class="forecast-area-table-wrap"><table class="forecast-area-table" aria-label="${day.day}各區人力預測"><thead><tr><th>區域／歷史週數</th><th>成長後預估 TC</th><th>需求工時</th><th>第三方 TC 20% 提醒</th><th>可排人數／工時</th><th>工時差</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${r.area} 區</strong><small class="forecast-history-weeks">${r.history}</small></td><td>${r.tc}</td><td>${r.needed}</td><td>${r.third}</td><td>${r.availability}</td><td class="forecast-gap ${r.delta.cls}">${r.delta.text}</td></tr>`).join('')}</tbody></table></div><div class="forecast-area-cards">${rows.map(r=>`<article class="forecast-area-card"><div class="forecast-area-card-head"><span>${r.area} 區 <small class="forecast-history-weeks">${r.history}</small></span><span class="forecast-gap ${r.delta.cls}">${r.delta.text}</span></div><div class="forecast-area-card-grid">${metric('成長後預估 TC',r.tc)}${metric('預估需求工時（÷2.5）',r.needed)}${metric('第三方 TC 20% 提醒值',r.third)}${metric('可排人數／工時',r.availability)}</div></article>`).join('')}</div></div>`;
@@ -5555,7 +5519,9 @@ function t995RowsFromSheet(workbook,sheetName,period,counter,unmapped){
     const area=t995AreaMap.get(store);if(!area){unmapped.add(store);return;}
     const date=t995ExcelDateToISO(row.DATE??row['日期']);if(!date){counter.badDates++;return;}
     const priorDate=t995ExcelDateToISO(row['DATE PY']??row['去年日期']);
-    out.push({restaurant_name:store,area_code:area,record_date:date,prior_year_date:priorDate,period_code:period,prior_year_tc:t995NumericZero(row['去年單數']??row['去年TC'],counter),total_tc:t995NumericZero(row['實際外送TC']??row['今年TC']??row['TC(System)'],counter),tc_ex_third_party:t995NumericZero(row['扣除第三方TC'],counter),source_sheet:sheetName,source_row:index+2});
+    const actualTc=Object.prototype.hasOwnProperty.call(row,'實際外送TC')?row['實際外送TC']:(row['今年TC']??row['TC(System)']);
+    if(actualTc===null||actualTc===undefined||String(actualTc).trim()===''||!Number.isFinite(Number(String(actualTc).replace(/,/g,'')))||Number(String(actualTc).replace(/,/g,''))<0)throw new Error(sheetName+' 第 '+(index+2)+' 列實際外送TC空白或無效，未將缺值當作0。');
+    out.push({restaurant_name:store,area_code:area,record_date:date,prior_year_date:priorDate,period_code:period,prior_year_tc:t995NumericZero(row['去年單數']??row['去年TC'],counter),total_tc:t995NumericZero(actualTc,counter),tc_ex_third_party:t995NumericZero(row['扣除第三方TC'],counter),source_sheet:sheetName,source_row:index+2});
   });return out;
 }
 async function t995CreateImportBatch(fileName,rows,note){
@@ -5763,14 +5729,16 @@ async function t995ImportCompleteWorkbookV4(){
           const area=t995AreaMap.get(name);if(!area){unmapped.add(name);return;}
           if(hasTc){
             const prior=field(row,priorNames),total=field(row,totalNames),excluded=field(row,excludedNames),priorDate=field(row,priorDateNames);
-            const totalTc=total.present?t995NumericZero(total.value,counter):0;
+            const totalValue=total.present&&total.value!==null&&String(total.value).trim()!==''?Number(String(total.value).replace(/,/g,'')):null;
+            if(totalValue!==null&&(!Number.isFinite(totalValue)||totalValue<0))throw new Error(sheetName+' 第 '+(index+2)+' 列實際TC無效，未改成0。');
+            const totalTc=totalValue;
             let thirdParty=0;
             if(uberHeader||pandaHeader){if(uberHeader)thirdParty+=t995NumericZero(field(row,uberNames).value,counter);if(pandaHeader)thirdParty+=t995NumericZero(field(row,pandaNames).value,counter);}
             else if(excluded.present)thirdParty=Math.max(0,totalTc-t995NumericZero(excluded.value,counter));
             const excludedTc=Math.max(0,totalTc-thirdParty);
             const item={restaurant_name:name,area_code:area,record_date:date,period_code:period,source_sheet:sheetName,source_row:index+2,third_party_tc_import:thirdParty};
             if(prior.present)item.prior_year_tc=t995NumericZero(prior.value,counter);
-            if(total.present)item.total_tc=totalTc;
+            if(totalTc!==null)item.total_tc=totalTc;
             if(total.present||excluded.present||uberHeader||pandaHeader)item.tc_ex_third_party=excludedTc;
             if(priorDate.present)item.prior_year_date=t995ExcelDateToISO(priorDate.value);
             const key=`${name}|${date}|${period}`,old=tcMap.get(key);
@@ -5791,7 +5759,9 @@ async function t995ImportCompleteWorkbookV4(){
     if(counter.badDates)throw new Error(`${counter.badDates} 列日期無法辨識`);
     if(unmapped.size)throw new Error(`餐廳未設定 A–K 區：${[...unmapped].slice(0,12).join("、")}${unmapped.size>12?"…":""}`);
     if(actualConflicts.length)throw new Error(`重複分頁的實際資料不一致：${[...new Set(actualConflicts)].slice(0,8).join("、")}`);
-    const parsedTcRows=[...tcMap.values()].map(x=>({prior_year_tc:0,total_tc:0,tc_ex_third_party:0,...x}));
+    const missingTc=[...tcMap.values()].filter(x=>x.total_tc===undefined);
+    if(missingTc.length)throw new Error('Power BI有 '+missingTc.length+' 列實際外送TC空白或缺欄，請補完整後匯入；未將空白當作0。');
+    const parsedTcRows=[...tcMap.values()].map(x=>({prior_year_tc:0,...x}));
     const tcRows=parsedTcRows.map(({third_party_tc_import,...x})=>x);const actualRows=[...actualMap.values()];
     const centerRows=[...centerMap.values()].map(({source_sheet,source_row,...x})=>x);
     const all=[...tcRows,...actualRows,...centerRows];const dates=t995MinMaxDates(all);
@@ -6175,9 +6145,10 @@ async function opsArchiveScoreSourceFiles(pair){
 
 
 
-<script src="operations-metrics.js?v=20261102-562-abby"></script>
+<script src="operations-forecast.js?v=20261103-unified"></script>
+<script src="operations-metrics.js?v=20261103-unified"></script>
 <script src="operations-summary.js?v=20261102-scope-effective1101"></script>
-<script src="operations-report.js?v=20261102-scope-effective1101b"></script>
+<script src="operations-report.js?v=20261103-unified"></script>
 <script src="operations-entry.js?v=20261102-scope-effective1101"></script>
 </body>
 </html>

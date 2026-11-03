@@ -24,8 +24,8 @@
     return out;
   }
 
-  // 23:00 回饋範本：L3=L5*1.04，L7=L3/2，L10=L4/L5-1。
-  const GROWTH=0.04,FORECAST_TPLH=2;
+  const F=typeof module!=='undefined'&&module.exports?require('./operations-forecast.js'):root.OpsForecast;
+  const GROWTH=F.SETTINGS.growth,FORECAST_TPLH=F.SETTINGS.tplh;
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
   const ratio=(a,b)=>a!==null&&b!==null&&b>0?a/b:null;
   const clean=s=>String(s||'').normalize('NFKC').replace(/\s+/g,'').trim();
@@ -55,8 +55,8 @@
   }
   function empty(){return {tc:0,fa:0,d7Y:0,d7N:0,d25Y:0,d25N:0,qtSum:0,qtN:0,d7Seconds:0,d7TimeN:0,d25Seconds:0,d25TimeN:0,prior:0,priorN:0};}
   function add(target,source){for(const k of Object.keys(empty()))target[k]+=source[k]||0;return target;}
-  function derived(x){const nonfa=x.tc-x.fa,forecast=x.priorN?x.prior*(1+GROWTH):null;return {...x,nonfa,forecast,forecastHours:forecast===null?null:forecast/FORECAST_TPLH,faShare:ratio(x.fa,x.tc),sstg:x.priorN&&x.prior>0?x.tc/x.prior-1:null,sstgExFA:x.priorN&&x.prior>0?nonfa/x.prior-1:null,tcAchievement:ratio(x.tc,forecast),d7:ratio(x.d7Y,x.d7Y+x.d7N),d25:ratio(x.d25Y,x.d25Y+x.d25N),qt:ratio(x.qtSum,x.qtN),d7Avg:ratio(x.d7Seconds,x.d7TimeN),d25Avg:ratio(x.d25Seconds,x.d25TimeN)};}
-  function build({rows,batches,history,mapping,catalog,reports,start,end}){
+  function derived(x){const nonfa=x.tc-x.fa,forecast=null;return {...x,nonfa,forecast,forecastHours:forecast===null?null:forecast/FORECAST_TPLH,faShare:ratio(x.fa,x.tc),sstg:x.priorN&&x.prior>0?x.tc/x.prior-1:null,sstgExFA:x.priorN&&x.prior>0?nonfa/x.prior-1:null,tcAchievement:ratio(x.tc,forecast),d7:ratio(x.d7Y,x.d7Y+x.d7N),d25:ratio(x.d25Y,x.d25Y+x.d25N),qt:ratio(x.qtSum,x.qtN),d7Avg:ratio(x.d7Seconds,x.d7TimeN),d25Avg:ratio(x.d25Seconds,x.d25TimeN)};}
+  function buildOrders({rows,batches,history,mapping,catalog,reports,start,end}){
     rows=scopeData({rows,batches}).rows;
     const rangeAreas=areasForDate(start);
     const days=new Map(dates(start,end).map(date=>[date,{date,areas:new Map(areasForDate(date).map(([a])=>[a,empty()])),types:new Set(),orders:[],raw:[],report:reports.find(x=>x.record_date===date)||null}]));
@@ -103,6 +103,53 @@
     const summary=derived(total),actualHours=hasHours&&completeHours?totalHours-transferOut+transferIn:null;
     if(missingBaselineDays.length){summary.forecast=null;summary.forecastHours=null;summary.sstg=null;summary.sstgExFA=null;summary.tcAchievement=null;}
     return {days,areas:new Map([...areas].map(([a,x])=>[a,derived(x)])),summary:{...summary,totalHours:hasHours?totalHours:null,transferOut,transferIn,actualHours,tplh:hoursWithoutScores.length?null:ratio(summary.nonfa,actualHours),hoursAchievement:hoursWithoutScores.length?null:ratio(actualHours,summary.forecastHours)},hourTotals,missingPairs,missingHourDays,missingBaselineDays,hoursWithoutScores,invalidHourDays};
+  }
+  function build(args){
+    const v=buildOrders(args),{start,end,mapping,catalog}=args;
+    const prepared=F.prepare({history:args.powerbiData?.history||args.history,mapping,catalog,batches:args.powerbiData?.batches||args.batches,inScope:storeInScope});
+    const today=args.today||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const missingTcDays=[],forecastDetails=[],areaDaily=new Map(),actualDaily=[];let powerbiHoursComplete=true;
+    const sumNullable=(rows,key)=>rows.length&&rows.every(x=>x[key]!==null&&x[key]!==undefined)?rows.reduce((n,x)=>n+x[key],0):null;
+    const decorate=(base,rows,forecasts,hours)=>{
+      const tc=sumNullable(rows,'tc'),fa=sumNullable(rows,'fa'),nonfa=sumNullable(rows,'nonfa'),prior=sumNullable(rows,'prior');
+      const forecast=sumNullable(forecasts,'totalTc'),forecastHours=forecast===null?null:forecast/FORECAST_TPLH;
+      return {...base,dmsTc:base.tc,dmsFa:base.fa,tc,fa,nonfa,prior,forecast,forecastHours,faShare:ratio(fa,tc),sstg:tc!==null&&prior>0?tc/prior-1:null,sstgExFA:nonfa!==null&&prior>0?nonfa/prior-1:null,tcAchievement:ratio(tc,forecast),tplh:ratio(nonfa,hours),hoursAchievement:ratio(hours,forecastHours)};
+    };
+    for(const day of v.days.values()){
+      const f=prepared.forecast(day.date);forecastDetails.push(...f);
+      const byArea=new Map();for(const store of prepared.eligible(day.date)){if(!byArea.has(store.area))byArea.set(store.area,[]);byArea.get(store.area).push(store);}
+      const current=[];
+      for(const [area,stores] of byArea){
+        const values=stores.map(store=>prepared.actual(store.name,day.date));
+        const raw=day.areas.get(area)||empty();
+        const valid=values.every(Boolean),tc=valid?values.reduce((n,x)=>n+x.tc,0):null;
+        const nonfa=valid&&values.every(x=>x.self!==null)?values.reduce((n,x)=>n+x.self,0):null;
+        const fa=tc!==null&&nonfa!==null?tc-nonfa:null;
+        const prior=raw.priorN>=stores.length?raw.prior:null;
+        const row={date:day.date,area,tc,nonfa,fa,prior};current.push(row);
+        if(!areaDaily.has(area))areaDaily.set(area,[]);
+        if(day.date<=today&&!day.scoreExcluded)areaDaily.get(area).push(row);
+        day.areas.set(area,{...raw,tc,fa,nonfa,prior,forecast:f.find(x=>x.area===area)?.totalTc??null});
+      }
+      day.tcComplete=current.length>0&&current.every(x=>x.tc!==null);
+      if(day.date<=today&&!day.scoreExcluded){actualDaily.push(...current);if(!day.tcComplete)missingTcDays.push(day.date);}
+      const requiredMissing=current.filter(x=>x.tc>0&&number(day.report?.area_hours?.[x.area])===null).length;
+      if(day.date<=today&&!day.scoreExcluded&&requiredMissing){powerbiHoursComplete=false;day.actualHours=null;day.missingAreas=Math.max(day.missingAreas,requiredMissing);if(!v.missingHourDays.includes(day.date))v.missingHourDays.push(day.date);}
+      day.metrics=decorate(day.metrics,current,f,day.actualHours);
+      if(day.scoreExcluded){for(const x of f){x.excluded=true;}}
+    }
+    const includedForecasts=forecastDetails.filter(x=>!x.excluded);
+    if(!powerbiHoursComplete)v.summary.actualHours=null;
+    v.summary=decorate(v.summary,actualDaily,includedForecasts,v.summary.actualHours);
+    for(const [area,base] of v.areas){const values=areaDaily.get(area)||[],forecasts=includedForecasts.filter(x=>x.area===area);v.areas.set(area,decorate(base,values,forecasts,v.hourTotals.get(area)?.count&&values.every(x=>x.tc===null||x.tc===0||number(v.days.get(x.date)?.report?.area_hours?.[area])!==null)?v.hourTotals.get(area).hours:null));}
+    v.forecastDetails=forecastDetails;v.missingTcDays=missingTcDays;v.powerbi=prepared;
+    v.forecastWarnings=[];
+    const partial=includedForecasts.filter(x=>x.historyWeeks<F.SETTINGS.weeks),missing=includedForecasts.filter(x=>x.totalTc===null);
+    if(partial.length)v.forecastWarnings.push('預估採Power BI前8週同星期；'+partial.length+'組區域／日期不足8週完整樣本'+(missing.length?'，其中'+missing.length+'組無法預估':''));
+    if(missingTcDays.length)v.forecastWarnings.push('Power BI實際TC尚缺或待核對：'+missingTcDays.join('、'));
+    if(prepared.suspectDates.size)v.forecastWarnings.push('Power BI全區TC為0但DMS有訂單，已排除預估樣本、未改原值：'+[...prepared.suspectDates].sort().join('、'));
+    if(prepared.conflicts.size)v.forecastWarnings.push('Power BI重複鍵內容衝突：'+prepared.conflicts.size+'筆，待核對');
+    return v;
   }
   const api={AREAS,AC_ASSIGNMENTS,HISTORICAL_AC_ASSIGNMENTS,SCOPE_EFFECTIVE_DATE,REMOVED_STORES,storeInScope,areasForDate,acAssignmentsForDate,scopeData,NON_DELIVERY_STORES,GROWTH,FORECAST_TPLH,number,ratio,clean,duration,addDays,range,dates,weeks,latestBatches,areaFor,build};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsMetrics=api;

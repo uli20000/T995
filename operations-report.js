@@ -22,34 +22,36 @@
     const month=date.slice(0,7);if(state.monthLoads.has(month))return state.monthLoads.get(month);if(!force&&state.monthCache.has(month))return state.monthCache.get(month);
     const work=(async()=>{
       await loadDirectory();const r=S.range(date,'month');
-      const [batchRows,reportResult,reference]=await Promise.all([
+      const [batchRows,reportResult,reference,powerbiData]=await Promise.all([
         paged('t995_score_import_batches','*',q=>q.gte('report_date',r.start).lte('report_date',r.end),'report_date'),
         db.from('t995_operations_daily_reports').select('*').gte('record_date',r.start).lte('record_date',r.end).order('record_date'),
-        db.rpc('t995_get_operations_reference',{p_month:r.start})
+        db.rpc('t995_get_operations_reference',{p_month:r.start}),
+        window.OpsForecast.load(db,r.start,r.end)
       ]);
       if(reportResult.error)throw reportResult.error;if(reference.error)throw reference.error;
       const batches=M.latestBatches(batchRows),ids=batches.map(b=>b.id),rows=ids.length?await paged('t995_score_import_rows','batch_id,row_number,store_code,restaurant_name,order_number,payload',q=>q.in('batch_id',ids),'batch_id'):[];
-      return {rows,batches,reports:reportResult.data||[],history:reference.data?.history||[],mapping:reference.data?.mapping||[]};
+      return {rows,batches,powerbiData,reports:reportResult.data||[],history:reference.data?.history||[],mapping:reference.data?.mapping||[]};
     })();state.monthLoads.set(month,work);
     try{const data=await work;state.monthCache.set(month,data);return data;}finally{state.monthLoads.delete(month);}
   }
   async function loadRange(r,force=false){
     const parts=await Promise.all(S.months(r.start,r.end).map(d=>loadMonth(d,force))),data={};
-    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);return M.scopeData(data);
+    for(const key of ['rows','batches','reports','history','mapping'])data[key]=parts.flatMap(p=>p[key]);data.powerbiData={history:parts.flatMap(p=>p.powerbiData.history),batches:parts.flatMap(p=>p.powerbiData.batches)};return M.scopeData(data);
   }
   function model(date,p,data=state.cache){return M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...S.range(date,p)});}
   function metricsRows(s){return [
-    ['去年單數',s.forecast===null?null:s.prior,'單'],['預估單數',s.forecast,'單'],['實際總單數',s.tc,'單'],['SSTG%',s.sstg,'%'],['TC預估達成率',s.tcAchievement,'%'],['實際工時',s.actualHours,'hrs'],['TPLH（扣FA）',s.tplh,''],['第三方佔比',s.faShare,'%'],['D7達成率',s.d7,'%'],['D25達成率',s.d25,'%'],
+    ['去年單數',s.prior,'單'],['預估單數',s.forecast,'單'],['實際總單數',s.tc,'單'],['SSTG%',s.sstg,'%'],['TC預估達成率',s.tcAchievement,'%'],['實際工時',s.actualHours,'hrs'],['TPLH（扣FA）',s.tplh,''],['第三方佔比',s.faShare,'%'],['D7達成率',s.d7,'%'],['D25達成率',s.d25,'%'],
     ['FA單數',s.fa,'單'],['預估工時',s.forecastHours,'hrs'],['SSTG%（扣FA）',s.sstgExFA,'%'],['預估工時達成率',s.hoursAchievement,'%'],['QT',s.qt,'分'],['平均留店時間',s.d7Avg,'秒'],['平均送達時間',s.d25Avg,'秒']
   ];}
   function formattedMetric(key,value,unit){return unit==='%'?pct(value):unit==='秒'?time(value):fmt(value,['hrs','分',''].includes(unit)?2:0);}
   function renderMetrics(v){
-    const hasScores=[...v.days.values()].some(d=>d.types.has('ByOrder')),actual=new Set(['實際總單數','SSTG%','TC預估達成率','TPLH（扣FA）','第三方佔比','D7達成率','D25達成率','FA單數','SSTG%（扣FA）','QT','平均留店時間','平均送達時間']);
-    const cards=metricsRows(v.summary).map(([k,value,unit])=>'<article class="ops-kpi-card"><h4>'+k+'</h4><strong>'+(!hasScores&&actual.has(k)?'—':formattedMetric(k,value,unit))+'</strong>'+(['單','hrs','分'].includes(unit)?'<span>'+unit+'</span>':'')+'</article>');
+    const hasScores=[...v.days.values()].some(d=>d.types.has('ByOrder'));
+    const dmsMetrics=new Set(['D7達成率','D25達成率','QT','平均留店時間','平均送達時間']);
+    const cards=metricsRows(v.summary).map(([k,value,unit])=>'<article class="ops-kpi-card"><h4>'+k+'</h4><strong>'+(!hasScores&&dmsMetrics.has(k)?'—':formattedMetric(k,value,unit))+'</strong>'+(['單','hrs','分'].includes(unit)?'<span>'+unit+'</span>':'')+'</article>');
     E('opsSummaryMetrics').innerHTML='<div class="ops-kpi-cards">'+cards.slice(0,10).join('')+'</div><details class="ops-secondary"><summary>其他指標</summary><div class="ops-kpi-cards ops-secondary-cards">'+cards.slice(10).join('')+'</div></details>';
   }
   function warnings(v,isDay,date){
-    const messages=[];if(v.missingPairs.length)messages.push('尚缺另一份成績檔：'+v.missingPairs.map(x=>x.slice(5)).join('、'));
+    const messages=[...v.forecastWarnings];if(v.missingPairs.length)messages.push('尚缺另一份成績檔：'+v.missingPairs.map(x=>x.slice(5)).join('、'));
     if(v.missingHourDays.length)messages.push(isDay?'尚有 '+v.days.get(date).missingAreas+' 區未填工時':'尚有 '+v.missingHourDays.length+' 天工時未填完整');
     if(v.hoursWithoutScores.length)messages.push('有工時但尚無成績：'+v.hoursWithoutScores.map(x=>x.slice(5)).join('、'));
     if(v.invalidHourDays.length)messages.push('調出工時超過可用工時：'+v.invalidHourDays.map(x=>x.slice(5)).join('、'));
@@ -61,7 +63,7 @@
     const days=[...v.days.values()],notes=days.filter(d=>String(d.report?.special_notes||'').trim()),excluded=days.filter(d=>d.report?.score_excluded);
     const list='<div class="ops-context-list">'+(excluded.length?'<div><b>不計成績</b>　'+excluded.map(d=>d.date.slice(5).replace('-','/')+(d.report?.special_notes?' '+escape(d.report.special_notes):'')).join('、')+'</div>':'')+(notes.length?notes.filter(d=>!d.report?.score_excluded).map(d=>'<div><b>'+d.date.slice(5).replace('-','/')+' 特殊事項</b>　'+escape(d.report.special_notes)+'</div>').join(''):'')+(!excluded.length&&!notes.length?'<div>本期尚無特殊事項</div>':'')+'</div>';
     if(state.context==='summary'){
-      let target=E('opsSummaryContext');if(!target){target=document.createElement('section');target.id='opsSummaryContext';target.className='ops-report-card';E('opsSummaryWarnings').after(target);}target.innerHTML='<h3>特殊事項</h3>'+list;return;
+      let target=E('opsSummaryContext');if(!target){target=document.createElement('section');target.id='opsSummaryContext';target.className='ops-report-card';E('opsSummaryWarnings').after(target);}target.innerHTML='<h3>特殊事項</h3>'+list+'<div>'+escape(window.OpsForecast.FORMULA)+'</div>';return;
     }
     const target=E('opsAnalysisSummary');if(!target)return;
     if(p!=='day'){target.innerHTML='<section class="ops-report-card"><h3>週期特殊事項</h3>'+list+'</section>';return;}
@@ -74,11 +76,11 @@
   }
   function valueInput(area,date,value){return '<input class="ops-area-hour" type="number" min="0" max="9999" step="0.25" inputmode="decimal" data-area="'+area+'" data-date="'+date+'" value="'+(value===null?'':value)+'" aria-label="'+escape(labels.get(area))+'總工時">';}
   function renderScores(date,v){
-    const p=period(),day=v.days.get(date),isDay=p==='day',s=v.summary,hasScores=[...v.days.values()].some(d=>d.types.has('ByOrder'));
+    const p=period(),day=v.days.get(date),isDay=p==='day',s=v.summary;
     E('opsPeriodLabel').textContent='區域成績　'+periodTitle(date,p);
     E('opsFileStatus').innerHTML=['ByDate','ByOrder'].map(type=>{const b=state.cache.batches.find(x=>x.report_date===date&&x.report_type===type);return '<div class="ops-file-card '+(b?'ready':'')+'"><b>'+type+'</b><span>'+date+'</span><strong>'+(b?'已匯入 '+fmt(b.row_count)+' 筆':'尚未匯入')+'</strong></div>';}).join('');
     const areaRows=[...M.areasForDate(S.range(date,p).start),...(v.areas.has('?')?[['?','未分類']]:[])];
-    const cells=x=>'<td data-label="TC">'+(hasScores?fmt(x.tc):'—')+'</td><td data-label="FA">'+(hasScores?fmt(x.fa):'—')+'</td><td data-label="第三方佔比">'+pct(x.faShare)+'</td><td data-label="D7">'+pct(x.d7)+'</td><td data-label="D25">'+pct(x.d25)+'</td>';
+    const cells=x=>'<td data-label="TC">'+fmt(x.tc)+'</td><td data-label="FA">'+fmt(x.fa)+'</td><td data-label="第三方佔比">'+pct(x.faShare)+'</td><td data-label="D7">'+pct(x.d7)+'</td><td data-label="D25">'+pct(x.d25)+'</td>';
     E('opsAnalysisTable').innerHTML='<table class="ops-area-table"><thead><tr><th>區域</th><th>TC</th><th>FA</th><th>第三方佔比</th><th>D7</th><th>D25</th><th>總工時</th></tr></thead><tbody>'+areaRows.map(([a,label])=>{const hours=isDay?M.number(day?.report?.area_hours?.[a]):v.hourTotals.get(a)?.count?v.hourTotals.get(a).hours:null;return '<tr><th>'+label+'</th>'+cells(v.areas.get(a))+'<td data-label="總工時">'+(isDay&&a!=='?'?valueInput(a,date,hours):fmt(hours,2))+'</td></tr>';}).join('')+'</tbody><tfoot><tr><th>合計</th>'+cells(s)+'<td data-label="總工時">'+fmt(s.totalHours,2)+'</td></tr></tfoot></table>';
     const report=day?.report;
     E('opsLaborAdjustments').innerHTML='<div class="ops-labor-grid"><label>合計總工時<output>'+fmt(s.totalHours,2)+'</output></label><label>調出工時'+(isDay?'<input id="opsTransferOut" type="number" min="0" max="9999" step="0.25" inputmode="decimal" value="'+(report?.transfer_out_hours??0)+'">':'<output>'+fmt(s.transferOut,2)+'</output>')+'</label><label>調入工時'+(isDay?'<input id="opsTransferIn" type="number" min="0" max="9999" step="0.25" inputmode="decimal" value="'+(report?.transfer_in_hours??0)+'">':'<output>'+fmt(s.transferIn,2)+'</output>')+'</label><label>實際工時<output>'+fmt(s.actualHours,2)+'</output></label></div>';
@@ -126,7 +128,7 @@
   }
   function renderMonthHours(date){const rows=monthHourRows(date);E('opsMonthHours').innerHTML='<h3>'+date.slice(0,7)+' 各區工時</h3><div class="ops-table-wrap"><table class="ops-month-hours"><thead><tr>'+rows[0].map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.slice(1).map(row=>'<tr><th>'+row[0]+'</th>'+row.slice(1).map(x=>'<td>'+fmt(x,2)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';}
   function renderDayList(r){
-    const rows=S.dates(r.start,r.end).filter(date=>date<=opsToday()).map(date=>{const v=model(date,'day'),d=v.days.get(date),s=v.summary,active=d.types.has('ByOrder')&&!d.scoreExcluded;return '<tr><th><button type="button" data-report-date="'+date+'">'+date.slice(5).replace('-','/')+'</button></th><td>'+(active?fmt(s.tc):'—')+'</td><td>'+(active?pct(s.sstg):'—')+'</td><td>'+(active?pct(s.tcAchievement):'—')+'</td><td>'+(!d.scoreExcluded?fmt(s.actualHours,2):'—')+'</td><td>'+(active?fmt(s.tplh,2):'—')+'</td><td>'+(active?pct(s.faShare):'—')+'</td><td>'+(active?pct(s.d7):'—')+'</td><td>'+(active?pct(s.d25):'—')+'</td><td>'+(d.scoreExcluded?'不計成績':d.types.size===2?'齊全':d.types.size?'缺一檔':'待匯入')+(d.report?.special_notes?'｜'+escape(d.report.special_notes):'')+'</td></tr>';});
+    const rows=S.dates(r.start,r.end).filter(date=>date<=opsToday()).map(date=>{const v=model(date,'day'),d=v.days.get(date),s=v.summary,active=d.tcComplete&&!d.scoreExcluded;return '<tr><th><button type="button" data-report-date="'+date+'">'+date.slice(5).replace('-','/')+'</button></th><td>'+(active?fmt(s.tc):'—')+'</td><td>'+(active?pct(s.sstg):'—')+'</td><td>'+(active?pct(s.tcAchievement):'—')+'</td><td>'+(!d.scoreExcluded?fmt(s.actualHours,2):'—')+'</td><td>'+(active?fmt(s.tplh,2):'—')+'</td><td>'+(active?pct(s.faShare):'—')+'</td><td>'+(!d.scoreExcluded?pct(s.d7):'—')+'</td><td>'+(!d.scoreExcluded?pct(s.d25):'—')+'</td><td>'+(d.scoreExcluded?'不計成績':d.types.size===2?'齊全':d.types.size?'缺一檔':'待匯入')+(d.report?.special_notes?'｜'+escape(d.report.special_notes):'')+'</td></tr>';});
     E('opsDayList').innerHTML='<table class="ops-daily-table"><thead><tr><th>日期</th><th>TC</th><th>SSTG</th><th>預估達成率</th><th>實際工時</th><th>TPLH</th><th>FA佔比</th><th>D7</th><th>D25</th><th>成績檔</th></tr></thead><tbody>'+rows.join('')+'</tbody></table>';
     E('opsDayList').querySelectorAll('[data-report-date]').forEach(b=>b.onclick=()=>window.OpsDateControl.set(b.dataset.reportDate,'day'));
   }
@@ -166,13 +168,15 @@
     for(let i=0;i<rows.length;i++)for(const key of percent){const address=XLSX.utils.encode_cell({r:i+1,c:headers.indexOf(key)});if(ws[address]?.t==='n')ws[address].z='0.0%';}XLSX.utils.book_append_sheet(wb,ws,name);
   }
   function appendScores(wb,data,r){
-    const daily=[],areas=[];
+    const daily=[],areas=[],forecastRows=[];
     for(const date of S.dates(r.start,r.end)){
-      const v=model(date,'day',data),d=v.days.get(date),s=v.summary,active=d.types.has('ByOrder')&&!d.scoreExcluded;
-      daily.push({日期:date,週次:S.week(date).year+'-'+S.weekLabel(date),不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',去年單:s.forecast===null?null:s.prior,預估單:s.forecast,實際單:active?s.tc:null,FA:active?s.fa:null,SSTG:active?s.sstg:null,預估達成率:active?s.tcAchievement:null,合計工時:d.scoreExcluded?null:s.totalHours,調出工時:d.scoreExcluded?null:s.transferOut,調入工時:d.scoreExcluded?null:s.transferIn,實際工時:d.scoreExcluded?null:s.actualHours,TPLH:active?s.tplh:null,第三方佔比:active?s.faShare:null,D7:active?s.d7:null,D25:active?s.d25:null,D7達成單:active?s.d7Y:null,D7有效單:active?s.d7Y+s.d7N:null,D25達成單:active?s.d25Y:null,D25有效單:active?s.d25Y+s.d25N:null,ByDate已匯入:d.types.has('ByDate')?'是':'否',ByOrder已匯入:d.types.has('ByOrder')?'是':'否',工時完整:d.scoreExcluded?'不計':d.actualHours!==null?'是':'否',去年單完整:d.baselineComplete?'是':'否'});
-      for(const [a,label] of [...M.areasForDate(date),...(v.areas.has('?')?[['?','未分類']]:[])]){const x=v.areas.get(a);areas.push({日期:date,不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',區域代碼:a,區域:label,TC:active?x.tc:null,FA:active?x.fa:null,FA佔比:active?x.faShare:null,D7:active?x.d7:null,D25:active?x.d25:null,區域工時:d.scoreExcluded?null:M.number(d.report?.area_hours?.[a]),D7達成單:active?x.d7Y:null,D7有效單:active?x.d7Y+x.d7N:null,D25達成單:active?x.d25Y:null,D25有效單:active?x.d25Y+x.d25N:null});}
+      const v=model(date,'day',data),d=v.days.get(date),s=v.summary,active=d.tcComplete&&!d.scoreExcluded;
+      forecastRows.push(...v.forecastDetails.map(x=>({日期:x.date,區域:x.area,預估TC:x.totalTc,需求工時:x.recommended,有效週數:x.historyWeeks,目標週數:x.targetWeeks})));
+      daily.push({TC來源:'Power BI',預估工時:s.forecastHours,預估工時達成率:s.hoursAchievement,日期:date,週次:S.week(date).year+'-'+S.weekLabel(date),不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',去年單:s.prior,預估單:s.forecast,實際單:active?s.tc:null,FA:active?s.fa:null,SSTG:active?s.sstg:null,預估達成率:active?s.tcAchievement:null,合計工時:d.scoreExcluded?null:s.totalHours,調出工時:d.scoreExcluded?null:s.transferOut,調入工時:d.scoreExcluded?null:s.transferIn,實際工時:d.scoreExcluded?null:s.actualHours,TPLH:active?s.tplh:null,第三方佔比:active?s.faShare:null,D7:!d.scoreExcluded?s.d7:null,D25:!d.scoreExcluded?s.d25:null,D7達成單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d7Y:null,D7有效單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d7Y+s.d7N:null,D25達成單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d25Y:null,D25有效單:d.types.has('ByOrder')&&!d.scoreExcluded?s.d25Y+s.d25N:null,ByDate已匯入:d.types.has('ByDate')?'是':'否',ByOrder已匯入:d.types.has('ByOrder')?'是':'否',工時完整:d.scoreExcluded?'不計':d.actualHours!==null?'是':'否',去年單完整:d.baselineComplete?'是':'否'});
+      for(const [a,label] of [...M.areasForDate(date),...(v.areas.has('?')?[['?','未分類']]:[])]){const x=v.areas.get(a);areas.push({日期:date,不計成績:d.scoreExcluded?'是':'否',特殊事項:d.report?.special_notes||'',區域代碼:a,區域:label,TC:!d.scoreExcluded?x.tc:null,FA:!d.scoreExcluded?x.fa:null,FA佔比:!d.scoreExcluded?x.faShare:null,D7:!d.scoreExcluded?x.d7:null,D25:!d.scoreExcluded?x.d25:null,區域工時:d.scoreExcluded?null:M.number(d.report?.area_hours?.[a]),D7達成單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d7Y:null,D7有效單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d7Y+x.d7N:null,D25達成單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d25Y:null,D25有效單:d.types.has('ByOrder')&&!d.scoreExcluded?x.d25Y+x.d25N:null});}
     }
-    appendTable(wb,'每日成績',daily,['日期','週次','不計成績','特殊事項','去年單','預估單','實際單','FA','SSTG','預估達成率','合計工時','調出工時','調入工時','實際工時','TPLH','第三方佔比','D7','D25','D7達成單','D7有效單','D25達成單','D25有效單','ByDate已匯入','ByOrder已匯入','工時完整','去年單完整'],['SSTG','預估達成率','第三方佔比','D7','D25']);
+    appendTable(wb,'預估樣本',forecastRows,['日期','區域','預估TC','需求工時','有效週數','目標週數']);
+    appendTable(wb,'每日成績',daily,['TC來源','日期','週次','不計成績','特殊事項','去年單','預估單','預估工時','預估工時達成率','實際單','FA','SSTG','預估達成率','合計工時','調出工時','調入工時','實際工時','TPLH','第三方佔比','D7','D25','D7達成單','D7有效單','D25達成單','D25有效單','ByDate已匯入','ByOrder已匯入','工時完整','去年單完整'],['SSTG','預估達成率','預估工時達成率','第三方佔比','D7','D25']);
     appendTable(wb,'區域每日成績',areas,['日期','不計成績','特殊事項','區域代碼','區域','TC','FA','FA佔比','D7','D25','區域工時','D7達成單','D7有效單','D25達成單','D25有效單'],['FA佔比','D7','D25']);
   }
   async function exportCombined(p){
@@ -181,8 +185,8 @@
       await state.saveQueue;if(state.saveError)throw new Error('工時尚未儲存成功，請先重新儲存');
       const d=selectedDate(),r=S.range(d,p);if(r.start>opsToday())throw new Error('所選日期尚未到');if(r.end>opsToday())r.end=opsToday();notify('匯出中…','summary');
       const [data,records]=await Promise.all([loadRange(r,true),loadRecords(r),loadWeatherRange(r)]);const v=M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...r}),wb=XLSX.utils.book_new(),hasScores=[...v.days.values()].some(x=>x.types.has('ByOrder')&&!x.scoreExcluded);
-      const summary=[['起始日期',r.start],['結束日期',r.end],['成績已匯入日數',[...v.days.values()].filter(x=>x.types.size===2).length],...metricsRows(v.summary).map(([k,value,unit])=>[k,!hasScores&&!['去年單數','預估單數','預估工時','實際工時'].includes(k)?null:value,unit])];
-      const ws=XLSX.utils.aoa_to_sheet([['營運總覽','數值','單位'],...summary]);ws['!cols']=[{wch:24},{wch:22},{wch:12}];summary.forEach((r,i)=>{if(r[2]==='%'&&ws['B'+(i+2)])ws['B'+(i+2)].z='0.0%';});XLSX.utils.book_append_sheet(wb,ws,'營運總覽');appendScores(wb,data,r);
+      const summary=[['起始日期',r.start],['結束日期',r.end],['成績已匯入日數',[...v.days.values()].filter(x=>x.types.size===2).length],...metricsRows(v.summary).map(([k,value,unit])=>[k,value,unit])];
+      const ws=XLSX.utils.aoa_to_sheet([['營運總覽','數值','單位'],...summary,['TC來源','Power BI'],['預估公式',window.OpsForecast.FORMULA],['資料提示',v.forecastWarnings.join('；')]]);ws['!cols']=[{wch:24},{wch:22},{wch:12}];summary.forEach((r,i)=>{if(r[2]==='%'&&ws['B'+(i+2)])ws['B'+(i+2)].z='0.0%';});XLSX.utils.book_append_sheet(wb,ws,'營運總覽');appendScores(wb,data,r);
       appendTable(wb,'劃線簽名',S.lineExport(state.stores,records.line,r.start,r.end,opsToday()),['日期','店號','餐廳','是否登記','劃線','簽名','登記時間','更新時間']);
       appendTable(wb,'等餐紀錄',records.delay.map(x=>({日期:x.record_date,店號:x.store_code,餐廳:x.restaurant_name,訂單編號:x.order_number,狀態:x.status==='completed'?'已回覆':'待回覆',等餐原因:x.reason||'',登記時間:x.created_at,回覆時間:x.responded_at||''})),['日期','店號','餐廳','訂單編號','狀態','等餐原因','登記時間','回覆時間']);
       const weather=S.dates(r.start,r.end).flatMap(date=>['新竹','桃園'].map(city=>{const x=weatherRow(date,city);return {日期:date,城市:city,測站:x?.station_name||'',測站代碼:x?.station_id||'',平均氣溫:x?.temperature??null,降雨毫米:x?.precipitation??null,微量降雨:x?.trace?'是':'否',觀測狀態:x?.status||'unavailable',來源:'https://codis.cwa.gov.tw/StationData',查詢時間:state.weather.get(date.slice(0,7))?.fetched_at||''};}));
