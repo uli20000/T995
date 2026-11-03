@@ -1,14 +1,14 @@
 (function(root){
   'use strict';
   const C=typeof module!=='undefined'&&module.exports?require('./operations-calendar.js'):root.OpsCalendar;
-  const SETTINGS=Object.freeze({weeks:8,growth:0.10,switchThreshold:0.015,tplh:2.5,thirdParty:0.20});
+  const SETTINGS=Object.freeze({weeks:8,growth:0.06,switchThreshold:null,tplh:2.5,thirdParty:0.20});
   const clean=s=>String(s||'').normalize('NFKC').replace(/\s+/g,'').trim();
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
   const addDays=(date,n)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
   const weekStart=date=>addDays(date,-((new Date(date+'T12:00:00Z').getUTCDay()+6)%7));
   const dates=(start,end)=>{const out=[];for(let d=start;d<=end;d=addDays(d,1))out.push(d);return out;};
   const sampleStart=start=>addDays(weekStart(start),-SETTINGS.weeks*7);
-  const FORMULA='Power BI預估｜優先去年目標日TC×1.1；前8週同星期平均較去年目標日成長超過1.5%時改採8週平均×1.1；各區進位、工時÷2.5；平日樣本排除假日及停班課；第三方20%僅提醒';
+  const FORMULA='Power BI預估｜去年對應週同星期（前52週）TC×1.06，各區進位；需求工時÷2.5；2026/11/1起排除苗栗三店；缺去年資料留空';
   function prepare({history=[],mapping=[],catalog=new Map(),batches=[],reports=[],inScope=()=>true}){
     const mapped=Array.isArray(mapping)?mapping:[...mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));
     const directory=new Map([...catalog.values()].map(s=>[clean(s.restaurant_name),String(s.store_code)]));
@@ -21,10 +21,8 @@
     for(const date of dmsDates){const list=eligible(date);if(list.length&&list.every(s=>{const h=index.get(date+'|'+s.name);return h&&number(h.total_tc)===0;}))suspectDates.add(date);}
     function actual(name,date){const key=date+'|'+clean(name),h=index.get(key);if(!h||conflicts.has(key)||suspectDates.has(date))return null;const tc=number(h.total_tc),self=number(h.tc_ex_third_party);return tc===null||tc<0?null:{tc,self:self!==null&&self>=0&&self<=tc?self:null,fa:self!==null&&self>=0&&self<=tc?tc-self:null,row:h};}
     function priorYear(name,date){
-      const key=date+'|'+clean(name),current=index.get(key),value=conflicts.has(key)?null:number(current?.prior_year_tc);
-      if(value!==null&&value>=0)return value;
-      const previous=(Number(date.slice(0,4))-1)+date.slice(4),oldKey=previous+'|'+clean(name),old=index.get(oldKey),tc=conflicts.has(oldKey)?null:number(old?.total_tc);
-      return tc!==null&&tc>=0?tc:null;
+      const previous=addDays(date,-364),value=actual(name,previous);
+      return value?value.tc:null;
     }
     const reportMap=new Map(reports.map(r=>[String(r.record_date).slice(0,10),r]));
     const closure=date=>{const r=reportMap.get(date);return !!r&&(r.score_excluded||/停班(?:停課|課)?|停課/.test(String(r.special_notes||'')));};
@@ -46,11 +44,10 @@
         const priors=list.map(s=>priorYear(s.name,date));
         const baseline=priors.every(x=>x!==null)?priors.reduce((n,x)=>n+x,0):null;
         const recentGrowth=baseline>0&&average!==null?average/baseline-1:null;
-        const useRecent=average!==null&&(baseline===null||baseline===0&&average>0||baseline>0&&average>baseline*(1+SETTINGS.switchThreshold)+1e-9);
-        const method=useRecent?'recent_8_weeks':baseline!==null?'prior_year':'missing';
-        const selected=useRecent?average:baseline;
+        const method=baseline!==null?'prior_year':'missing';
+        const selected=baseline;
         const tc=selected===null?null:Math.max(0,Math.ceil(selected*(1+SETTINGS.growth)-1e-9));
-        return {date,area,totalTc:tc,averageTc:average,baselineTc:baseline,recentGrowth,method,switchThreshold:SETTINGS.switchThreshold,recommended:tc===null?null:tc/SETTINGS.tplh,thirdPartyCap:tc===null?null:tc*SETTINGS.thirdParty,historyWeeks:samples.length,targetWeeks:SETTINGS.weeks,samples,excludedSamples,excluded:!!reportMap.get(date)?.score_excluded};
+        return {date,area,totalTc:tc,averageTc:average,baselineTc:baseline,baselineDate:addDays(date,-364),recentGrowth,method,switchThreshold:SETTINGS.switchThreshold,recommended:tc===null?null:tc/SETTINGS.tplh,thirdPartyCap:tc===null?null:tc*SETTINGS.thirdParty,historyWeeks:samples.length,targetWeeks:SETTINGS.weeks,samples,excludedSamples,excluded:!!reportMap.get(date)?.score_excluded};
       });
     }
     return {stores,index,eligible,actual,priorYear,forecast,suspectDates,conflicts};
@@ -58,6 +55,7 @@
   async function load(db,start,end){
     const first=sampleStart(start),history=[],batches=[],reports=[],months=new Set();
     for(const d of dates(first,end))months.add(d.slice(0,7)+'-01');
+    for(const d of dates(addDays(start,-364),addDays(end,-364)))months.add(d.slice(0,7)+'-01');
     const refs=await Promise.all([...months].map(p_month=>db.rpc('t995_get_operations_reference',{p_month})));
     for(const r of refs){if(r.error)throw r.error;history.push(...(r.data?.history||[]));}
     for(let offset=0;;offset+=1000){const r=await db.from('t995_score_import_batches').select('report_date,report_type,row_count').gte('report_date',first).lte('report_date',end).eq('report_type','ByOrder').order('report_date').range(offset,offset+999);if(r.error)throw r.error;batches.push(...(r.data||[]));if((r.data||[]).length<1000)break;}

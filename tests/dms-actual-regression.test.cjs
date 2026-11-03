@@ -4,6 +4,7 @@ const oldModule={exports:{}};vm.runInNewContext(cp.execFileSync('git',['show','b
 function fixture(start,end){
  const mapping=new Map([['測試甲','A'],['測試乙','B']]),catalog=new Map([['001',{store_code:'001',restaurant_name:'測試甲'}],['002',{store_code:'002',restaurant_name:'測試乙'}]]),history=[],rows=[],batches=[],reports=[];
  for(const d of F.dates(F.sampleStart(start),end))for(const name of mapping.keys())history.push({record_date:d,restaurant_name:name,period_code:'full_day',total_tc:100,tc_ex_third_party:80,prior_year_tc:10});
+ for(const d of F.dates(F.addDays(start,-364),F.addDays(end,-364)))for(const name of mapping.keys())history.push({record_date:d,restaurant_name:name,period_code:'full_day',total_tc:100});
  for(const d of F.dates(start,end)){
   for(const type of ['ByOrder','ByDate'])batches.push({id:d+type,report_date:d,report_type:type,row_count:3});
   for(let i=0;i<3;i++)rows.push({batch_id:d+'ByOrder',row_number:i+1,store_code:i===2?'002':'001',restaurant_name:i===2?'測試乙':'測試甲',order_number:d+'-'+i,payload:{'自動/手動':i===2?'第三方':'自動',D7:i?'N':'Y',D25:'Y'}});
@@ -20,7 +21,7 @@ for(const [label,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026-
  const snapshot=JSON.stringify(d);d.powerbiData={history:d.history.filter(x=>x.record_date<start),batches:[]};const missing=M.build(d);assert.equal(missing.summary.tc,before.summary.tc);assert.equal(missing.summary.forecast,after.summary.forecast);assert.ok(!missing.forecastWarnings.some(x=>x.includes('Power BI實際TC尚缺')));
 });
 test('DMS dedup/exclusions/missing hours remain identical and inputs immutable',()=>{
- const d=fixture('2026-11-02','2026-11-04');d.rows.push({...d.rows[0]});d.reports[0].score_excluded=true;d.reports[1].area_hours={A:2};const input=JSON.stringify(d),a=M.build(d),b=old.build(d);for(const k of actualKeys)assert.equal(a.summary[k],b.summary[k],k);assert.equal(JSON.stringify(d),input);assert.equal(a.summary.forecast,440);
+ const d=fixture('2026-11-02','2026-11-04');d.rows.push({...d.rows[0]});d.reports[0].score_excluded=true;d.reports[1].area_hours={A:2};const input=JSON.stringify(d),a=M.build(d),b=old.build(d);for(const k of actualKeys)assert.equal(a.summary[k],b.summary[k],k);assert.equal(JSON.stringify(d),input);assert.equal(a.summary.forecast,424);
 });
 function reportHarness(d,period){
  const els=new Map(),get=id=>{if(!els.has(id))els.set(id,{remove(){},querySelectorAll(){return [];}});return els.get(id);};const sheets=new Map(),XLSX={utils:{json_to_sheet(rows){return {rows};},encode_cell(){return '';},book_append_sheet(wb,ws,name){sheets.set(name,ws.rows);}}};
@@ -34,10 +35,10 @@ for(const [period,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026
 test('analysis ranking and export use DMS while preview keeps Power BI forecast',()=>{
  const d=fixture('2026-11-02','2026-11-02');d.powerbiData.history=d.history.filter(x=>x.record_date<d.start);d.mapping=[...d.mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));Object.assign(d,{delays:[],feedback:[],campaigns:[],weeklyNotes:[],monthReports:[]});
  const els=new Map(),get=id=>{if(!els.has(id))els.set(id,{innerHTML:'',textContent:'',dataset:{},classList:{add(){},remove(){}},querySelectorAll(){return [];},addEventListener(){}});return els.get(id);};const sheets=new Map(),XLSX={utils:{book_new(){return {};},json_to_sheet(rows){return {rows};},book_append_sheet(wb,ws,name){sheets.set(name,ws.rows);}},writeFile(){}};const window={OpsMetrics:M,OpsSummary:S,OpsForecast:F,supabase:{createClient(){return {};}}};let src=fs.readFileSync(require('node:path').join(__dirname,'../analysis-dashboard.js'),'utf8');src=src.slice(0,src.indexOf("  document.querySelectorAll('[data-period]').forEach(b=>b.onclick="))+'window.__test={state,storeAnalytics,renderExport};})();';vm.runInNewContext(src,{window,document:{getElementById:get},XLSX});window.__test.state.catalog=d.catalog;window.__test.state.date=d.start;
- const rows=window.__test.storeAnalytics(d,{start:d.start,end:d.end});assert.equal(rows.reduce((n,x)=>n+x.tc,0),3);window.__test.renderExport(d,rows,{start:d.start,end:d.end});const sum=sheets.get('營運摘要')[0];assert.equal(sum.TC,3);assert.equal(sum.FA,1);assert.equal(sum.預估TC,220);assert.equal(sum.預估工時,88);assert.equal(sum.TC來源,'DMS（ByOrder／ByDate）');
+ const rows=window.__test.storeAnalytics(d,{start:d.start,end:d.end});assert.equal(rows.reduce((n,x)=>n+x.tc,0),3);window.__test.renderExport(d,rows,{start:d.start,end:d.end});const sum=sheets.get('營運摘要')[0];assert.equal(sum.TC,3);assert.equal(sum.FA,1);assert.equal(sum.預估TC,212);assert.equal(sum.預估工時,84.8);assert.equal(sum.TC來源,'DMS（ByOrder／ByDate）');
 });
 test('day/week/month exports disclose prior-year selection independently of DMS actuals',()=>{
  for(const [period,start,end] of [['day','2026-11-02','2026-11-02'],['week','2026-10-26','2026-11-01'],['month','2026-10-01','2026-10-31']]){
-  const d=fixture(start,end);d.history.forEach(x=>x.prior_year_tc=200);d.mapping=[...d.mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));const h=reportHarness(d,period);h.window.__test.appendScores({},d,{start,end});const days=h.sheets.get('每日成績'),samples=h.sheets.get('預估樣本');assert.equal(days.reduce((n,x)=>n+x.預估單,0),440*days.length);assert.equal(days.reduce((n,x)=>n+x.實際單,0),3*days.length);assert.ok(samples.every(x=>x.預估依據==='prior_year'&&x.去年TC===200&&x.前8週平均===100&&x.切換門檻===.015));
+  const d=fixture(start,end);d.history.filter(x=>x.record_date<F.sampleStart(start)).forEach(x=>x.total_tc=200);d.mapping=[...d.mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));const h=reportHarness(d,period);h.window.__test.appendScores({},d,{start,end});const days=h.sheets.get('每日成績'),samples=h.sheets.get('預估樣本');assert.equal(days.reduce((n,x)=>n+x.預估單,0),424*days.length);assert.equal(days.reduce((n,x)=>n+x.實際單,0),3*days.length);assert.ok(samples.every(x=>x.預估依據==='prior_year'&&x.去年TC===200&&x.前8週平均===100&&x.成長倍率===1.06));
  }
 });

@@ -128,9 +128,8 @@
     for(const [area,base] of v.areas)v.areas.set(area,decorate(base,includedForecasts.filter(x=>x.area===area)));
     v.forecastDetails=forecastDetails;v.missingTcDays=[];v.powerbi=prepared;
     v.forecastWarnings=[];
-    const partial=includedForecasts.filter(x=>x.historyWeeks<F.SETTINGS.weeks),missing=includedForecasts.filter(x=>x.totalTc===null);
-    if(partial.length)v.forecastWarnings.push('預估採Power BI前8週同星期；'+partial.length+'組區域／日期不足8週完整樣本'+(missing.length?'，其中'+missing.length+'組無法預估':''));
-    if(prepared.suspectDates.size)v.forecastWarnings.push('Power BI全區TC為0但DMS有訂單，已排除預估樣本、未改原值：'+[...prepared.suspectDates].sort().join('、'));
+    const missing=includedForecasts.filter(x=>x.totalTc===null);
+    if(missing.length)v.forecastWarnings.push('去年對應週TC缺漏：'+missing.length+'組區域／日期無法預估');
     if(prepared.conflicts.size)v.forecastWarnings.push('Power BI重複鍵內容衝突：'+prepared.conflicts.size+'筆，待核對');
     return v;
   }
