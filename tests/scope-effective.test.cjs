@@ -3,6 +3,7 @@ const stores=[['025','苗栗中正','K'],['173','苗栗竹南','K'],['580','苗�
 const batches=['2026-10-31','2026-11-01'].flatMap(report_date=>['ByOrder','ByDate'].map(report_type=>({id:report_date+report_type,report_date,report_type})));
 const rows=batches.flatMap(b=>stores.map((x,i)=>({...x,batch_id:b.id,row_number:i+1,order_number:b.id+x.store_code,payload:{AC:'995-'+x.area,D7:'Y',D25:'Y'}})));
 const history=['2026-10-31','2026-11-01'].flatMap(record_date=>stores.map(x=>({...x,record_date,period_code:'full_day',prior_year_tc:1,total_tc:1,tc_ex_third_party:1})));
+history.push(...history.map(x=>({...x,record_date:M.addDays(x.record_date,-364)})));
 const reports=['2026-10-31','2026-11-01'].map(record_date=>({record_date,area_hours:{K:30,E:10}}));
 const data={rows,batches,history,reports,mapping:new Map(stores.map(x=>[x.restaurant_name,x.area])),catalog:new Map(stores.map(x=>[x.store_code,x])),start:'2026-10-31',end:'2026-11-01'};
 for(const code of ['025','173','580']){assert.equal(M.storeInScope(code,'2026-10-31'),true);assert.equal(M.storeInScope(code,'2026-11-01'),false);}
