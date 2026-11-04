@@ -107,6 +107,7 @@
       }
       $('opsFeedbackMessage').textContent=`完成匯入 ${done.toLocaleString()} 筆篩選資料；重複鍵值已更新。`;
       prepared.length=0;root.value='';render();
+      window.t995RefreshFeedback?.();
     }catch(e){$('opsFeedbackMessage').textContent='匯入中止：'+(e.message||'請檢查登入狀態與資料庫 migration')+'；重新上傳同檔可更新已匯入資料。';}
     finally{const currentButton=$('opsFeedbackImport');if(currentButton)currentButton.disabled=!prepared.length;}
   });

@@ -55,6 +55,13 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",Arial,sans
 @media(max-width:600px){.period-choices[data-period="week"] button span{white-space:normal;overflow-wrap:anywhere}.period-choices[data-period="week"] button{min-height:68px}}
 .bi-upload{margin:10px 0;padding:12px}.bi-upload h3{margin:0 0 8px}.bi-upload input{max-width:100%}.tracking-note{color:#686868;font-size:12px;line-height:1.7}.timeline{margin:10px 0}.timeline table{min-width:900px}.timeline .scroll{overflow-x:auto}.line-chart{padding:8px 0 16px}.line-chart h4{margin:12px}.line-chart svg{width:100%;min-width:620px;height:auto;font-size:13px}.line-chart{overflow-x:auto}.line-legend{display:flex;justify-content:center;gap:22px}.line-legend span{display:flex;align-items:center;gap:7px}.line-legend i{display:inline-block;width:30px;height:9px}.period-choices[data-period="month"]{grid-template-columns:repeat(5,minmax(0,1fr));max-width:1000px}@media(max-width:600px){.period-choices[data-period="month"] strong{font-size:11px;white-space:normal}}
 .dashboard-layout{display:block}.metric-upload-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:10px 0}.metric-upload-row .metric-tabs{display:contents}.metric-upload-row .metric-tabs.hidden{display:none!important}.metric-upload-row .metric-tabs button,.bi-upload-button{display:flex;align-items:center;justify-content:center;width:100%;min-width:0;min-height:46px;margin:0;padding:8px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:900;text-align:center}.metric-upload-row .metric-tabs button.active{background:var(--red);border-color:var(--red);color:#fff}.bi-upload-button{cursor:pointer}.bi-upload-button input{position:absolute;width:1px;height:1px;opacity:0}.bi-upload-button:focus-within{outline:3px solid #2879bd;outline-offset:2px}#biStatus{margin:5px auto 10px}@media(max-width:700px){.metric-upload-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.metric-upload-row .metric-tabs button,.bi-upload-button{font-size:13px;min-height:48px;padding:7px 3px}}
+.metric-upload-row{grid-template-columns:repeat(5,minmax(0,1fr))}
+.metric-upload-row .metric-tabs button{min-width:0;padding-inline:4px;font-size:clamp(11px,2.6vw,14px)}
+.metric-import-footer{margin:20px auto 0;padding:12px 0 0;border-top:1px solid var(--line);text-align:center;min-width:0}
+.metric-import-footer.hidden,.metric-import-footer button:disabled{display:none}
+.metric-import-footer .bi-upload-button{display:flex;width:min(100%,168px);min-height:36px;padding:4px 8px;margin:0 auto;border:1px solid var(--red);color:var(--red);font-size:13px}
+.metric-import-footer .tracking-note{margin:5px 0}
+#opsFeedbackPreview{max-width:100%;overflow-x:auto}
 </style>
 <link rel="stylesheet" href="display-mode.css?v=20261102-toggle3">
 </head>
@@ -68,17 +75,30 @@ body{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",Arial,sans
     <div class="periods" role="group" aria-label="報表週期"><button type="button" data-period="day" class="active" aria-pressed="true">日</button><button type="button" data-period="week" aria-pressed="false">週</button><button type="button" data-period="month" aria-pressed="false">月</button></div>
     <div class="date-actions"><button id="refresh" class="secondary" type="button">重新整理</button><button id="export" class="primary" type="button">匯出 Excel</button><button type="button" class="secondary" data-display-mode-toggle aria-pressed="false">☀️</button></div>
   </div>
-<div class="metric-upload-row"><nav id="metricTabs" class="metric-tabs hidden" aria-label="成績分析項目"></nav><label class="bi-upload-button">BI 週 SSSG 匯入<input id="biFiles" type="file" accept=".xlsx,.xls,.xlsm,.csv" multiple></label></div><div id="biStatus" class="tracking-note" role="status">選取週 SSSG 檔案，通過檢查後正式匯入。</div><div id="biPreview"></div>
+<div class="metric-upload-row"><nav id="metricTabs" class="metric-tabs hidden" aria-label="成績分析項目"></nav></div>
   <div id="periodPicker" class="period-picker hidden" aria-live="polite"><div id="periodChoices" class="period-choices"></div></div>
   <div id="status" class="period-status" role="status"></div>
   <div id="report" class="dashboard-layout hidden">
 
-    <section class="panel metric-detail"><h2 id="metricTitle"></h2><div id="metricSubtitle" class="metric-subtitle"></div><div id="metricContent"></div></section>
+    <section class="panel metric-detail"><h2 id="metricTitle"></h2><div id="metricSubtitle" class="metric-subtitle"></div><div id="metricContent"></div>
+      <footer id="biUploadFooter" class="metric-import-footer hidden">
+        <label class="bi-upload-button">匯入 BI 週 SSSG<input id="biFiles" type="file" accept=".xlsx,.xls,.xlsm,.csv" multiple></label>
+        <div id="biStatus" class="tracking-note" role="status">選擇含 SSSG%_wk 的 Power BI 週檔</div>
+        <div id="biPreview"></div>
+      </footer>
+      <footer id="feedbackUploadFooter" class="metric-import-footer hidden">
+        <label class="bi-upload-button">匯入 GES／080 資料<input id="opsFeedbackFiles" type="file" accept=".xlsx,.xls,.xlsm" multiple></label>
+        <p class="tracking-note">選擇 GES、0800 或 4128 Excel</p>
+        <div id="opsFeedbackPreview"></div>
+        <button id="opsFeedbackImport" type="button" class="bi-upload-button" disabled>確認匯入</button>
+        <div id="opsFeedbackMessage" class="tracking-note" role="status"></div>
+      </footer>
+    </section>
   </div>
 </div>
 </main></div>
-<script src="analysis-dashboard.js?v=20261104-weekly-import"></script>
+<script src="analysis-dashboard.js?v=20261104-upload-footer"></script>
 
-<script src="operations-feedback.js?v=20261027-report1"></script>
+<script src="operations-feedback.js?v=20261104-upload-footer"></script>
 </body>
 </html>
