@@ -23,7 +23,7 @@ test('actual daily/weekly/monthly AC renderers move 562 waits and inspection den
   const window={OpsMetrics:M,OpsSummary:S};
   const source=fs.readFileSync(path.join(__dirname,'../operations-report.js'),'utf8').replace(/\}\)\(\);\s*$/, 'window.__test={renderAcWaitSummary,renderAcLineSummary};})();');
   vm.runInNewContext(source,{window,document:{getElementById:get},opsEscape:s=>String(s)});
-  const value=(id,name)=>get(id).innerHTML.match(new RegExp('<strong>'+name+'</strong><b>([^<]+)</b>'))?.[1];
+  const value=(id,name)=>get(id).innerHTML.match(new RegExp('<td>'+name+'</td><td>([^<]+)</td>'))?.[1];
   for(const period of ['day','week','month']){
     const date='2026-11-02',r=S.range(date,period),base={record_date:date};
     const waits=['133','562','562','066','203'].map(store_code=>({...base,store_code}));
