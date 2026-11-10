@@ -280,7 +280,54 @@
   }
   function renderTrackingExport(data,r){const wb=XLSX.utils.book_new(),t=trackingStats(data,r);XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(t.values.map(([name,value,type])=>({指標:name,數值:value,型態:type,開始:r.start,結束:r.end,有效成績日:t.scoreDates.length,截止:t.scoreDates.at(-1)||'',缺項:value===null?(name==='SSSG'?'缺資料或期間口徑未對齊':'缺資料或未確認完整來源'):''}))), '五大成績');const rows=(state.timeline||[]).flatMap(x=>x.data?trackingStats(x.data,x.range).values.filter(([name])=>trackingKeys(state.metric).includes(name)).map(([name,value])=>({開始:x.range.start,結束:x.range.end,指標:name,數值:value})): [{開始:x.range.start,結束:x.range.end,狀態:x.error||'尚未發生'}]);if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'前後兩期比較');XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet([{SSSG:'週資料採 BI SSSG%_wk。W43 的 10/23、10/24 營業額為 0。W44 採原週餐廳範圍。' ,時段人力:'缺時段工時與出勤',等餐分鐘:'缺開始與結束時間',因果:'因素差異僅為關聯證據',範圍:'11/1起排除苗栗三店；歷史保留',零值:'等餐與080無紀錄不視為完整零件'}]),'缺項與限制');document.querySelectorAll('#metricContent table').forEach((table,index)=>XLSX.utils.book_append_sheet(wb,XLSX.utils.table_to_sheet(table),'畫面分析'+(index+1)));XLSX.writeFile(wb,'T995_測試追蹤_'+r.start+'.xlsx');}
   function isoWeekBounds(year,week){const anchor=new Date(Date.UTC(year,0,4,12)),dow=(anchor.getUTCDay()+6)%7;anchor.setUTCDate(anchor.getUTCDate()-dow+(week-1)*7);const start=anchor.toISOString().slice(0,10),end=M.addDays(start,6);if(S.week(start).year!==year||S.week(start).number!==week)return null;return {start,end};}
-  function parseWeeklySales(book,file){for(const sheet of book.SheetNames){const grid=XLSX.utils.sheet_to_json(book.Sheets[sheet],{header:1,defval:null,raw:true}),header=grid.findIndex(row=>row.some(x=>String(x||'').trim()==='STR_SN')&&row.some(x=>String(x||'').trim()==='SSSG%_wk'));if(header<0)continue;const h=grid[header].map(x=>String(x||'').trim()),get=(row,name)=>row[h.indexOf(name)],footer=grid.map(row=>row.map(x=>String(x??'')).join(' ')).join('\n'),year=footer.match(/YEAR\s*是\s*(20\d{2})/i),week=footer.match(/YWEEK\s*是\s*(\d{1,2})/i),dates=footer.match(/DATE\s*在\s*(20\d{2}-\d{2}-\d{2})\s*當時或之後\s*及\s*在\s*(20\d{2}-\d{2}-\d{2})\s*之前/i);if(!/CenterName\s*是\s*桃園外送中心/i.test(footer)||!year||!week||!dates)return {error:'無法確認桃園外送中心、年份、週次與日期範圍；只預覽欄位。'};const range=isoWeekBounds(Number(year[1]),Number(week[1]));if(!range||dates[1]>range.start||dates[2]<=range.end)return {error:'檔案未涵蓋完整週；只預覽，不做整週排名。'};const all=grid.slice(header+1),total=all.find(row=>String(get(row,'Area')||'').trim()==='Total'&&!get(row,'STR_SN')),stores=all.filter(row=>get(row,'STR_SN')&&String(get(row,'STR_SN')).trim()!=='Total').map(row=>({name:String(get(row,'STR_SN')).trim(),row:header+all.indexOf(row)+2,value:typeof get(row,'SSSG%_wk')==='number'?get(row,'SSSG%_wk'):null})),directory=new Set([...state.catalog.values()].map(x=>M.clean(x.restaurant_name))),unknown=stores.filter(x=>!directory.has(M.clean(x.name))),names=stores.map(x=>M.clean(x.name));if(!total||typeof get(total,'SSSG%_wk')!=='number'||!stores.length||unknown.length||new Set(names).size!==names.length)return {error:'總計、餐廳名稱或重複值無法通過檢查；只預覽，不採用。'};return {file:file.name,sheet,row:header+all.indexOf(total)+2,...range,value:get(total,'SSSG%_wk'),stores};}return null;}
+  function parseWeeklySales(book, file) {
+    for (const sheet of book.SheetNames) {
+      const grid = XLSX.utils.sheet_to_json(book.Sheets[sheet], {header:1, defval:null, raw:true});
+      const header = grid.findIndex(row => ['STR_SN', 'SSSG%_wk'].every(key => row.some(cell => String(cell ?? '').trim() === key)));
+      if (header < 0) continue;
+      const columns = grid[header].map(cell => String(cell ?? '').trim());
+      const get = (row, name) => row[columns.indexOf(name)];
+      const footer = grid.map(row => row.join(' ')).join('\n');
+      const dates = footer.match(/DATE\s*在\s*(20\d{2}-\d{2}-\d{2})\s*當時或之後\s*及\s*在\s*(20\d{2}-\d{2}-\d{2})\s*之前/i);
+      const year = footer.match(/^[ \t]*YEAR[ \t]*是[ \t]*(20\d{2})[ \t]*$/im);
+      const week = footer.match(/^[ \t]*YWEEK[ \t]*是[ \t]*(\d{1,2})[ \t]*$/im);
+      const hasWeekFilter = /^\s*YWEEK\s*是\s*/im.test(footer);
+      const hasCenterFilter = /^\s*CenterName\s*是\s*/im.test(footer);
+      const center = /^\s*CenterName\s*是\s*桃園外送中心\s*$/im.test(footer);
+      const area = /^\s*Area\s*是\s*桃園\s*$/im.test(footer);
+      if (!dates || !year || (hasWeekFilter && !week) || !(hasCenterFilter ? center : area)) {
+        return {error:'無法確認桃園外送中心、年份與日期範圍。'};
+      }
+      const start = dates[1];
+      const iso = S.week(start);
+      const range = week ? isoWeekBounds(Number(year[1]), Number(week[1])) : isoWeekBounds(iso.year, iso.number);
+      const exactWeek = range && start === range.start && dates[2] === M.addDays(range.end, 1);
+      const explicitCenterWeek = center && week && range && start <= range.start && dates[2] > range.end;
+      if (!range || (!exactWeek && !explicitCenterWeek) || (!week && iso.year !== Number(year[1]))) {
+        return {error:'檔案未涵蓋可確認的完整單週。'};
+      }
+      const rows = grid.slice(header + 1);
+      const totalIndex = rows.findIndex(row => String(get(row, 'Area') ?? '').trim() === 'Total' && !get(row, 'STR_SN'));
+      const value = totalIndex < 0 ? null : get(rows[totalIndex], 'SSSG%_wk');
+      const stores = [];
+      for (const [index, row] of rows.entries()) {
+        const name = String(get(row, 'STR_SN') ?? '').trim();
+        if (!name || name === 'Total' || M.clean(name) === '桃園外送中心') continue;
+        const cell = get(row, 'SSSG%_wk');
+        if (cell != null && String(cell).trim() !== '' && !Number.isFinite(cell)) {
+          return {error:sheet + ' 第 ' + (header + index + 2) + ' 列 SSSG%_wk 格式無效。'};
+        }
+        stores.push({name, row:header + index + 2, value:Number.isFinite(cell) ? cell : null});
+      }
+      const directory = new Set([...state.catalog.values()].map(store => M.clean(store.restaurant_name)));
+      const names = stores.map(store => M.clean(store.name));
+      if (!Number.isFinite(value) || !stores.length || names.some(name => !directory.has(name)) || new Set(names).size !== names.length) {
+        return {error:'中心總計、餐廳名稱或重複值無法通過檢查。'};
+      }
+      return {file:file.name, sheet, row:header + totalIndex + 2, ...range, value, stores};
+    }
+    return null;
+  }
   const weeklySalesTable = 't995_bi_weekly_sales';
 
   function rememberWeeklySales(row) {
@@ -342,20 +389,25 @@
     const results = [];
     try {
       for (const file of files) {
+        let period = '—', count = '—', missingDetails = '—';
         try {
           const book = XLSX.read(await file.arrayBuffer(), {type:'array'});
           const week = parseWeeklySales(book, file);
           if (!week || week.error) {
-            results.push([file.name, '—', '—', week?.error || '找不到週 SSSG 欄位，無法匯入']);
+            results.push([file.name, '—', '—', '—', week?.error || '找不到週 SSSG 欄位，無法匯入']);
             continue;
           }
+          const missing = week.stores.filter(store => store.value === null);
+          period = week.start + '～' + week.end;
+          count = week.stores.length - missing.length;
+          missingDetails = missing.map(store => week.sheet + ' 第 ' + store.row + ' 列 ' + store.name + '（SSSG%_wk 空白）').join('；') || '—';
           const result = await importWeeklySales(week);
-          results.push([file.name, week.start + '～' + week.end, week.stores.length || '—', result]);
+          results.push([file.name, period, count, missingDetails, result]);
         } catch (error) {
-          results.push([file.name, '—', '—', '無法確認匯入結果：' + error.message]);
+          results.push([file.name, period, count, missingDetails, '無法確認匯入結果：' + error.message]);
         }
       }
-      $('biPreview').innerHTML = table(['檔案', '週期', '餐廳筆數', '匯入結果'], results);
+      $('biPreview').innerHTML = table(['檔案', '週期', '有效餐廳筆數', '缺值明細', '匯入結果'], results);
       $('biStatus').textContent = '處理完成，請查看各檔案的匯入結果。';
       if (state.data && !$('report').classList.contains('hidden')) {
         renderMetric(state.data, state.previous, range());
