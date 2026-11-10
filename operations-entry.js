@@ -127,7 +127,10 @@
   E('opsGlobalRefresh').onclick=()=>refreshActive(true);
   E('opsDelaySearch').oninput=renderDelay;E('opsLineSearch').oninput=renderLine;
   E('opsLineStats').onclick=e=>{const b=e.target.closest('[data-line-filter]');if(!b)return;state.lineFilter=state.lineFilter===b.dataset.lineFilter?'all':b.dataset.lineFilter;renderLine();};
-  function monthReplyLinkEnabled(){const c=window.CENTER_CONFIG;return (c?.schema==='shared_test_995'||(c?.environment==='production'&&c?.schema==='public'))&&c?.features?.monthReplyGatewayReady===true;}
+  function monthReplyGatewayLink(){const c=window.CENTER_CONFIG;return (c?.schema==='shared_test_995'||(c?.environment==='production'&&c?.schema==='public'))&&c?.features?.monthReplyGatewayReady===true;}
+  // 新版月回覆未啟用的正式中心（996／998）沿用舊制發連結函式（打包時 t995_ 換成該中心前綴）
+  function monthReplyLegacyLink(){const c=window.CENTER_CONFIG;return c?.environment==='production'&&c?.schema==='public'&&c?.features?.monthReplyGatewayReady!==true;}
+  function monthReplyLinkEnabled(){return monthReplyGatewayLink()||monthReplyLegacyLink();}
   const linkMonth=E('opsLinkMonth');
   const monthLabel=value=>value.slice(0,4)+'年'+value.slice(5)+'月';
   linkMonth.value=opsToday().slice(0,7);
@@ -144,10 +147,10 @@
     if(!monthReplyLinkEnabled()){msg.textContent='隔離月回覆入口尚未啟用，沒有建立連結。';return;}
     if(button.disabled)return;
     if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)){msg.textContent='請選擇有效的回覆月份';return;}
-    if(!confirm('建立 '+monthLabel(month)+' 的固定月份連結？同月重新產生會撤銷該月前一個隔離測試連結；連結沒有固定到期日，其他月份及正式舊連結不受影響。'))return;
+    if(!confirm('建立 '+monthLabel(month)+' 的固定月份連結？同月重新產生會撤銷該月前一個連結；連結沒有固定到期日，其他月份不受影響。'))return;
     clearMonthLink();button.disabled=true;linkMonth.disabled=true;msg.textContent='正在建立 '+monthLabel(month)+' 連結…';
     try{
-      const r=await db.rpc('issue_month_reply_link',{p_month:month+'-01'});if(r.error)throw r.error;
+      const r=await db.rpc(monthReplyGatewayLink()?'issue_month_reply_link':'t995_issue_month_reply_link',{p_month:month+'-01'});if(r.error)throw r.error;
       if(r.data?.month!==month||!/^[0-9a-f]{64}$/.test(r.data?.token||''))throw new Error('月份連結回應不完整，請重新確認');
       const url=new URL('reply.html',location.href);url.searchParams.set('kind','month');url.searchParams.set('token',r.data.token);
       E('opsLinkUrl').value=url.href;E('opsLinkMonthLabel').textContent='固定回覆月份：'+monthLabel(month);E('opsLinkResult').hidden=false;

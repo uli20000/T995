@@ -9,13 +9,20 @@
   const num=(v,d=0)=>v===null||v===undefined||Number.isNaN(v)?null:Number(v).toLocaleString('zh-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
   const pct=v=>v===null||v===undefined?null:num(v*100,1)+'%';
   // 目標與分析儀表板一致（analysis-dashboard.js）
+  const targets=window.CenterBusinessConfig.kpiTargets;
+  const goal=(key,fmt,compare)=>({
+    targetText:()=>targets[key]===null?'目標待核對':'目標 '+fmt(targets[key]),
+    ok:value=>targets[key]===null?null:compare(value,targets[key])
+  });
+  const min=(value,target)=>value>=target,max=(value,target)=>value<=target;
+  const percent=value=>num(value*100,Number.isInteger(value*100)?0:1)+'%';
   const KPI=[
     {key:'tc',label:'TC',fmt:v=>num(v),target:s=>s.forecast,targetText:s=>s.forecast==null?'預估資料不足':'預估 '+num(s.forecast),ok:(v,s)=>s.forecast==null?null:v>=s.forecast},
-    {key:'sstg',label:'SSTG',fmt:pct,targetText:()=>'目標 +4.2%',ok:v=>v>=0.042},
-    {key:'d7',label:'D7',scope:'全部餐廳',fmt:pct,targetText:()=>'目標 25%',ok:v=>v>=0.25},
-    {key:'d25',label:'D25',scope:'全部餐廳',fmt:pct,targetText:()=>'目標 70%',ok:v=>v>=0.70},
-    {key:'faShare',label:'FA 佔比',fmt:pct,targetText:()=>'目標 ≤25%',ok:v=>v<=0.25},
-    {key:'tplh',label:'TPLH',fmt:v=>num(v,2),targetText:()=>'目標 2.0',ok:v=>v>=2.0}
+    {key:'sstg',label:'SSTG',fmt:pct,...goal('sstg',v=>(v>0?'+':'')+percent(v),min)},
+    {key:'d7',label:'D7',scope:'全部餐廳',fmt:pct,...goal('d7',percent,min)},
+    {key:'d25',label:'D25',scope:'全部餐廳',fmt:pct,...goal('d25',percent,min)},
+    {key:'faShare',label:'FA 佔比',fmt:pct,...goal('faShareMax',v=>'≤'+percent(v),max)},
+    {key:'tplh',label:'TPLH',fmt:v=>num(v,2),...goal('tplh',v=>num(v,1),min)}
   ];
   const shift=(d,n)=>{const x=new Date(d+'T12:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10);};
   const sharedDate={key:'t995-shared-date-v1',get(){try{const x=JSON.parse(localStorage.getItem(this.key)||'null');if(x&&/^\d{4}-\d{2}-\d{2}$/.test(x.date)&&['day','week','month'].includes(x.period)&&Date.now()-x.at<43200000)return x;}catch(e){}return null;},set(date,period){try{localStorage.setItem(this.key,JSON.stringify({date,period,at:Date.now()}));}catch(e){}}};
@@ -56,6 +63,7 @@
   async function load(){
     const id=++req,wd='日一二三四五六'[new Date(date+'T12:00:00Z').getUTCDay()];E('uoDate').textContent=date+'（'+wd+'）';E('uoTitle').textContent='T'+((window.CENTER_CONFIG&&window.CENTER_CONFIG.center)||(window.CenterBusinessConfig||{}).center||'')+' '+((window.CenterBusinessConfig||{}).centerName||'外送中心')+'｜營運成績';E('uoStatus').textContent='讀取中…';E('uoFoot').textContent='';
     try{
+      if(window.KpiSettings&&typeof db!=='undefined'){try{await window.KpiSettings.load(db);}catch(e){}}
       const o=await window.OpsReport.overview(date,'day');if(id!==req)return;
       renderKpis(o);renderWait(o);renderLine(o);
       const now=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());

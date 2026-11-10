@@ -20,6 +20,11 @@
     {key:'ops:line',label:'劃線簽名',ic:'✍️',mode:'ops',tab:'line',sub:true},
     {key:'ops:summary',label:'報表匯出',ic:'📊',mode:'ops',tab:'summary',sub:true},
     {key:'analysis',label:'分析儀表板',ic:'📈',href:'analysis.html'},
+    {key:'analysis:alerts',label:'預警',ic:'🔔',href:'analysis.html#tab=alerts',sub:true},
+    {key:'analysis:impact',label:'影響度排名',ic:'🎯',href:'analysis.html#tab=impact',sub:true},
+    {key:'analysis:weekly',label:'週報草稿',ic:'📝',href:'analysis.html#tab=weekly',sub:true},
+    {key:'analysis:store',label:'餐廳頁',ic:'🏪',href:'analysis.html#tab=store',sub:true},
+    {key:'analysis:actions',label:'行動追蹤',ic:'✅',href:'analysis.html#tab=actions',sub:true},
     {group:'車隊與設備'},
     {key:'vehicle',label:'車輛／巡檢',ic:'🛵',btn:'vehicleModeBtn',sub:true},
     {key:'battery',label:'電池／紀錄器',ic:'🔋',btn:'batteryModeBtn',sub:true},
@@ -27,7 +32,9 @@
     {key:'roster',label:'在職名單',ic:'👥',btn:'rosterModeBtn',sub:true},
     {key:'shift',label:'指休',ic:'🗓️',btn:'shiftModeBtn',sub:true},
     {key:'defensive',label:'防禦駕駛',ic:'🛡️',btn:'defensiveModeBtn',sub:true},
-    {key:'survey',label:'意向調查',ic:'📋',btn:'surveyModeBtn',sub:true}
+    {key:'survey',label:'意向調查',ic:'📋',btn:'surveyModeBtn',sub:true},
+    {group:'設定'},
+    {key:'analysis:targets',label:'目標值',ic:'⚙️',href:'analysis.html#tab=targets',sub:true}
   ];
   const TITLES=Object.fromEntries(NAV.filter(n=>n.key).map(n=>[n.key,n.label]));
 
@@ -75,7 +82,7 @@
     nav.querySelectorAll('.ui-item').forEach(b=>b.classList.toggle('active',b.dataset.uiKey===key));
     const t=E('uiPageTitle');if(t)t.textContent=TITLES[key]||'';
   }
-  if(isAnalysis){mark('analysis');window.UiShell={mark};return;}
+  if(isAnalysis){mark((/^#tab=(alerts|impact|weekly|store|actions|targets)$/.test(location.hash)?'analysis:'+location.hash.slice(5):null)||'analysis');window.UiShell={mark};return;}
 
   function go(n){
     if(n.mode==='home'){showAdminMode('home');return;}

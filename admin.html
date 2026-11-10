@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="normal">
-<script src="display-mode.js?v=20261110-prod2"></script>
+<script src="display-mode.js?v=20261111-c2"></script>
 <meta name="theme-color" content="#f4f0e8">
 <title>KFC｜桃園-T995 巡檢後台</title>
 
@@ -1289,9 +1289,9 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 .ops-section{font-size:16px;line-height:1.65}.ops-section button,.ops-section input,.ops-section select,.ops-section textarea{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",sans-serif!important;font-size:16px!important}.ops-section button{font-weight:800!important}.ops-section .ops-table{font-size:15px}.ops-section .ops-message,.ops-section .ops-empty{color:#49443e;font-size:14px;font-weight:600}
 @media(max-width:600px){.ops-section .ops-table{font-size:14px}.ops-section .ops-table th,.ops-section .ops-table td{padding:9px 7px}}
 </style>
-<link rel="stylesheet" href="operations-report.css?v=20261110-prod2">
-<link rel="stylesheet" href="display-mode.css?v=20261110-prod2">
-<link rel="stylesheet" href="ui-shell.css?v=20261110-prod2">
+<link rel="stylesheet" href="operations-report.css?v=20261111-c2">
+<link rel="stylesheet" href="display-mode.css?v=20261111-c2">
+<link rel="stylesheet" href="ui-shell.css?v=20261111-c2">
 </head>
 
 <body>
@@ -1299,7 +1299,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 <div id="authGate" class="auth-gate">
   <form id="authForm" class="auth-card" autocomplete="on">
     <div class="auth-brand"><span class="auth-brand-kfc">KFC</span><span class="auth-brand-separator">/</span><span>T995 RIDER CENTER</span></div>
-    <div class="auth-mark"><span>995</span></div>
+    <div class="auth-mark"><span data-center-number></span></div>
     <div class="auth-heading">管理後台</div>
     <div class="auth-field">
       <label for="authEmail">帳號</label>
@@ -1395,7 +1395,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
       <div id="opsFileStatus" class="ops-file-status"></div><h3 id="opsPeriodLabel">區域成績</h3>
       <div id="opsReportWarnings" class="ops-report-warnings" hidden></div>
       <div id="opsAnalysisSummary"></div>
-      <section class="ops-report-card"><h3>區域成績與工時</h3><div id="opsAnalysisTable"></div><div id="opsLaborAdjustments"></div></section><section class="ops-report-card"><h3>新竹市／新竹縣／桃園天氣</h3><div id="opsWeather" aria-live="polite"></div></section><section class="ops-report-card"><h3>每日成績</h3><div id="opsDayList" class="ops-table-wrap"></div></section>
+      <section class="ops-report-card"><h3>區域成績與工時</h3><div id="opsAnalysisTable"></div><div id="opsLaborAdjustments"></div></section><section class="ops-report-card"><h3 data-center-weather-title>天氣</h3><div id="opsWeather" aria-live="polite"></div></section><section class="ops-report-card"><h3>每日成績</h3><div id="opsDayList" class="ops-table-wrap"></div></section>
       <div id="opsReportStatus" class="ops-report-status" role="status"></div>
       <details class="ops-month-fold"><summary>各區每日／整月工時</summary><div id="opsMonthHours"></div></details>
     </div>
@@ -1406,7 +1406,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
         <section class="ops-report-card"><h3>等餐</h3><div id="opsDelayCounts"></div><h4>AC 排名</h4><div id="opsDelayAcSummary"></div><h4>待改善餐廳</h4><div id="opsDelayRank"></div></section>
         <section class="ops-report-card"><h3>劃線／簽名</h3><div id="opsLineCounts"></div><h4>AC 排名</h4><div id="opsLineAcSummary"></div><h4>待改善餐廳</h4><div id="opsLineRank"></div></section>
       </div>
-      <details class="ops-report-card ops-summary-weather"><summary>新竹市／新竹縣／桃園天氣</summary><div id="opsSummaryWeather" aria-live="polite"></div></details>
+      <details class="ops-report-card ops-summary-weather"><summary data-center-weather-title>天氣</summary><div id="opsSummaryWeather" aria-live="polite"></div></details>
       <div id="opsSummaryStatus" class="ops-report-status" role="status"></div>
       <div id="opsLinksPanel" class="ops-shared-link ops-compact-actions">
         <div class="ops-export-link-row">
@@ -1488,7 +1488,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
   <div class="section-title">新增車輛</div>
   <div class="vehicle-add-grid">
     <input id="newVehicleFullPlate" class="search-input" type="text" placeholder="完整車牌，例如 EWB-8129" autocomplete="off">
-    <input id="newVehicleCenter" class="search-input" type="text" placeholder="所在餐廳店號，例如 013" inputmode="text" autocomplete="off">
+    <input id="newVehicleCenter" class="search-input" type="text" placeholder="所在餐廳店號" inputmode="text" autocomplete="off">
     <button id="addVehicleBtn" class="action-btn" type="button">＋ 新增車輛</button>
   </div>
   <div id="addVehicleMessage" class="hint" style="margin-top:8px;"></div>
@@ -1568,22 +1568,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <div class="section-title">新增正常設備</div>
     <div class="search-box device-add-panel">
       <div id="deviceRegisterIntro" class="device-add-intro">查無此設備，請補充資料後新增。新增的設備會直接設定為正常。</div>
-      <select id="deviceRegisterRestaurant" class="search-input">
-        <option value="">請選擇電池所在餐廳</option>
-        <option value="093">林口文化（093）</option><option value="018">林口復興（018）</option><option value="099">南崁中正（099）</option>
-            <option value="201">桃園台茂（201）</option><option value="095">中壢環中東（095）</option><option value="209">中壢環中東二（209）</option>
-            <option value="137">桃園大園（137）</option><option value="062">龍潭北龍（062）</option><option value="154">新竹清大（154）</option>
-            <option value="227">桃園新屋（227）</option><option value="248">桃園領航（248）</option><option value="041">楊梅中山（041）</option>
-            <option value="161">楊梅大成（161）</option><option value="516">中壢中正（516）</option><option value="544">中壢中和（544）</option>
-            <option value="084">中壢民族（084）</option><option value="242">中壢過嶺（242）</option>
-            <option value="133">新竹新豐（133）</option><option value="203">新竹湖口（203）</option><option value="562">新竹竹北（562）</option>
-            <option value="144">竹北自強（144）</option><option value="587">新竹民生（587）</option><option value="066">新竹竹東（066）</option>
-            <option value="214">新竹中正（214）</option><option value="594">新竹亞太（594）</option><option value="235">竹北中華（235）</option>
-            <option value="142">桃園桃鶯（142）</option>
-            <option value="182">桃園萬壽（182）</option><option value="167">桃園介壽（167）</option><option value="165">桃園南平（165）</option>
-            <option value="179">桃園大竹（179）</option><option value="190">桃園大溪（190）</option><option value="098">桃園大興西（098）</option>
-            <option value="183">桃園中山二（183）</option><option value="013">新竹光復（013）</option>
-      </select>
+      <select id="deviceRegisterRestaurant" class="search-input"><option value="">請選擇電池所在餐廳</option></select>
       <select id="deviceRegisterSize" class="search-input" style="margin-top:10px;display:none">
         <option value="large">A10／大台</option>
         <option value="small">C100／小台</option>
@@ -1643,13 +1628,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <div class="section-title">在職員工</div>
     <div class="employee-add-panel">
       <input id="employeeNameInput" class="employee-add-name" type="text" maxlength="60" placeholder="輸入姓名" autocomplete="name" aria-label="新員工姓名">
-      <select id="employeeAreaInput" class="employee-add-area" aria-label="新員工區域">
-        <option value="">選擇區域</option>
-        <option value="A">A 區</option><option value="B">B 區</option><option value="C">C 區</option>
-        <option value="D">D 區</option><option value="E">E 區</option><option value="F">F 區</option>
-        <option value="G">G 區</option><option value="H">H 區</option><option value="I">I 區</option>
-        <option value="J">J 區</option><option value="K">K 區</option>
-      </select>
+      <select id="employeeAreaInput" class="employee-add-area" aria-label="新員工區域"><option value="">選擇區域</option></select>
       <button id="employeeAddBtn" class="action-btn employee-add-btn" type="button">＋ 新增</button>
       <div id="employeeMessage" class="hint employee-add-message" role="status" aria-live="polite"></div>
     </div>
@@ -1682,7 +1661,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
   <section class="section">
     <div class="section-title">指休管理</div>
     <div class="shift-heading-tools">
-      <div class="hint">TPLH 2.5｜第三方 ≤20%</div>
+      <div class="hint" data-staffing-goals></div>
       <label class="shift-test-toggle"><input id="shiftTestModeToggle" type="checkbox" aria-label="測試模式"><span>測試</span></label>
       <button id="shiftDeleteTestBtn" class="shift-mini-delete" type="button" hidden title="刪除所選週測試資料" aria-label="刪除所選週測試資料">🗑</button>
     </div>
@@ -1708,7 +1687,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
     <details class="shift-fold">
       <summary class="section-title">下週人力建議</summary>
       <div class="shift-fold-content">
-        <div class="hint forecast-formula">Power BI預估：去年對應週同星期TC×1.06｜各區進位｜需求工時÷2.5｜第三方提醒20%</div>
+        <div class="hint forecast-formula" data-center-forecast-formula></div>
         <div id="staffingRecommendationSummary" class="summary forecast-summary-grid"></div>
         <div id="staffingForecastDataWarning" class="forecast-data-warning" hidden role="status" aria-live="polite"></div>
         <div id="staffingWeekGap" class="forecast-week-gap" hidden></div>
@@ -1798,7 +1777,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
   </form>
 </div>
 
-<script src="config/995-business.js"></script><script src="center-ui.js?v=20261110-prod2"></script>
+<script src="config/995-business.js?v=20261111-c2"></script><script src="center-ui.js?v=20261111-c2"></script>
 <script>
 
 const SUPABASE_URL =
@@ -5143,19 +5122,21 @@ let t995ShiftExportRows=[];
 let t995ShiftStatusFilter="all";
 let t995ShiftTestRecordCount=0;
 let t995ShiftOpenWeeks=new Set();
-let t995StaffingSettings={target_tplh:2.5,max_third_party_usage_pct:20,forecast_weeks:8,shift_test_mode:false};
+const t995StaffingForecastConfig=window.CenterBusinessConfig.forecast;
+let t995StaffingSettings={target_tplh:t995StaffingForecastConfig.tplh,max_third_party_usage_pct:t995StaffingForecastConfig.thirdParty*100,
+  forecast_weeks:t995StaffingForecastConfig.weeks,shift_test_mode:false};
 let t995AreaMap=new Map();
 let t995AreaMapLoaded=false;
 
 function t995RenderEmployeeDirectory(){
-  const areas=['A','B','C','D','E','F','G','H','I','J','K'];
+  const areas=window.CenterBusinessConfig.areas.map(([code])=>code);
   const counts=Object.fromEntries(areas.map(a=>[a,t995Employees.filter(row=>row.area_code===a).length]));
   const tabItems=[['ALL','ALL',t995Employees.length],...areas.map(a=>[a,`${a}區`,counts[a]])];
   t995EmployeeAreaTabs.innerHTML=tabItems.map(([code,label,count])=>`<button type="button" class="employee-area-tab ${t995EmployeeAreaFilter===code?'active':''}" data-t995-area-filter="${code}" aria-pressed="${t995EmployeeAreaFilter===code?'true':'false'}">${label}<br><small>${count}</small></button>`).join('');
   const areaOrder=Object.fromEntries(areas.map((a,i)=>[a,i]));
   const sorted=[...t995Employees].sort((a,b)=>{const ai=areaOrder[a.area_code]??areas.length,bi=areaOrder[b.area_code]??areas.length;return ai-bi||String(a.full_name||'').localeCompare(String(b.full_name||''),'zh-Hant');});
   const rows=t995EmployeeAreaFilter==='ALL'?sorted:sorted.filter(row=>row.area_code===t995EmployeeAreaFilter);
-  t995EmployeeDirectorySummary.textContent=`${rows.length} 人｜依 A–K 區排序`;
+  t995EmployeeDirectorySummary.textContent=`${rows.length} 人｜依中心區域排序`;
   if(!rows.length){t995EmployeeDirectoryList.innerHTML='<div class="empty">目前沒有員工</div>';return;}
   t995EmployeeDirectoryList.innerHTML=rows.map(row=>{
     const options=['<option value="" '+(!row.area_code?'selected':'')+'>未設定</option>',...areas.map(x=>`<option value="${x}" ${row.area_code===x?'selected':''}>${x}區</option>`)].join('');
@@ -5181,7 +5162,7 @@ async function t995LoadEmployees(){
 async function t995AddEmployee(){
   const name=t995EmployeeNameInput.value.trim();const area=t995EmployeeAreaInput.value;
   if(!name){t995EmployeeMessage.textContent="請輸入員工姓名。";t995EmployeeNameInput.focus();return;}
-  if(!area){t995EmployeeMessage.textContent="請選擇 A–K 區。";t995EmployeeAreaInput.focus();return;}
+  if(!area){t995EmployeeMessage.textContent="請選擇區域。";t995EmployeeAreaInput.focus();return;}
   t995EmployeeAddBtn.disabled=true;t995EmployeeMessage.textContent="新增中…";
   try{
     const existing=await db.from("employee_directory").select("id,is_active,area_code").eq("full_name",name).maybeSingle();if(existing.error)throw existing.error;
@@ -5430,7 +5411,7 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   const weeklyGap=completeWeek?weeklyAvailable-weeklyNeeded:null;
   const fmtTc=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{maximumFractionDigits:1});
   const fmtHours=value=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:1,maximumFractionDigits:1});
-  t995StaffingSummary.innerHTML=`<div class="summary-card"><div class="summary-label">成長後預估整週 TC</div><div class="summary-number">${fmtTc(weeklyTc)}</div></div><div class="summary-card"><div class="summary-label">預估需求工時（÷2.5）</div><div class="summary-number">${fmtHours(weeklyNeeded)}</div></div><div class="summary-card"><div class="summary-label">可安排工時</div><div class="summary-number">${fmtHours(weeklyAvailable)}</div></div><div class="summary-card"><div class="summary-label">第三方 TC 提醒值（20%）</div><div class="summary-number">${fmtTc(weeklyThirdParty)}</div></div>`;
+  t995StaffingSummary.innerHTML=`<div class="summary-card"><div class="summary-label">成長後預估整週 TC</div><div class="summary-number">${fmtTc(weeklyTc)}</div></div><div class="summary-card"><div class="summary-label">預估需求工時（÷${window.OpsForecast.SETTINGS.tplh}）</div><div class="summary-number">${fmtHours(weeklyNeeded)}</div></div><div class="summary-card"><div class="summary-label">可安排工時</div><div class="summary-number">${fmtHours(weeklyAvailable)}</div></div><div class="summary-card"><div class="summary-label">第三方 TC 提醒值（20%）</div><div class="summary-number">${fmtTc(weeklyThirdParty)}</div></div>`;
   t995StaffingForecastDataWarning.textContent=missingForecasts.length?`去年對應週TC缺漏：${missingForecasts.length} 組區域／日期無法預估。`:'';
   t995StaffingForecastDataWarning.hidden=!missingForecasts.length;
   if(completeWeek){
@@ -5461,11 +5442,11 @@ function t995RenderStaffingDay(){
   const totalPeople=dayData.reduce((sum,d)=>sum+d.people,0);const totalAvailable=dayData.reduce((sum,d)=>sum+d.availableHours,0);
   const totalGap=totalNeeded===null?null:totalAvailable-totalNeeded;const totalDelta=gap(totalGap);
   const totalText=(value,digits=1)=>value===null?'—':Number(value).toLocaleString('zh-TW',{minimumFractionDigits:digits,maximumFractionDigits:digits});
-  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜去年對應週TC×1.06，各區進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷2.5）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
+  const totals=`<div class="forecast-day-total-wrap"><div class="forecast-day-total-title">${day.day} 預估合計｜去年對應週TC×${1+window.OpsForecast.SETTINGS.growth}，各區進位</div><div class="forecast-day-total-grid"><div class="forecast-day-total-card"><span>預估 TC</span><strong>${fmtTc(totalTc)}</strong></div><div class="forecast-day-total-card"><span>需求工時（÷${window.OpsForecast.SETTINGS.tplh}）</span><strong>${totalText(totalNeeded)}</strong></div><div class="forecast-day-total-card"><span>第三方 TC 提醒值（20%）</span><strong>${fmtTc(totalThird)}</strong></div><div class="forecast-day-total-card"><span>可排人數／工時</span><strong>${totalPeople} 人／${totalText(totalAvailable)} 小時</strong></div><div class="forecast-day-total-card"><span>工時差</span><strong class="forecast-gap ${totalDelta.cls}">${totalDelta.text}</strong></div></div></div>`;
   const rows=areas.map(({area,days})=>{const d=days[offset];const delta=gap(d.gap);const tc=d.excluded?'不適用':fmtTc(d.totalTc);const needed=d.excluded?'不適用':fmtHours(d.recommended);const third=d.excluded?'不適用':fmtTc(d.thirdPartyCap);const availability=`${d.people} 人／${d.availableHours.toFixed(1)} 小時`;const history=d.baselineDate||'—';
     return {area,tc,needed,third,availability,delta,history};
   });
-  t995StaffingList.innerHTML=`<div class="forecast-day-panel"><div class="forecast-day-heading">${day.day}｜${day.date}</div>${totals}<div class="forecast-area-table-wrap"><table class="forecast-area-table" aria-label="${day.day}各區人力預測"><thead><tr><th>區域／去年日期</th><th>成長後預估 TC</th><th>需求工時</th><th>第三方 TC 20% 提醒</th><th>可排人數／工時</th><th>工時差</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${r.area} 區</strong><small class="forecast-history-weeks">${r.history}</small></td><td>${r.tc}</td><td>${r.needed}</td><td>${r.third}</td><td>${r.availability}</td><td class="forecast-gap ${r.delta.cls}">${r.delta.text}</td></tr>`).join('')}</tbody></table></div><div class="forecast-area-cards">${rows.map(r=>`<article class="forecast-area-card"><div class="forecast-area-card-head"><span>${r.area} 區 <small class="forecast-history-weeks">${r.history}</small></span><span class="forecast-gap ${r.delta.cls}">${r.delta.text}</span></div><div class="forecast-area-card-grid">${metric('成長後預估 TC',r.tc)}${metric('預估需求工時（÷2.5）',r.needed)}${metric('第三方 TC 20% 提醒值',r.third)}${metric('可排人數／工時',r.availability)}</div></article>`).join('')}</div></div>`;
+  t995StaffingList.innerHTML=`<div class="forecast-day-panel"><div class="forecast-day-heading">${day.day}｜${day.date}</div>${totals}<div class="forecast-area-table-wrap"><table class="forecast-area-table" aria-label="${day.day}各區人力預測"><thead><tr><th>區域／去年日期</th><th>成長後預估 TC</th><th>需求工時</th><th>第三方 TC 20% 提醒</th><th>可排人數／工時</th><th>工時差</th></tr></thead><tbody>${rows.map(r=>`<tr><td><strong>${r.area} 區</strong><small class="forecast-history-weeks">${r.history}</small></td><td>${r.tc}</td><td>${r.needed}</td><td>${r.third}</td><td>${r.availability}</td><td class="forecast-gap ${r.delta.cls}">${r.delta.text}</td></tr>`).join('')}</tbody></table></div><div class="forecast-area-cards">${rows.map(r=>`<article class="forecast-area-card"><div class="forecast-area-card-head"><span>${r.area} 區 <small class="forecast-history-weeks">${r.history}</small></span><span class="forecast-gap ${r.delta.cls}">${r.delta.text}</span></div><div class="forecast-area-card-grid">${metric('成長後預估 TC',r.tc)}${metric('預估需求工時（÷'+window.OpsForecast.SETTINGS.tplh+'）',r.needed)}${metric('第三方 TC 20% 提醒值',r.third)}${metric('可排人數／工時',r.availability)}</div></article>`).join('')}</div></div>`;
 }
 function t995RenderShiftAndForecast(){t995RenderShiftAdmin();t995RenderStaffingFromCurrent();}
 
@@ -5523,7 +5504,7 @@ async function t995ImportTcWorkbook(){
     const counter={count:0,badDates:0};const unmapped=new Set();
     const rows=[...t995RowsFromSheet(workbook,fullSheet,"full_day",counter,unmapped),...t995RowsFromSheet(workbook,mealSheet,"meal_period",counter,unmapped)];
     if(counter.badDates)throw new Error(`${counter.badDates} 列日期無法辨識，請檢查 DATE 欄。`);
-    if(unmapped.size)throw new Error(`以下店名不在 A–K 對照表，未匯入：${[...unmapped].slice(0,15).join("、")}${unmapped.size>15?"…":""}`);
+    if(unmapped.size)throw new Error(`以下店名不在中心區域對照表，未匯入：${[...unmapped].slice(0,15).join("、")}${unmapped.size>15?"…":""}`);
     if(!rows.length)throw new Error("沒有可匯入的餐廳資料列。請確認是否只有 Total 總計列。");
     const unique=new Set(rows.map(r=>`${r.restaurant_name}|${r.record_date}|${r.period_code}`));if(unique.size!==rows.length)throw new Error("檔案內有重複餐廳／日期／整天或餐期資料；請先整理後再匯入。");
     const dates=t995MinMaxDates(rows);t995TcImportMessage.textContent=`預覽完成：${rows.length} 列｜${dates.start} 至 ${dates.end}｜整天與餐期分開保存｜Total 列已略過｜空白／負數歸零 ${counter.count} 個欄位。重複的餐廳／日期／類型會更新。`;
@@ -5552,7 +5533,7 @@ async function t995ImportActualsWorkbook(){
       rows.push({restaurant_name:store,area_code:area,record_date:date,actual_work_hours:t995NumericZero(t995ActualField(row,["實際工時","實際安排工時","工時"]),counter),actual_tplh:t995NumericZero(t995ActualField(row,["實際TPLH","實際 TPLH","實際TPLH (FA)","實際 TPLH (FA)"]),counter),third_party_usage_pct:rate});
     });
     if(counter.badDates)throw new Error(`${counter.badDates} 列日期無法辨識，請檢查 DATE 欄。`);
-    if(unmapped.size)throw new Error(`以下店名不在 A–K 對照表：${[...unmapped].slice(0,15).join("、")}${unmapped.size>15?"…":""}`);
+    if(unmapped.size)throw new Error(`以下店名不在中心區域對照表：${[...unmapped].slice(0,15).join("、")}${unmapped.size>15?"…":""}`);
     if(!rows.length)throw new Error("沒有可匯入的餐廳資料列。Total 列會略過。");
     const keys=new Set(rows.map(r=>`${r.restaurant_name}|${r.record_date}`));if(keys.size!==rows.length)throw new Error("檔案內有重複餐廳／日期資料，請先整理。");
     const dates=t995MinMaxDates(rows);t995ActualsImportMessage.textContent=`預覽完成：${rows.length} 列｜${dates.start} 至 ${dates.end}｜空白／負數歸零 ${counter.count} 個欄位。`;
@@ -5799,7 +5780,7 @@ async function t995ImportCompleteWorkbookV4(){
     if(validationErrors.length)throw new Error(`預覽錯誤 ${validationErrors.length} 列；未匯入。${validationErrors.slice(0,5).join('；')}`);
     if(!tcMap.size&&!actualMap.size&&!centerMap.size)throw new Error("找不到可辨識的逐日 TC 或中心實際資料分頁");
     if(counter.badDates)throw new Error(`${counter.badDates} 列日期無法辨識`);
-    if(unmapped.size)throw new Error(`餐廳未設定 A–K 區：${[...unmapped].slice(0,12).join("、")}${unmapped.size>12?"…":""}`);
+    if(unmapped.size)throw new Error(`餐廳未設定區域：${[...unmapped].slice(0,12).join("、")}${unmapped.size>12?"…":""}`);
     if(actualConflicts.length)throw new Error(`重複分頁的實際資料不一致：${[...new Set(actualConflicts)].slice(0,8).join("、")}`);
     const parsedTcRows=[...tcMap.values()];
     const tcRows=parsedTcRows.map(({third_party_tc_import,...x})=>x);const actualRows=[...actualMap.values()];
@@ -6336,19 +6317,19 @@ async function opsArchiveScoreSourceFiles(pair){
 
 
 
-<script src="operations-calendar.js?v=20261110-prod2"></script>
+<script src="operations-calendar.js?v=20261111-c2"></script>
 <script src="config/business-schema.js"></script>
-<script src="config/995-business.js"></script>
-<script src="score-revision-reader.js"></script>
+<script src="config/995-business.js?v=20261111-c2"></script>
 <script src="score-read-source.js"></script>
-<script src="operations-forecast.js?v=20261110-prod2"></script>
-<script src="operations-metrics.js?v=20261110-prod2"></script>
-<script src="operations-summary.js?v=20261110-prod2"></script>
-<script src="operations-report.js?v=20261110-prod2"></script>
-<script src="operations-entry.js?v=20261110-prod2"></script>
-<script src="ui-shell.js?v=20261110-prod2"></script>
-<script src="ui-overview.js?v=20261110-prod2"></script>
-<script src="ui-ops.js?v=20261110-prod2"></script>
+<script src="operations-forecast.js?v=20261111-c2"></script>
+<script src="operations-metrics.js?v=20261111-c2"></script>
+<script src="operations-summary.js?v=20261111-c2"></script>
+<script src="operations-report.js?v=20261111-c2"></script>
+<script src="operations-entry.js?v=20261111-c2"></script>
+<script src="ui-shell.js?v=20261111-v2c"></script>
+<script src="kpi-settings.js?v=20261111-v2c"></script>
+<script src="ui-overview.js?v=20261111-v2c"></script>
+<script src="ui-ops.js?v=20261111-c2"></script>
 </body>
 </html>
 
