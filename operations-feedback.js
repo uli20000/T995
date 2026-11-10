@@ -1,6 +1,10 @@
 (function(){
   'use strict';
   const $=id=>document.getElementById(id),db=window.t995SupabaseClient;
+  const B=window.OpsMetrics?.BUSINESS||window.CenterBusinessConfig||{};
+  const REGION=B.regionLabel||'',CENTER_LABEL=REGION+'外送中心',AREA_NAMES=new Set(B.feedback0800AreaNames||[]);
+  const OWN_RESTAURANTS=new Set((B.restaurants||[]).map(r=>String(r.restaurant_name??'').normalize('NFKC').replace(/\s+/g,' ').trim()));
+  const isCenterRow=name=>!!REGION&&name.includes(REGION)&&name.includes('外送中心');
   if(!db)return;
   const prepared=[];let cachedStores;const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const clean=v=>String(v??'').normalize('NFKC').replace(/\s+/g,' ').trim();
@@ -29,13 +33,13 @@
     for(const [offset,cells] of nonempty(matrix.slice(headerRow+1)).entries()){
       const get=k=>ix[k]>=0?cells[ix[k]]:'';
       const kind=clean(get('kind')),complaintType=clean(get('type')),area=clean(get('area')),restaurant=clean(get('restaurant'));
-      if(kind!=='抱怨'||!['網路外送','外送'].includes(complaintType)||!(area==='中一區'||(restaurant.includes('桃園')&&restaurant.includes('外送中心'))))continue;
+      if(kind!=='抱怨'||!['網路外送','外送'].includes(complaintType)||!(AREA_NAMES.has(area)||isCenterRow(restaurant)||OWN_RESTAURANTS.has(restaurant)))continue;
       const recordDate=opsIsoDate(get('date'));if(!recordDate)continue;
       const row={record_date:recordDate,area_name:area,restaurant_name:restaurant,source_channel:clean(get('channel')),feedback_kind:kind,complaint_type:complaintType,main_topic:clean(get('topic')),item_1:clean(get('item1')),item_2:clean(get('item2')),content:String(get('content')??'').trim(),invoice_number:clean(get('invoice')),work_order:clean(get('work')),followup_status:clean(get('follow')),raw_fields:Object.fromEntries(headers.map((h,i)=>[h||`欄位${i+1}`,cells[i] instanceof Date?opsIsoDate(cells[i]):cells[i]??'']))};
       const caseKey=row.work_order?`work:${row.work_order}:${row.main_topic}:${row.item_1}:${row.item_2}`:`hash:${await stableHash([recordDate,row.invoice_number,restaurant,row.main_topic,row.item_1,row.item_2,row.content])}`;
       out.push(rowRecord('0800',caseKey,file,row));
     }
-    if(!out.length)throw new Error('此 0800 檔沒有符合條件的資料：抱怨＋外送＋中一區或桃園外送中心。');
+    if(!out.length)throw new Error('此 0800 檔沒有符合條件的資料：抱怨＋外送＋'+[...AREA_NAMES,CENTER_LABEL].join('或')+(OWN_RESTAURANTS.size?'或本中心餐廳':'')+'。');
     return out;
   }
   async function parse4128(matrix,file,stores){
@@ -45,14 +49,14 @@
     const out=[];
     for(const cells of nonempty(matrix.slice(headerRow+1))){
       const get=k=>ix[k]>=0?cells[ix[k]]:'';
-      const sourceRestaurant=clean(get('restaurant'));if(!(sourceRestaurant.includes('桃園')&&sourceRestaurant.includes('外送中心')))continue;
+      const sourceRestaurant=clean(get('restaurant'));if(!isCenterRow(sourceRestaurant))continue;
       const recordDate=opsIsoDate(get('date')),orderNumber=clean(get('order')),storeCode=(orderNumber.match(/^(\d{3})/)||[])[1]||'';
       if(!recordDate||!storeCode)continue;
       const store=stores.byCode.get(storeCode),restaurantName=store?.restaurant_name||`未配對店號 ${storeCode}`;
       const row={record_date:recordDate,area_name:clean(get('area'))||'外送中心',store_code:storeCode,restaurant_name:restaurantName,source_channel:clean(get('channel')),feedback_kind:clean(get('kind')),complaint_type:clean(get('type')),content:String(get('content')??'').trim(),order_number:orderNumber,work_order:clean(get('work')),followup_status:clean(get('follow')),raw_fields:Object.fromEntries(headers.map((h,i)=>[h||`欄位${i+1}`,cells[i] instanceof Date?opsIsoDate(cells[i]):cells[i]??'']))};
       out.push(rowRecord('4128',keyParts([recordDate,orderNumber,row.work_order]),file,row));
     }
-    if(!out.length)throw new Error('此 4128 檔沒有桃園外送中心且可辨識前三碼店號的資料。');
+    if(!out.length)throw new Error('此 4128 檔沒有'+CENTER_LABEL+'且可辨識前三碼店號的資料。');
     return out;
   }
   function parseGes(matrix,file,stores){
@@ -112,3 +116,4 @@
     finally{const currentButton=$('opsFeedbackImport');if(currentButton)currentButton.disabled=!prepared.length;}
   });
 })();
+

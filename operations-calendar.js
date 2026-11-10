@@ -81,3 +81,4 @@
   const api={years,sources,known:date=>Object.hasOwn(years,String(date).slice(0,4)),holiday:date=>years[String(date).slice(0,4)]?.[date]||null};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsCalendar=api;
 })(typeof window!=='undefined'?window:globalThis);
+

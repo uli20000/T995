@@ -1,19 +1,17 @@
 (function(root){
   'use strict';
-  const AREAS=[['A','新竹'],['B','竹北'],['C','竹東'],['D','中壢'],['E','桃園'],['F','楊梅'],['G','大園'],['H','大溪'],['I','林口'],['J','大竹'],['K','苗栗']];
-  const HISTORICAL_AC_ASSIGNMENTS=[
-    {name:'Abby',stores:['133','144','203','562']},
-    {name:'Avery',stores:['025','173','066','214','587','594','235']},
-    {name:'Chance',stores:['095','209','099','018','093','137','062','154','201']},
-    {name:'Jewel',stores:['098','179','165','182','183','142','190','167','013']},
-    {name:'Renee',stores:['041','161','227','516','544','084','242','248','580']}
-  ];
-  const NON_DELIVERY_STORES=new Set(['201','203']);
-  const SCOPE_EFFECTIVE_DATE='2026-11-01';
-  const REMOVED_STORES=new Set(['025','173','580']);
-  const REMOVED_NAMES=new Set(['苗栗中正','苗栗竹南','苗栗頭份']);
+  const isNode=typeof module!=='undefined'&&module.exports;
+  const schema=isNode?require('./config/business-schema.js'):root.CenterBusinessSchema;
+  if(!schema)throw new Error('尚未載入中心營運設定驗證器');
+  const BUSINESS=schema.validate(isNode?(root.CenterBusinessConfig||require('./config/995-business.js')):root.CenterBusinessConfig,root.CENTER_CONFIG?.center);
+  const AREAS=BUSINESS.areas;
+  const HISTORICAL_AC_ASSIGNMENTS=BUSINESS.acAssignments;
+  const NON_DELIVERY_STORES=new Set(BUSINESS.nonDeliveryStores);
+  const SCOPE_EFFECTIVE_DATE=BUSINESS.scopeEffectiveDate;
+  const REMOVED_STORES=new Set(BUSINESS.removedStores);
+  const REMOVED_NAMES=new Set(BUSINESS.removedNames);
   const storeInScope=(code,date,name='')=>!date||date<SCOPE_EFFECTIVE_DATE||!(REMOVED_STORES.has(String(code||'').padStart(3,'0'))||REMOVED_NAMES.has(String(name||'').normalize('NFKC').replace(/\s+/g,'')));
-  const areasForDate=date=>AREAS.filter(([code])=>date<SCOPE_EFFECTIVE_DATE||code!=='K');
+  const areasForDate=date=>AREAS.filter(([code])=>date<SCOPE_EFFECTIVE_DATE||!BUSINESS.removedAreas.includes(code));
   const acAssignmentsForDate=date=>HISTORICAL_AC_ASSIGNMENTS.map(ac=>({...ac,stores:ac.stores.filter(code=>storeInScope(code,date))}));
   const AC_ASSIGNMENTS=acAssignmentsForDate(SCOPE_EFFECTIVE_DATE);
   function scopeData(data){
@@ -51,7 +49,7 @@
     const p=row.payload||{},name=clean(row.restaurant_name),code=String(row.store_code||'');
     const canonical=catalog.get(code);const mapped=mapping.get(name)||mapping.get(clean(canonical?.restaurant_name));
     if(mapped)return mapped;
-    const ac=String(p.AC||'').match(/995[-\s]?([A-K])$/i);return ac?ac[1].toUpperCase():'?';
+    const ac=String(p.AC||'').match(new RegExp(BUSINESS.center+'[-\\s]?([A-Z0-9]+)$','i'));return ac&&AREAS.some(([code])=>code===ac[1].toUpperCase())?ac[1].toUpperCase():'?';
   }
   function empty(){return {tc:0,fa:0,d7Y:0,d7N:0,d25Y:0,d25N:0,qtSum:0,qtN:0,d7Seconds:0,d7TimeN:0,d25Seconds:0,d25TimeN:0,prior:0,priorN:0};}
   function add(target,source){for(const k of Object.keys(empty()))target[k]+=source[k]||0;return target;}
@@ -61,6 +59,8 @@
     const rangeAreas=areasForDate(start);
     const days=new Map(dates(start,end).map(date=>[date,{date,areas:new Map(areasForDate(date).map(([a])=>[a,empty()])),types:new Set(),orders:[],raw:[],report:reports.find(x=>x.record_date===date)||null}]));
     const byBatch=new Map(batches.map(b=>[b.id,b]));
+    // An imported zero-row day is still a known source day.
+    for(const batch of batches){if(days.has(batch.report_date))days.get(batch.report_date).types.add(batch.report_type);}
     const seen=new Set();
     for(const row of rows){const b=byBatch.get(row.batch_id);if(!b||!days.has(b.report_date))continue;const day=days.get(b.report_date);day.types.add(b.report_type);const key=b.report_date+'|'+b.report_type+'|'+(row.order_number||row.row_number);if(seen.has(key))continue;seen.add(key);const code=areaFor(row,mapping,catalog);if(!day.areas.has(code))day.areas.set(code,empty());const a=day.areas.get(code),p=row.payload||{};day.raw.push({...row,report_date:b.report_date,report_type:b.report_type,area_code:code});
       if(b.report_type==='ByOrder'){
@@ -111,6 +111,7 @@
     const v=buildOrders(args),{start,end,mapping,catalog}=args;
     const prepared=v.priorSource;
     const forecastDetails=[];
+    const today=args.today||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
     const sumForecast=rows=>rows.length&&rows.every(x=>x.totalTc!==null)?rows.reduce((n,x)=>n+x.totalTc,0):null;
     const decorate=(base,forecasts)=>{
       const forecast=sumForecast(forecasts),forecastHours=forecast===null?null:forecast/FORECAST_TPLH;
@@ -122,20 +123,38 @@
       forecastDetails.push(...f);
       day.tcComplete=day.types.has('ByOrder')&&!day.scoreExcluded;
       day.metrics=decorate(day.metrics,f);
+      day.attainmentEligible=day.tcComplete&&day.date<=today;
+      if(!day.attainmentEligible)day.metrics.tcAchievement=null;
       day.metrics.hoursAchievement=ratio(day.actualHours,day.metrics.forecastHours);
-      for(const [area,base] of day.areas){const value=derived(base);if(day.baselineMissingAreas.has(area)){value.prior=null;value.sstg=null;value.sstgExFA=null;}day.areas.set(area,decorate(value,f.filter(x=>x.area===area)));}
+      for(const [area,base] of day.areas){const value=derived(base);if(day.baselineMissingAreas.has(area)){value.prior=null;value.sstg=null;value.sstgExFA=null;}const decorated=decorate(value,f.filter(x=>x.area===area));if(!day.attainmentEligible)decorated.tcAchievement=null;day.areas.set(area,decorated);}
     }
     const includedForecasts=forecastDetails.filter(x=>!x.excluded);
     v.summary=decorate(v.summary,includedForecasts);
     v.summary.hoursAchievement=v.hoursWithoutScores.length?null:ratio(v.summary.actualHours,v.summary.forecastHours);
     for(const [area,base] of v.areas)v.areas.set(area,decorate(base,includedForecasts.filter(x=>x.area===area)));
-    v.forecastDetails=forecastDetails;v.missingTcDays=[];v.powerbi=prepared;
+    // Keep full-period forecasts for planning, but attainment compares matching elapsed source days only.
+    const attainmentDays=[...v.days.values()].filter(day=>day.attainmentEligible);
+    const attainmentForecasts=forecastDetails.filter(x=>!x.excluded&&v.days.get(x.date)?.attainmentEligible);
+    v.summary.attainmentForecast=sumForecast(attainmentForecasts);
+    v.summary.attainmentActual=attainmentDays.length?attainmentDays.reduce((sum,day)=>sum+day.metrics.tc,0):null;
+    v.summary.tcAchievement=ratio(v.summary.attainmentActual,v.summary.attainmentForecast);
+    for(const [area,value] of v.areas){
+      value.attainmentForecast=sumForecast(attainmentForecasts.filter(x=>x.area===area));
+      value.attainmentActual=attainmentDays.length?attainmentDays.reduce((sum,day)=>sum+(day.areas.get(area)?.tc||0),0):null;
+      value.tcAchievement=ratio(value.attainmentActual,value.attainmentForecast);
+    }
+    v.forecastDetails=forecastDetails;
+    v.missingTcDays=[...v.days.values()].filter(day=>day.date<=today&&!day.scoreExcluded&&!day.types.has('ByOrder')).map(day=>day.date);
+    v.powerbi=prepared;
     v.forecastWarnings=[];
+    if(v.missingTcDays.length)v.forecastWarnings.push('預估達成率已排除缺少 ByOrder 的日期（實際與預估同時排除）：'+v.missingTcDays.join('、'));
+    if([...v.days.values()].some(day=>day.date>today))v.forecastWarnings.push('預估達成率僅計算截至今日已匯入 ByOrder 的日期；今日採整日預估');
     const missing=includedForecasts.filter(x=>x.totalTc===null);
     if(missing.length)v.forecastWarnings.push('去年對應週TC缺漏：'+missing.length+'組區域／日期無法預估');
     if(prepared.conflicts.size)v.forecastWarnings.push('Power BI重複鍵內容衝突：'+prepared.conflicts.size+'筆，待核對');
     return v;
   }
-  const api={AREAS,AC_ASSIGNMENTS,HISTORICAL_AC_ASSIGNMENTS,SCOPE_EFFECTIVE_DATE,REMOVED_STORES,storeInScope,areasForDate,acAssignmentsForDate,scopeData,NON_DELIVERY_STORES,GROWTH,FORECAST_TPLH,number,ratio,clean,duration,addDays,range,dates,weeks,latestBatches,areaFor,build};
+  const api={BUSINESS,AREAS,AC_ASSIGNMENTS,HISTORICAL_AC_ASSIGNMENTS,SCOPE_EFFECTIVE_DATE,REMOVED_STORES,storeInScope,areasForDate,acAssignmentsForDate,scopeData,NON_DELIVERY_STORES,GROWTH,FORECAST_TPLH,number,ratio,clean,duration,addDays,range,dates,weeks,latestBatches,areaFor,build};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsMetrics=api;
 })(typeof window!=='undefined'?window:globalThis);
+

@@ -15,3 +15,4 @@ html[data-display-mode="dark"] :is(#opsScoresPanel,#opsSummaryPanel){--ops-ink:#
 html[data-display-mode="dark"] :is(.ops-file-card,.ops-file-card.ready,.ops-kpi-card,.ops-line-stat,.ops-incomplete-fold,.ops-records-table tr,.ops-area-table tr,.ops-score-heading,.ops-area-hour){background:#22262b!important;color:#f1f1f1;border-color:#4b5058}
 html[data-display-mode="dark"] :is(.ops-kpi-card strong,.ops-summary-priority-rank,.ops-summary-priority-list b,.ops-ac-summary-grid b){color:#ff91a5!important}
 html[data-display-mode="dark"] :is(.ops-area-table tfoot th,.ops-area-table tfoot td,.ops-area-table tbody tr:nth-child(even)){background:#2c3138;color:#f1f1f1}
+

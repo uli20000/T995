@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!-- T995 V8: multi-week opening + Taipei-week rollover refresh; confirmed UI unchanged. -->
 <html lang="zh-Hant">
-<head>
+<head><script src="center-config.js"></script><script src="center-runtime.js"></script><script src="score-pair-adapter.js"></script><script src="source-archive-adapter.js"></script><script src="score-revision-upload.js"></script><link rel="stylesheet" href="shared-shell.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="normal">
-<script src="display-mode.js?v=20261102-toggle3"></script>
+<script src="display-mode.js?v=20261110-prod1"></script>
 <meta name="theme-color" content="#f4f0e8">
 <title>KFC｜桃園-T995 巡檢後台</title>
 
@@ -1289,8 +1289,9 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 .ops-section{font-size:16px;line-height:1.65}.ops-section button,.ops-section input,.ops-section select,.ops-section textarea{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC",sans-serif!important;font-size:16px!important}.ops-section button{font-weight:800!important}.ops-section .ops-table{font-size:15px}.ops-section .ops-message,.ops-section .ops-empty{color:#49443e;font-size:14px;font-weight:600}
 @media(max-width:600px){.ops-section .ops-table{font-size:14px}.ops-section .ops-table th,.ops-section .ops-table td{padding:9px 7px}}
 </style>
-<link rel="stylesheet" href="operations-report.css?v=20261105-summary-cards">
-<link rel="stylesheet" href="display-mode.css?v=20261102-toggle3">
+<link rel="stylesheet" href="operations-report.css?v=20261110-prod1">
+<link rel="stylesheet" href="display-mode.css?v=20261110-prod1">
+<link rel="stylesheet" href="ui-shell.css?v=20261110-prod1">
 </head>
 
 <body>
@@ -1390,11 +1391,11 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
       <h3 id="opsLineListTitle">餐廳狀態</h3><div id="opsLineList" class="ops-table-wrap"></div>
     </div>
     <div id="opsScoresPanel" class="ops-panel" hidden>
-      <div class="ops-upload-block"><h3>匯入當日成績</h3><div class="ops-score-upload"><label class="ops-score-file-button">選擇兩個 Excel<input id="opsScoreFiles" type="file" accept=".xlsx,.xls,.xlsm" multiple></label></div><div id="opsScorePreview" class="ops-table-wrap"></div><button id="opsScoreImport" type="button" class="action-btn primary" disabled>匯入當日成績</button><div id="opsScoreMessage" class="ops-message" role="status"></div></div>
+      <div class="ops-upload-block"><h3>匯入當日成績</h3><div class="ops-score-upload"><label class="ops-score-file-button">選擇兩個 Excel<input id="opsScoreFiles" type="file" accept=".xlsx,.xls,.xlsm" multiple></label></div><div id="opsScorePreview" class="ops-table-wrap"></div><button id="opsScoreImport" type="button" class="action-btn primary" disabled>匯入當日成績</button><div id="opsRevisionReview" hidden><pre id="opsRevisionSummary" style="white-space:pre-wrap" role="status"></pre><button id="opsRevisionConfirm" type="button" class="action-btn primary">確認成對提交新版本</button><button id="opsRevisionCancel" type="button" class="action-btn">取消核對</button><p class="hint">舊版與原始檔保留。網路結果不明時請保持本頁，重試沿用原請求；不要重新整理。</p></div><div id="opsScoreMessage" class="ops-message" role="status"></div></div>
       <div id="opsFileStatus" class="ops-file-status"></div><h3 id="opsPeriodLabel">區域成績</h3>
       <div id="opsReportWarnings" class="ops-report-warnings" hidden></div>
       <div id="opsAnalysisSummary"></div>
-      <section class="ops-report-card"><h3>區域成績與工時</h3><div id="opsAnalysisTable"></div><div id="opsLaborAdjustments"></div></section><section class="ops-report-card"><h3>新竹／桃園天氣</h3><div id="opsWeather" aria-live="polite"></div></section><section class="ops-report-card"><h3>每日成績</h3><div id="opsDayList" class="ops-table-wrap"></div></section>
+      <section class="ops-report-card"><h3>區域成績與工時</h3><div id="opsAnalysisTable"></div><div id="opsLaborAdjustments"></div></section><section class="ops-report-card"><h3>新竹市／新竹縣／桃園天氣</h3><div id="opsWeather" aria-live="polite"></div></section><section class="ops-report-card"><h3>每日成績</h3><div id="opsDayList" class="ops-table-wrap"></div></section>
       <div id="opsReportStatus" class="ops-report-status" role="status"></div>
       <details class="ops-month-fold"><summary>各區每日／整月工時</summary><div id="opsMonthHours"></div></details>
     </div>
@@ -1405,7 +1406,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
         <section class="ops-report-card"><h3>等餐</h3><div id="opsDelayCounts"></div><h4>AC 排名</h4><div id="opsDelayAcSummary"></div><h4>待改善餐廳</h4><div id="opsDelayRank"></div></section>
         <section class="ops-report-card"><h3>劃線／簽名</h3><div id="opsLineCounts"></div><h4>AC 排名</h4><div id="opsLineAcSummary"></div><h4>待改善餐廳</h4><div id="opsLineRank"></div></section>
       </div>
-      <details class="ops-report-card ops-summary-weather"><summary>新竹／桃園天氣</summary><div id="opsSummaryWeather" aria-live="polite"></div></details>
+      <details class="ops-report-card ops-summary-weather"><summary>新竹市／新竹縣／桃園天氣</summary><div id="opsSummaryWeather" aria-live="polite"></div></details>
       <div id="opsSummaryStatus" class="ops-report-status" role="status"></div>
       <div id="opsLinksPanel" class="ops-shared-link ops-compact-actions">
         <div class="ops-export-link-row">
@@ -1637,7 +1638,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 </section>
 
 <section id="rosterModePage" class="admin-mode-page">
-  <div class="mode-back-row protected-mode-actions"><button id="rosterBackBtn" class="action-btn" type="button">← 返回後台入口</button><button id="rosterPasswordChangeBtn" class="action-btn" type="button">變更共用密碼</button></div>
+  <div class="mode-back-row protected-mode-actions"><button id="rosterBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
   <section class="section">
     <div class="section-title">在職員工</div>
     <div class="employee-add-panel">
@@ -1677,7 +1678,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
   <div id="surveyFailedList" style="display:none"></div>
 </section>
 <section id="shiftModePage" class="admin-mode-page">
-  <div class="mode-back-row protected-mode-actions"><button id="shiftBackBtn" class="action-btn" type="button">← 返回後台入口</button><button id="shiftPasswordChangeBtn" class="action-btn" type="button">變更共用密碼</button></div>
+  <div class="mode-back-row protected-mode-actions"><button id="shiftBackBtn" class="action-btn" type="button">← 返回後台入口</button></div>
   <section class="section">
     <div class="section-title">指休管理</div>
     <div class="shift-heading-tools">
@@ -1698,7 +1699,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
         <button id="shiftRefreshBtn" class="action-btn" type="button">重新整理</button>
         <select id="shiftExportWeekSelect" class="search-input shift-export-week" aria-label="選擇匯出週次"></select>
         <button id="shiftExportBtn" class="action-btn" type="button">匯出</button>
-        <button id="shiftPurgeOldBtn" class="action-btn shift-purge-old-btn" type="button" title="刪除一個月前指休資料" aria-label="刪除一個月前指休資料">刪除一個月前</button>
+        <button id="shiftPurgeOldBtn" class="action-btn shift-purge-old-btn" type="button" title="清理週結束滿三個月的指休資料" aria-label="清理週結束滿三個月的指休資料">清理三個月前</button>
       </div>
     </div>
     <div id="shiftAdminSummary" class="hint" style="margin-top:10px"></div>
@@ -1797,17 +1798,22 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
   </form>
 </div>
 
+<script src="config/995-business.js"></script><script src="center-ui.js?v=20261110-prod1"></script>
 <script>
 
 const SUPABASE_URL =
-  "https://nurnboqwhctyswcufkyk.supabase.co";
+  window.CENTER_CONFIG.supabaseUrl;
 
 const SUPABASE_KEY =
-  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
+  window.CENTER_CONFIG.publishableKey;
 
 const db =
-  supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  window.CenterRuntime.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+const atomicScoreImporter = ScorePairAdapter.create({db,enabled:window.CENTER_CONFIG?.features?.atomicScores===true});
+const dedupSourceArchiver=SourceArchiveAdapter.create({enabled:window.CENTER_CONFIG?.features?.archiveDedup===true,transport:window.CenterArchiveTransport});
+let scoreArchiveRetryCache=null;
+const scoreRevisionWorkflow=ScoreRevisionUpload.browser({config:window.CENTER_CONFIG,db});
 const OIL_INTERVAL = 1500;
 const OIL_WARNING_DISTANCE = 300;
 
@@ -2024,6 +2030,8 @@ function fmt(v){
   return d.toLocaleString(
     "zh-TW",
     {
+      timeZone:"Asia/Taipei",
+      hourCycle:"h23",
       year:"numeric",
       month:"2-digit",
       day:"2-digit",
@@ -4497,15 +4505,26 @@ function renderRecorderReports(){
   }).join("");
 }
 
+async function t995LoadAllDeviceIssues(table){
+  const rows=[];
+  for(let offset=0;;offset+=1000){
+    const result=await db.from(table).select("*").order("reported_at",{ascending:false}).order("id",{ascending:true}).range(offset,offset+999);
+    if(result.error)throw result.error;rows.push(...(result.data||[]));
+    if((result.data||[]).length<1000)return {data:rows,error:null};
+  }
+}
+
 async function loadRecorderData(){
   batteryReportList.innerHTML = '<div class="loading">載入紀錄器資料中…</div>';
   try{
-    const [ir,rr] = await Promise.all([db.from("recorders").select("*").order("created_at",{ascending:false}),db.from("recorder_issue_reports").select("*").order("reported_at",{ascending:false})]);
+    const [ir,rr] = await Promise.all([db.from("recorders").select("*").order("created_at",{ascending:false}),t995LoadAllDeviceIssues("recorder_issue_reports")]);
     if(ir.error) throw ir.error; if(rr.error) throw rr.error;
     recorderInventory = ir.data || []; recorderReports = rr.data || [];
-    renderRecorderSummary(); renderRecorderReports();
+    if(deviceAdminType.value==="recorder"){renderRecorderSummary();renderRecorderReports();}
   }catch(e){
-    recorderInventory=[]; recorderReports=[]; batterySummary.innerHTML=`<div class="empty" style="grid-column:1/-1">紀錄器資料讀取失敗：${esc(e.message || "請先執行 recorders 建表 SQL")}</div>`; batteryReportList.innerHTML=`<div class="empty">紀錄器資料讀取失敗：${esc(e.message || "請確認資料表與權限")}</div>`;
+    recorderInventory=[]; recorderReports=[];
+    if(deviceAdminType.value!=="recorder")return;
+    batterySummary.innerHTML=`<div class="empty" style="grid-column:1/-1">紀錄器資料讀取失敗：${esc(e.message || "請先執行 recorders 建表 SQL")}</div>`; batteryReportList.innerHTML=`<div class="empty">紀錄器資料讀取失敗：${esc(e.message || "請確認資料表與權限")}</div>`;
   }
 }
 
@@ -4629,19 +4648,7 @@ function exportCurrentDevices(){
 }
 
 async function updateRecorderIssue(id, action){
-  const row = recorderReports.find(item => String(item.id) === String(id)); if(!row || !recorderReportPending(row)) return;
-  const scrap = action === "scrapped"; const label = scrap ? "報廢" : "維修完成";
-  if(!confirm(`確定要將紀錄器「${row.recorder_number || "未填編號"}」標記為「${label}」嗎？`)) return;
-  try{
-    const inv = recorderInventory.find(item => recorderKey(item.recorder_number) === recorderKey(row.recorder_number));
-    if(!inv) throw new Error("找不到此紀錄器建檔資料。");
-    const now = new Date().toISOString();
-    const ur = await db.from("recorders").update({status:scrap ? "scrapped" : "active",health_status:scrap ? "abnormal" : "normal",health_note:scrap ? "報廢" : null,...(scrap ? {scrapped_at:now,scrapped_note:"由異常回報標記報廢"} : {})}).eq("id",inv.id);
-    if(ur.error) throw ur.error;
-    const rr = await db.from("recorder_issue_reports").update({resolution_status:"resolved",resolved_at:now,resolution_note:label}).eq("recorder_number",row.recorder_number).neq("resolution_status","resolved");
-    if(rr.error) throw rr.error;
-    alert(`✅ 已完成：${label}`); await loadRecorderData();
-  }catch(e){ alert(`紀錄器處理失敗：${e.message || "未知錯誤"}`); }
+  return t995ResolveSelectedDeviceIssues("recorder",[id],action);
 }
 
 function exportRecorderReports(){
@@ -4656,18 +4663,18 @@ async function loadBatteryData(){
   try{
     const [inventoryResult, reportResult] = await Promise.all([
       db.from("batteries").select("*").order("created_at",{ascending:false}),
-      db.from("battery_issue_reports").select("*").order("reported_at",{ascending:false})
+      t995LoadAllDeviceIssues("battery_issue_reports")
     ]);
     if(inventoryResult.error) throw inventoryResult.error;
     if(reportResult.error) throw reportResult.error;
     batteryInventory = inventoryResult.data || [];
     batteryReports = reportResult.data || [];
-    renderBatterySummary();
-    renderBatteryReports();
+    if(deviceAdminType.value==="battery"){renderBatterySummary();renderBatteryReports();}
   }
   catch(e){
     batteryInventory = [];
     batteryReports = [];
+    if(deviceAdminType.value!=="battery")return;
     batterySummary.innerHTML = `
       <div class="empty" style="grid-column:1/-1">電池建檔資料讀取失敗：${esc(e.message || "請先執行 batteries 建表 SQL")}</div>
     `;
@@ -4676,30 +4683,7 @@ async function loadBatteryData(){
 }
 
 async function updateBatteryIssue(id, action){
-  const row = batteryReports.find(item => String(item.id || "") === String(id || ""));
-  if(!row || !batteryReportPending(row)) return;
-  const isScrap = action === "scrapped";
-  const label = isScrap ? "報廢" : "維修完成";
-  if(!confirm(`確定要將電池「${row.battery_number || "未填編號"}」標記為「${label}」嗎？`)) return;
-  try{
-    if(isScrap){
-      const inventory = batteryInventory.find(item => batteryKey(item.battery_number) === batteryKey(row.battery_number) && item.status === "active");
-      if(!inventory){
-        throw new Error("找不到此電池的使用中建檔資料，請先完成電池建檔。");
-      }
-      const inventoryResult = await db.from("batteries").update({status:"scrapped", scrapped_at:new Date().toISOString(), scrapped_note:"由異常回報標記報廢"}).eq("id", inventory.id);
-      if(inventoryResult.error) throw inventoryResult.error;
-    }
-    const reportResult = await db.from("battery_issue_reports").update({resolution_status:"resolved", resolved_at:new Date().toISOString(), resolution_note:label}).eq("battery_number", row.battery_number).neq("resolution_status","resolved");
-    if(!reportResult.error && !isScrap){
-      await db.from("batteries").update({health_status:"normal", health_note:null}).eq("battery_number", row.battery_number).eq("status","active");
-    }
-    if(reportResult.error) throw reportResult.error;
-    alert(`✅ 已完成：${label}`);
-    await loadBatteryData();
-  }catch(e){
-    alert(`電池處理失敗：${e.message || "未知錯誤"}`);
-  }
+  return t995ResolveSelectedDeviceIssues("battery",[id],action);
 }
 
 function exportBatteryReports(){
@@ -5270,7 +5254,7 @@ function t995ParseRanges(value){
 function t995RangeHours(ranges,start,end){return (ranges||[]).reduce((sum,[a,b])=>sum+Math.max(0,Math.min(b,end)-Math.max(a,start))/60,0);}
 function t995DayLabel(iso){const [y,m,d]=iso.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));return `${m}/${d} ${['日','一','二','三','四','五','六'][dt.getUTCDay()]}`;}
 function t995IsAllBlank(row){return ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].every(k=>!String(row[k]||'').trim());}
-function t995LatestShiftByEmployee(rows){const map=new Map();for(const r of [...(rows||[])].sort((a,b)=>String(b.submitted_at||'').localeCompare(String(a.submitted_at||''))))if(!map.has(String(r.employee_id)))map.set(String(r.employee_id),r);return map;}
+function t995LatestShiftByEmployee(rows){const map=new Map();for(const r of [...(rows||[])].filter(r=>r.is_test!==true).sort((a,b)=>String(b.submitted_at||'').localeCompare(String(a.submitted_at||''))))if(!map.has(String(r.employee_id)))map.set(String(r.employee_id),r);return map;}
 function t995RenderShiftWeekButtons(weeks){
   const selected=t995ShiftWeekSelect.value;
   t995ShiftWeekButtons.innerHTML=weeks.map(w=>{
@@ -5322,7 +5306,7 @@ async function t995SetShiftWeekOpen(input){
     await t995LoadShiftAdmin();
   }catch(e){
     input.checked=previous;t995SyncShiftToggleVisual(input);
-    alert(`週次開放狀態更新失敗：${e.message||"請確認已部署995 V4逐週開放SQL，且管理區密碼已解鎖。"}`);
+    alert(`週次開放狀態更新失敗：${e.message||"請確認已部署995 V4逐週開放SQL，且以管理員登入。"}`);
   }finally{if(input.isConnected)input.disabled=false;}
 }
 function t995RenderShiftAdmin(){
@@ -5341,7 +5325,7 @@ function t995RenderShiftAdmin(){
     if(t995ShiftStatusFilter==='submitted'&&!shift)return false;if(t995ShiftStatusFilter==='missing'&&shift)return false;
     return !term||String(employee.full_name||'').toLocaleLowerCase('zh-Hant').includes(term);
   });
-  t995ShiftSummary.textContent=`${weekLabel}｜在職 ${active}｜已提交 ${submitted}｜測試資料 ${t995ShiftTestRecordCount} 筆｜未提交 ${missing}｜顯示 ${rows.length}`;
+  t995ShiftSummary.textContent=`${weekLabel}｜在職 ${active}｜已提交 ${submitted}｜測試資料 ${t995ShiftTestRecordCount} 筆（不計入正式統計）｜未提交 ${missing}｜顯示 ${rows.length}`;
   if(!rows.length){t995ShiftAdminList.innerHTML='<div class="shift-admin-empty">沒有符合資料</div>';return;}
   const days=[['週一','monday'],['週二','tuesday'],['週三','wednesday'],['週四','thursday'],['週五','friday'],['週六','saturday'],['週日','sunday']];
   const body=rows.map(({employee:e,shift:r})=>{
@@ -5354,7 +5338,7 @@ function t995RenderShiftAdmin(){
 }
 function t995BuildShiftExportRows(week,shiftRows){
   const days=[['週一','monday'],['週二','tuesday'],['週三','wednesday'],['週四','thursday'],['週五','friday'],['週六','saturday'],['週日','sunday']];
-  return shiftRows.map(({employee:e,shift:r})=>({週次:week,姓名:e.full_name,區域:e.area_code?`${e.area_code}區`:"未分類",資料類型:r?.is_test?"測試資料（納入人力建議）":"正式資料",提交狀態:!r?"未提交":r.is_test?"測試提交":t995IsAllBlank(r)?"已提交－七天皆空白":"已提交",...Object.fromEntries(days.map(([label,key])=>[label,r?.[key]||""])),備註:r?.notes||"",最後提交時間:r?.submitted_at||""}));
+  return shiftRows.map(({employee:e,shift:r})=>({週次:week,姓名:e.full_name,區域:e.area_code?`${e.area_code}區`:"未分類",資料類型:r?.is_test?"測試資料（不納入正式人力建議）":"正式資料",提交狀態:!r?"未提交":r.is_test?"測試提交":t995IsAllBlank(r)?"已提交－七天皆空白":"已提交",...Object.fromEntries(days.map(([label,key])=>[label,r?.[key]||""])),備註:r?.notes||"",最後提交時間:r?.submitted_at||""}));
 }
 async function t995ExportShiftWeek(){
   const week=document.getElementById("shiftExportWeekSelect")?.value||t995ShiftWeekSelect.value;
@@ -5379,17 +5363,18 @@ function t995TaipeiDateMonthsAgo(months=1){
 }
 async function t995PurgeOldShiftData(){
   if(!t995ShiftPurgeOldBtn)return;
-  const cutoff=t995TaipeiDateMonthsAgo(1);t995ShiftPurgeOldBtn.disabled=true;
+  // week_start + 6 days is the week end. Retain three calendar months after week end.
+  const cutoff=t995DateAdd(t995TaipeiDateMonthsAgo(3),-6);t995ShiftPurgeOldBtn.disabled=true;
   try{
     const preview=await db.from("weekly_shift_availability").select("id",{count:"exact",head:true}).lt("week_start",cutoff);
     if(preview.error)throw preview.error;const count=Number(preview.count||0);
     if(!count){alert(`沒有早於 ${cutoff} 的指休資料。`);return;}
-    if(!confirm(`將永久刪除 ${count} 筆指休紀錄（週次早於 ${cutoff}）。正式與測試資料都會刪除；其他人力歷史資料不受影響。此操作無法復原。確定刪除？`))return;
+    if(!confirm(`將永久刪除 ${count} 筆指休紀錄（週開始日早於 ${cutoff}，週結束已滿三個月）。正式與測試資料都會刪除；其他人力歷史資料不受影響。此操作無法復原。確定刪除？`))return;
     const result=await db.from("weekly_shift_availability").delete().lt("week_start",cutoff).select("id");
     if(result.error)throw result.error;
-    alert(`已刪除 ${(result.data||[]).length} 筆指休紀錄（週次早於 ${cutoff}）。`);
+    alert(`已刪除 ${(result.data||[]).length} 筆指休紀錄（週開始日早於 ${cutoff}，週結束已滿三個月）。`);
     await t995LoadShiftAdmin();
-  }catch(e){alert(`刪除逾月指休資料失敗：${e.message||"請確認管理員權限"}`);}
+  }catch(e){alert(`清理三個月前指休資料失敗：${e.message||"請確認管理員權限"}`);}
   finally{t995ShiftPurgeOldBtn.disabled=false;}
 }
 async function t995DeleteShiftTestData(){
@@ -5424,7 +5409,7 @@ async function t995RenderStaffingRecommendation(weekStart,shiftRows){
   const areaOrder=window.OpsMetrics.AREAS.map(([a])=>a);
   const areas=[...new Set(dayForecasts.flatMap(xs=>xs.map(x=>x.area)))].sort((a,b)=>areaOrder.indexOf(a)-areaOrder.indexOf(b));
   const byArea=new Map();
-  for(const {employee,shift} of shiftRows){if(!employee.area_code)continue;if(!byArea.has(employee.area_code))byArea.set(employee.area_code,[]);byArea.get(employee.area_code).push({employee,shift});}
+  for(const {employee,shift} of shiftRows){if(!employee.area_code||shift?.is_test===true)continue;if(!byArea.has(employee.area_code))byArea.set(employee.area_code,[]);byArea.get(employee.area_code).push({employee,shift});}
   t995StaffingForecastData=[];
   if(!areas.length){t995StaffingSummary.innerHTML='';t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML='';t995StaffingList.innerHTML='<div class="empty">尚未設定有效餐廳區域對照表。</div>';return;}
   const output=areas.map(area=>({area,days:dayNames.map((day,offset)=>{
@@ -5673,6 +5658,39 @@ batteryReportList.onclick=e=>{const b=e.target.closest("[data-t995-device-delete
 
 
 
+function t995CompareImportRows(incoming,existing,keyFields){
+  const key=row=>JSON.stringify(keyFields.map(field=>row[field]));
+  const map=new Map();for(const row of existing){const k=key(row);if(map.has(k))throw new Error("既有資料有重複鍵，停止匯入");map.set(k,row);}
+  const ignored=new Set(['id','source_sheet','source_row','import_batch_id','created_at','updated_at']);
+  const result={added:0,changed:0,unchanged:0,errors:0};
+  for(const row of incoming){
+    if(keyFields.some(field=>row[field]===null||row[field]===undefined||String(row[field]).trim()==='')){result.errors++;continue;}
+    const old=map.get(key(row));if(!old){result.added++;continue;}
+    const different=Object.keys(row).filter(field=>!ignored.has(field)&&row[field]!==undefined).some(field=>{
+      const value=row[field],before=old[field];
+      return typeof value==='number'?(before===null||before===undefined||String(before).trim()===''||Number(before)!==value):value!==before;
+    });
+    if(different)result.changed++;else result.unchanged++;
+  }
+  return result;
+}
+async function t995PreviewImportGroup(table,rows,keyFields){
+  if(!rows.length)return {added:0,changed:0,unchanged:0,errors:0};
+  const dates=t995MinMaxDates(rows),existing=[];let expectedCount=null;
+  for(let offset=0;;offset+=1000){
+    let query=db.from(table).select('*',{count:'exact'}).gte('record_date',dates.start).lte('record_date',dates.end);
+    for(const field of keyFields)query=query.order(field,{ascending:true});
+    const result=await query.range(offset,offset+999);
+    if(result.error)throw new Error('無法讀取既有資料，沒有匯入：'+result.error.message);
+    if(!Array.isArray(result.data)||!Number.isInteger(result.count))throw new Error('既有資料讀取不完整，不能判為新增');
+    if(expectedCount!==null&&expectedCount!==result.count)throw new Error('預覽期間資料有異動，請重新預覽');
+    expectedCount=result.count;existing.push(...result.data);
+    if(result.data.length<1000)break;
+  }
+  if(existing.length!==expectedCount)throw new Error('既有資料筆數不一致，停止匯入');
+  return t995CompareImportRows(rows,existing,keyFields);
+}
+
 async function t995ImportCompleteWorkbookV4(){
   const files=Array.from(t995TcFile.files||[]);if(!files.length){t995TcImportMessage.textContent="請選擇 Excel";return;}if(files.length>2){t995TcImportMessage.textContent="一次最多選擇兩個 Excel 檔案";return;}
   t995TcImportBtn.disabled=true;t995TcImportMessage.textContent="分析 Excel…";let batchId=null;
@@ -5687,7 +5705,7 @@ async function t995ImportCompleteWorkbookV4(){
   };
   try{
     if(!t995AreaMapLoaded)await t995LoadAreaMap();
-    const counter={count:0,badDates:0},unmapped=new Set(),tcMap=new Map(),actualMap=new Map(),centerMap=new Map(),actualConflicts=[];
+    const counter={count:0,badDates:0},unmapped=new Set(),tcMap=new Map(),actualMap=new Map(),centerMap=new Map(),actualConflicts=[],validationErrors=[];
     const storeNames=["STR_SN","餐廳","餐廳名稱"],centerNames=["CenterName","中心名稱","中心"],dateNames=["DATE","日期","Date"];
     const priorDateNames=["DATE PY","去年日期"],priorNames=["去年單數","去年TC","去年 TC"];
     const totalNames=["實際外送TC","今年TC","今年 TC","TC(System)","TC (System)","總TC","T_C","TC"];
@@ -5716,7 +5734,11 @@ async function t995ImportCompleteWorkbookV4(){
           const sourceRow=(row.__rowNum__??index+1)+1;
           const nameField=field(row,hasStore?storeNames:centerNames);const name=String(nameField.value??"").trim();
           if(!name||/^total$/i.test(name)||/^grand\s*total$/i.test(name)||/套用的篩選|篩選條件/.test(name))return;
-          const date=t995ExcelDateToISO(field(row,dateNames).value);if(!date){counter.badDates++;return;}
+          const date=t995ExcelDateToISO(field(row,dateNames).value);if(!date||!/^\d{4}-\d{2}-\d{2}$/.test(date)||new Date(date+'T12:00:00Z').toISOString().slice(0,10)!==date){counter.badDates++;return;}
+          const numericFields=[totalNames,excludedNames,uberNames,pandaNames,hoursNames,tplhNames,exTplhNames,rateNames,priorNames];
+          const badFields=numericFields.map(names=>field(row,names)).filter(x=>x.present&&(x.value===null||String(x.value).trim()===''||!Number.isFinite(Number(String(x.value).replace(/[,%]/g,'')))||Number(String(x.value).replace(/[,%]/g,''))<0));
+          if(hasCenterMetrics&&!field(row,totalNames).present)badFields.push({name:'中心實際TC（缺欄）'});
+          if(badFields.length){validationErrors.push(`${file.name}／${sheetName} 第 ${index+2} 列：${badFields.map(x=>x.name).join('、')} 空白或無效`);return;}
           if(hasCenterMetrics){
             const totalField=field(row,totalNames),excludedField=field(row,excludedNames),uberField=field(row,uberNames),pandaField=field(row,pandaNames);
             const total=totalField.present?t995NumericZero(totalField.value,counter):0;
@@ -5774,6 +5796,7 @@ async function t995ImportCompleteWorkbookV4(){
         });
       }
     }
+    if(validationErrors.length)throw new Error(`預覽錯誤 ${validationErrors.length} 列；未匯入。${validationErrors.slice(0,5).join('；')}`);
     if(!tcMap.size&&!actualMap.size&&!centerMap.size)throw new Error("找不到可辨識的逐日 TC 或中心實際資料分頁");
     if(counter.badDates)throw new Error(`${counter.badDates} 列日期無法辨識`);
     if(unmapped.size)throw new Error(`餐廳未設定 A–K 區：${[...unmapped].slice(0,12).join("、")}${unmapped.size>12?"…":""}`);
@@ -5788,15 +5811,24 @@ async function t995ImportCompleteWorkbookV4(){
     const centerTotals=new Map();for(const r of centerRows){const x=centerTotals.get(r.record_date)||{tc:0,tp:0};x.tc+=Number(r.total_tc||0);x.tp+=Number(r.third_party_tc||0);centerTotals.set(r.record_date,x);}
     let matched=0;const differences=[];for(const [date,sums] of storeTotals){const center=centerTotals.get(date);if(!center||missingTcDates.has(date))continue;matched++;if(Math.abs(sums.tc-center.tc)>0.01||Math.abs(sums.tp-center.tp)>0.01)differences.push(date);}
     const audit=matched?`｜兩檔對帳 ${matched} 日${differences.length?`（差異 ${differences.length} 日）`:"（TC／第三方 TC 相符）"}`:"";
-    t995TcImportMessage.textContent=`${labels.join("｜")}｜${dates.start}–${dates.end}${audit}${missingText()}`;
-    if(!confirm(`匯入 ${labels.join("、")} 共 ${all.length} 列？\n${dates.start} 至 ${dates.end}${audit}${missing.length?"\n缺值 "+missing.length+" 項，明細在匯入區。":""}`))return;
+    t995TcImportMessage.textContent='正在讀取既有資料並比較…';
+    const comparisons=await Promise.all([
+      t995PreviewImportGroup('staffing_tc_history',tcRows,['restaurant_name','record_date','period_code']),
+      t995PreviewImportGroup('staffing_daily_actuals',actualRows,['restaurant_name','record_date']),
+      t995PreviewImportGroup('staffing_center_daily_actuals',centerRows,['center_name','record_date'])
+    ]);
+    const counts=comparisons.reduce((sum,row)=>{for(const key of Object.keys(sum))sum[key]+=row[key];return sum;},{added:0,changed:0,unchanged:0,errors:0});
+    const preview=`新增 ${counts.added}｜變更 ${counts.changed}｜不變 ${counts.unchanged}｜錯誤 ${counts.errors}`;
+    t995TcImportMessage.textContent=`${preview}｜${labels.join("｜")}｜${dates.start}–${dates.end}${audit}${missingText()}`;
+    if(counts.errors)throw new Error('必要欄位有錯誤，未寫入任何資料');
+    if(!confirm(`${preview}\n匯入 ${labels.join("、")} 共 ${all.length} 列？\n${dates.start} 至 ${dates.end}${audit}${missing.length?"\n缺值 "+missing.length+" 項，明細在匯入區。":""}\n確認後將依來源覆寫；預覽為目前讀取快照。`))return;
     batchId=await t995CreateImportBatch(files.map(f=>f.name).join(" + "),all,`雙檔歷史資料：${labels.join("；")}${audit}${missingText()}`);
     tcRows.forEach(x=>x.import_batch_id=batchId);actualRows.forEach(x=>x.import_batch_id=batchId);centerRows.forEach(x=>x.import_batch_id=batchId);
     if(tcRows.length)await t995UpsertChunks("staffing_tc_history",tcRows,"restaurant_name,record_date,period_code",t995TcImportMessage);
     if(actualRows.length)await t995UpsertChunks("staffing_daily_actuals",actualRows,"restaurant_name,record_date",t995TcImportMessage);
     if(centerRows.length)await t995UpsertChunks("staffing_center_daily_actuals",centerRows,"center_name,record_date",t995TcImportMessage);
     t995TcImportMessage.textContent=`已匯入｜${labels.join("｜")}｜${dates.start}–${dates.end}${audit}${missingText()}`;await t995LoadShiftAdmin();
-  }catch(e){t995TcImportMessage.textContent=`匯入失敗：${e.message||"請檢查 Excel"}${batchId?"｜可重傳同檔補齊":""}${missingText()}`; }
+  }catch(e){t995TcImportMessage.textContent=`匯入失敗：${e.message||"請檢查 Excel"}${batchId?"｜可重傳同檔補齊":""}${missingText()}`;}
   finally{t995TcImportBtn.disabled=false;}
 }
 /* T995 v3: guarded employee/shift modules, test-mode control and full device purge. */
@@ -5852,7 +5884,11 @@ function t995OpenPasswordDialog(mode,targetMode){
 function t995ClosePasswordDialog(){
   t995ProtectedModal.style.display="none";t995ClearPasswordDialog();t995ProtectedTargetMode=null;
 }
+// 2026-11-10 使用者決定：在職名單與指休不再使用共用密碼，管理員登入即可進入（資料庫權限仍限管理員）。
 async function t995EnterProtectedModule(mode){
+  showAdminMode(mode);
+}
+async function t995EnterProtectedModuleWithPassword(mode){
   try{
     const status=await db.rpc("employee_shift_gate_status");if(status.error)throw status.error;
     const state=status.data||{};
@@ -5892,8 +5928,6 @@ rosterModeBtn.onclick=()=>t995EnterProtectedModule("roster");
 t995ShiftModeBtn.onclick=()=>t995EnterProtectedModule("shift");
 rosterBackBtn.onclick=()=>showAdminMode("home");
 t995ShiftBackBtn.onclick=()=>showAdminMode("home");
-document.getElementById("rosterPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","roster");
-document.getElementById("shiftPasswordChangeBtn").onclick=()=>t995OpenPasswordDialog("change","shift");
 
 if(t995ShiftTestModeToggle){
   t995ShiftTestModeToggle.addEventListener("change",async()=>{
@@ -5924,6 +5958,79 @@ async function t995LoadDeviceClaims(){
     t995DeviceClaimRecords=rows;
   }catch(e){t995DeviceClaimRecords=[];t995DeviceClaimFetchError=e.message||"請確認已執行 v3 增量 SQL。";}
 }
+// Select report IDs explicitly. Resolving a case never resolves all reports for its device.
+let t995DeviceResolutionBusy=false;
+function t995SetDeviceResolutionBusy(busy){
+  t995DeviceResolutionBusy=busy;
+  batteryReportList.querySelectorAll('[data-device-case-type], .device-case-bulk-actions button').forEach(control=>{control.disabled=busy;});
+}
+function t995DeviceIssueConfig(type){
+  if(type!=="battery"&&type!=="recorder")throw new Error("未知設備類型");
+  const recorder=type==="recorder";
+  return {table:recorder?"recorder_issue_reports":"battery_issue_reports",inventoryTable:recorder?"recorders":"batteries",field:recorder?"recorder_number":"battery_number",reports:recorder?recorderReports:batteryReports,inventory:recorder?recorderInventory:batteryInventory,label:recorder?"紀錄器":"電池"};
+}
+function t995SelectedDeviceCases(type){return [...batteryReportList.querySelectorAll('input[data-device-case-type="'+type+'"]:checked')].map(input=>input.value);}
+function t995AttachDeviceCaseSelection(type,checkedIds){
+  const c=t995DeviceIssueConfig(type),key=batteryKey,icon=type==="recorder"?"📹":"🔋";
+  batteryReportList.querySelectorAll(".survey-card").forEach(card=>{
+    const number=card.querySelector(".survey-name")?.textContent.replace(icon,"").trim();
+    if(!number)return;
+    // Hide the former latest-case action: expose every pending case, with no preselection.
+    card.querySelectorAll('.battery-repair-btn,.battery-scrap-btn,.recorder-repair-btn,.recorder-scrap-btn').forEach(button=>button.remove());
+    const pending=(c.reports||[]).filter(row=>key(row[c.field])===key(number)&&row.resolution_status!=="resolved");
+    if(!pending.length)return;
+    let box=card.querySelector('.device-pending-cases');if(!box){box=document.createElement('section');box.className='device-pending-cases';card.appendChild(box);}
+    box.innerHTML='<strong>待處理案件（逐筆勾選）</strong>'+pending.map(row=>'<label style="display:block;padding:8px 0"><input type="checkbox" data-device-case-type="'+type+'" value="'+esc(row.id)+'"'+(checkedIds.has(String(row.id))?' checked':'')+(t995DeviceResolutionBusy?' disabled':'')+'> '+esc(fmt(row.reported_at))+'｜'+esc(row.issue_description||'未填說明')+'</label>').join('');
+  });
+  const existing=batteryReportList.querySelector('.device-case-bulk-actions');if(existing)existing.remove();
+  if(!(c.reports||[]).some(row=>row.resolution_status!=="resolved"))return;
+  const bar=document.createElement('div');bar.className='record-actions device-case-bulk-actions';
+  for(const [action,label] of [['repaired','將勾選案件標記維修完成'],['scrapped','將勾選案件標記報廢']]){
+    const button=document.createElement('button');button.type='button';button.className='action-btn';button.textContent=label;button.disabled=t995DeviceResolutionBusy;
+    button.onclick=()=>t995ResolveSelectedDeviceIssues(type,t995SelectedDeviceCases(type),action);bar.appendChild(button);
+  }
+  batteryReportList.prepend(bar);
+}
+async function t995ResolveSelectedDeviceIssues(type,ids,action){
+  if(t995DeviceResolutionBusy)return;
+  const c=t995DeviceIssueConfig(type),wanted=new Set((ids||[]).map(String));
+  const selected=(c.reports||[]).filter(row=>wanted.has(String(row.id))&&row.resolution_status!=="resolved");
+  if(!selected.length){alert("請先勾選尚未結案的案件。");return;}
+  const scrap=action==="scrapped",label=scrap?"報廢":"維修完成";
+  const numbers=[...new Set(selected.map(row=>row[c.field]))];
+  if(!confirm(`將勾選的 ${selected.length} 筆${c.label}案件標記為「${label}」？設備：${numbers.join("、")}。未勾選案件不會結案。${scrap?"相關設備也會標記為報廢。":"設備仍有待處理案件時，不會改為正常。"}`))return;
+  t995SetDeviceResolutionBusy(true);let casesSaved=false;
+  try{
+    if(typeof window!=="undefined"&&window.CENTER_CONFIG?.features?.atomicDevices===true){
+      const rpcName=type==="recorder"?"resolve_recorder_cases":"resolve_battery_cases";
+      const result=await db.rpc(rpcName,{p_ids:selected.map(row=>row.id),p_action:action});
+      if(result.error)throw result.error;
+      if(!result.data||result.data.resolved_count!==selected.length)throw new Error("原子結案回傳結果不完整，請重新載入確認；未重試直接寫入。");
+      alert(`已原子完成 ${result.data.resolved_count} 筆勾選案件與設備狀態同步。`);
+      return; // Never fall back to direct writes after an RPC result or failure.
+    }
+    const now=new Date().toISOString();
+    // One SQL UPDATE covers the selected cases. Inventory reconciliation is a separate request.
+    const saved=await db.from(c.table).update({resolution_status:"resolved",resolved_at:now,resolution_note:label}).in("id",selected.map(row=>row.id)).or("resolution_status.is.null,resolution_status.neq.resolved").select("id,"+c.field);
+    if(saved.error)throw saved.error;
+    const changed=saved.data||[];casesSaved=changed.length>0;
+    for(const number of [...new Set(changed.map(row=>row[c.field]))]){
+      const pending=await db.from(c.table).select("id",{count:"exact",head:true}).eq(c.field,number).or("resolution_status.is.null,resolution_status.neq.resolved");
+      if(pending.error)throw pending.error;
+      if(!Number.isInteger(pending.count)||pending.count<0)throw new Error("無法確認剩餘案件數，不更新設備為正常");
+      const payload=scrap?{status:"scrapped",health_status:"abnormal",health_note:"報廢",scrapped_at:now,scrapped_note:"由勾選異常案件標記報廢"}:Number(pending.count)>0?{health_status:"abnormal"}:{health_status:"normal",health_note:null};
+      let update=db.from(c.inventoryTable).update(payload).eq(c.field,number);
+      if(!scrap)update=update.eq("status","active"); // Do not reactivate a retired device.
+      const result=await update;if(result.error)throw result.error;
+    }
+    alert(`已處理 ${changed.length} 筆勾選案件。${changed.length<selected.length?"其他案件已被處理或沒有修改權限，請重新確認。":""}`);
+  }catch(e){alert((casesSaved?"勾選案件已結案，但設備狀態同步未完成，請核對後台；不要重複結案。":"案件處理未確認完成，請重新載入核對後再操作。")+"\n"+(e.message||"未知錯誤"));}
+  finally{
+    try{if(type==="recorder")await loadRecorderData();else await loadBatteryData();}
+    finally{t995SetDeviceResolutionBusy(false);}
+  }
+}
+
 function t995AttachDeviceDeleteButtons(type){
   const isRecorder=type==="recorder";const list=batteryReportList;
   const keyFn=isRecorder?recorderKey:batteryKey;const prop=isRecorder?"recorder_number":"battery_number";const icon=isRecorder?"📹":"🔋";
@@ -5946,13 +6053,19 @@ function t995AttachDeviceDeleteButtons(type){
   });
 }
 const t995OriginalRenderBatteryReportsV3=renderBatteryReports;
-renderBatteryReports=function(){t995OriginalRenderBatteryReportsV3();t995AttachDeviceDeleteButtons("battery");};
+renderBatteryReports=function(){
+  const checkedIds=new Set(t995SelectedDeviceCases("battery"));
+  t995OriginalRenderBatteryReportsV3();t995AttachDeviceDeleteButtons("battery");t995AttachDeviceCaseSelection("battery",checkedIds);
+};
 const t995OriginalRenderRecorderReportsV3=renderRecorderReports;
-renderRecorderReports=function(){t995OriginalRenderRecorderReportsV3();t995AttachDeviceDeleteButtons("recorder");};
+renderRecorderReports=function(){
+  const checkedIds=new Set(t995SelectedDeviceCases("recorder"));
+  t995OriginalRenderRecorderReportsV3();t995AttachDeviceDeleteButtons("recorder");t995AttachDeviceCaseSelection("recorder",checkedIds);
+};
 const t995OriginalLoadBatteryDataV3=loadBatteryData;
-loadBatteryData=async function(){await t995OriginalLoadBatteryDataV3();await t995LoadDeviceClaims();renderBatteryReports();};
+loadBatteryData=async function(){await t995OriginalLoadBatteryDataV3();await t995LoadDeviceClaims();if(deviceAdminType.value==="battery")renderBatteryReports();};
 const t995OriginalLoadRecorderDataV3=loadRecorderData;
-loadRecorderData=async function(){await t995OriginalLoadRecorderDataV3();await t995LoadDeviceClaims();renderRecorderReports();};
+loadRecorderData=async function(){await t995OriginalLoadRecorderDataV3();await t995LoadDeviceClaims();if(deviceAdminType.value==="recorder")renderRecorderReports();};
 async function t995DeleteDeviceCard(type,id,number){
   const label=type==="recorder"?"行車紀錄器":"電池";
   if(!confirm(`刪除${label}「${number}」及異常／維修紀錄？不可復原。車輛領用紀錄保留。`))return;
@@ -6089,46 +6202,106 @@ function opsRenderPreparedScoreFiles(errors=[]){
     :"";
   $("opsScoreImport").disabled=!opsScorePair();
 }
+let opsScoreSelectionGeneration=0;
 opsScoreFileInput.addEventListener("change",async()=>{
+  if(window.CENTER_CONFIG?.features?.scoreRevisions===true){try{scoreRevisionWorkflow.cancel();}catch(e){$("opsScoreMessage").textContent=e.message;opsRevisionControls();return;}opsRevisionControls();}
   opsPreparedScoreFiles=[];$("opsScoreImport").disabled=true;$("opsScoreMessage").textContent="讀取與辨識檔案中…";
-  const errors=[];
-  for(const file of [...(opsScoreFileInput.files||[])]){
-    try{opsPreparedScoreFiles.push(await opsParseScoreFile(file));}
+  const selection=++opsScoreSelectionGeneration,files=[...(opsScoreFileInput.files||[])],errors=[],prepared=[];
+  for(const file of files){
+    try{prepared.push(await opsParseScoreFile(file));}
     catch(e){errors.push({file:file.name,error:e.message||"檔案無法讀取"});}
+    if(selection!==opsScoreSelectionGeneration)return;
   }
+  if(selection!==opsScoreSelectionGeneration)return;
+  opsPreparedScoreFiles=prepared;
   opsRenderPreparedScoreFiles(errors);
   const pair=opsScorePair();$("opsScoreMessage").textContent=errors.length?"辨識完成；"+errors.length+" 個檔案格式不符或無法讀取。":pair?"兩份檔案日期一致，共 "+pair.dates.length+" 天，可匯入。":"請選擇一份 ByDate 與一份 ByOrder 檔案，且兩份檔案的日期範圍需一致。";
 });
 $("opsScoreImport").onclick=async()=>{
+  if(window.CENTER_CONFIG?.features?.scoreRevisions===true){await opsReviewScoreRevision();return;}
   const pair=opsScorePair();if(!pair){$("opsScoreMessage").textContent="請選擇一份 ByDate 與一份 ByOrder 檔案，且兩份檔案的日期範圍需一致。";return;}
   $("opsScoreImport").disabled=true;$("opsScoreMessage").textContent="封存原始 Excel 至 Supabase…";
   const importedDate=pair.dates.at(-1);let completed=0,archiveIds=[],importedCalls=0;
   try{
-    archiveIds=await opsArchiveScoreSourceFiles(pair);
+    const sourceFiles=[pair.byType.ByDate.file,pair.byType.ByOrder.file];
+    if(window.CENTER_CONFIG?.features?.archiveDedup===true){
+      // Every attempt reaches the trusted gateway; retry IDs stay stable, shared bytes are not re-created.
+      archiveIds=(await dedupSourceArchiver.archivePair(pair)).map(receipt=>receipt.requestId);
+    }else if(scoreArchiveRetryCache&&scoreArchiveRetryCache.files.every((file,i)=>file===sourceFiles[i]))archiveIds=scoreArchiveRetryCache.ids;
+    else {archiveIds=await opsArchiveScoreSourceFiles(pair);scoreArchiveRetryCache={files:sourceFiles,ids:archiveIds};}
     $("opsScoreMessage").textContent="原始檔已存入 Supabase；開始整理成績…";
+    if(window.CENTER_CONFIG?.features?.atomicScores===true){
+      const statuses=await atomicScoreImporter.importDays(pair);
+      completed=statuses.filter(x=>x.status==='completed').length;importedCalls=completed*2;
+      $("opsScorePreview").innerHTML+='<table class="ops-table"><thead><tr><th>日期</th><th>成對匯入結果</th></tr></thead><tbody>'+statuses.map(x=>'<tr><td>'+opsEscape(x.date)+'</td><td>'+opsEscape(x.status==='completed'?'完成':x.error||'失敗')+'</td></tr>').join('')+'</tbody></table>';
+      const failures=statuses.filter(x=>x.status!=='completed');
+      if(failures.length)throw new Error('已完成 '+completed+'／'+pair.dates.length+' 天；再次匯入只重試失敗日期：'+failures.map(x=>x.date).join('、'));
+    }else{
     for(const date of pair.dates){
       const results=await Promise.all(Object.values(pair.byType).map(item=>db.rpc("t995_import_score_batch",{p_report_date:date,p_report_type:item.type,p_source_file:item.file.name,p_rows:item.rows.filter(row=>row.record_date===date)})));
       importedCalls+=results.filter(r=>!r.error).length;const failed=results.find(r=>r.error);if(failed)throw new Error("已完成 "+completed+"／"+pair.dates.length+" 天；日期 "+date+"："+failed.error.message);
       completed++;$("opsScoreMessage").textContent="匯入中… "+completed+"／"+pair.dates.length+" 天";
     }
-    const marked=await db.from("t995_score_source_archives").update({import_status:"imported",imported_at:new Date().toISOString(),import_note:null}).in("id",archiveIds);
+    }
+    const marked=await opsMarkScoreArchives(archiveIds,"imported","");
     if(marked.error)throw new Error("成績已匯入，但原檔封存狀態未能更新："+marked.error.message);
     $("opsScoreMessage").textContent="完成匯入 "+pair.dates.length+" 天；ByDate／ByOrder 原始 Excel 已封存至 Supabase。";
-    opsPreparedScoreFiles=[];opsScoreFileInput.value="";opsRenderPreparedScoreFiles();
+    dedupSourceArchiver.complete(pair);opsPreparedScoreFiles=[];scoreArchiveRetryCache=null;opsScoreFileInput.value="";opsRenderPreparedScoreFiles();
     window.OpsDateControl?.set(importedDate||opsToday(),"day",false);
     await opsLoadDailyAnalytics();
   }catch(e){
     const detail=e.message||"請檢查登入狀態與 Supabase 設定";
     if(archiveIds.length){
       const status=importedCalls?"partial":"archived";
-      await db.from("t995_score_source_archives").update({import_status:status,import_note:detail}).in("id",archiveIds);
+      await opsMarkScoreArchives(archiveIds,status,detail);
       $("opsScoreMessage").textContent="原始 Excel 已保存在 Supabase；成績匯入中止："+detail;
     }else $("opsScoreMessage").textContent="匯入中止："+detail;
   }
   finally{$("opsScoreImport").disabled=!opsScorePair();}
 };
 
+function opsRevisionControls(busy=false){
+  if(window.CENTER_CONFIG?.features?.scoreRevisions!==true)return;
+  const state=scoreRevisionWorkflow.state,uncertain=state.status==="uncertain";
+  $("opsScoreFiles").disabled=busy||uncertain;
+  $("opsScoreImport").disabled=busy||uncertain||!opsScorePair();
+  $("opsScoreImport").textContent="核對目前版本與新報表";
+  $("opsRevisionReview").hidden=state.status==="idle";
+  $("opsRevisionConfirm").disabled=busy||!["reviewed","uncertain","rejected"].includes(state.status);
+  $("opsRevisionConfirm").textContent=uncertain?"重試原請求（不更換來源）":"確認成對提交新版本";
+  $("opsRevisionCancel").disabled=busy||uncertain;
+}
+async function opsReviewScoreRevision(){
+  opsRevisionControls(true);
+  try{
+    const state=await scoreRevisionWorkflow.review(opsScorePair());
+    $("opsRevisionSummary").textContent=state.date+"\n目前版本："+(state.version?"第 "+state.version+" 版":"尚無版本")+"\n將新增第 "+(state.version+1)+" 版，兩報表一起生效，保留舊資料。\n"+state.files.map(x=>x.type+"："+x.name+"（"+x.rowCount+" 筆）").join("\n");
+    $("opsScoreMessage").textContent="請核對後再確認；目前尚未上傳檔案。";
+  }catch(e){$("opsScoreMessage").textContent=e.message;}finally{opsRevisionControls();}
+}
+$("opsRevisionConfirm").onclick=async()=>{
+  opsRevisionControls(true);
+  try{
+    const receipt=await scoreRevisionWorkflow.submit();
+    $("opsScoreMessage").textContent="已提交 "+receipt.reportDate+" 第 "+receipt.version+" 版。兩份報表及來源紀錄保留；回執："+receipt.requestId;
+    try{await opsLoadDailyAnalytics();}catch{$("opsScoreMessage").textContent+=" 報表刷新失敗，提交已成功，請稍後重新讀取。";}
+  }catch(e){$("opsScoreMessage").textContent=e.message+(scoreRevisionWorkflow.state.status==="uncertain"?" 請勿更換檔案或重新整理，使用原請求重試。":"");}
+  finally{opsRevisionControls();}
+};
+$("opsRevisionCancel").onclick=()=>{try{scoreRevisionWorkflow.cancel();$("opsRevisionSummary").textContent="";$("opsScoreMessage").textContent="已取消核對，沒有刪除任何檔案。";}catch(e){$("opsScoreMessage").textContent=e.message;}opsRevisionControls();};
+window.addEventListener("beforeunload",event=>{if(["uncertain","submitting"].includes(scoreRevisionWorkflow.state.status)){event.preventDefault();event.returnValue="";}});
+opsRevisionControls();
+
+async function opsMarkScoreArchives(ids,status,note){
+  if(window.CENTER_CONFIG?.features?.archiveDedup===true){
+    try{return {data:await dedupSourceArchiver.markImport(ids,status,String(note||'').slice(0,1000)),error:null};}
+    catch(error){return {data:null,error};}
+  }
+  return db.from("t995_score_source_archives").update({import_status:status,import_note:note||null,...(status==="imported"?{imported_at:new Date().toISOString()}:{})}).in("id",ids);
+}
+
 async function opsArchiveScoreSourceFiles(pair){
+  if(window.CENTER_CONFIG?.features?.archiveDedup===true)throw new Error("內容去重模式禁止直接寫入Storage，請使用隔離封存閘道。");
   const bucket="t995-score-source-archive",userResult=await db.auth.getUser(),user=userResult?.data?.user;
   if(!user)throw new Error("請先登入管理後台。");
   const items=Object.values(pair.byType),uploaded=[],metadata=[];
@@ -6152,7 +6325,8 @@ async function opsArchiveScoreSourceFiles(pair){
     if(saved.error)throw new Error("檔案已上傳，但封存索引建立失敗："+saved.error.message);
     return metadata.map(x=>x.id);
   }catch(error){
-    if(uploaded.length)await db.storage.from(bucket).remove(uploaded);
+    // Preserve uploaded files on failure. Cleanup needs explicit authorization;
+    // never delete an archived source merely because metadata saving failed.
     throw error;
   }
 }
@@ -6162,14 +6336,22 @@ async function opsArchiveScoreSourceFiles(pair){
 
 
 
-<script src="operations-calendar.js?v=20261103-holidays"></script>
-<script src="operations-forecast.js?v=20261103-sstg-week"></script>
-<script src="operations-metrics.js?v=20261103-sstg-week"></script>
-<script src="operations-summary.js?v=20261102-scope-effective1101"></script>
-<script src="operations-report.js?v=20261105-summary-cards"></script>
-<script src="operations-entry.js?v=20261102-scope-effective1101"></script>
+<script src="operations-calendar.js?v=20261110-prod1"></script>
+<script src="config/business-schema.js"></script>
+<script src="config/995-business.js"></script>
+<script src="score-revision-reader.js"></script>
+<script src="score-read-source.js"></script>
+<script src="operations-forecast.js?v=20261110-prod1"></script>
+<script src="operations-metrics.js?v=20261110-prod1"></script>
+<script src="operations-summary.js?v=20261110-prod1"></script>
+<script src="operations-report.js?v=20261110-prod1"></script>
+<script src="operations-entry.js?v=20261110-prod1"></script>
+<script src="ui-shell.js?v=20261110-prod1"></script>
+<script src="ui-overview.js?v=20261110-prod1"></script>
+<script src="ui-ops.js?v=20261110-prod1"></script>
 </body>
 </html>
+
 
 
 

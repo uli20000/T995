@@ -19,17 +19,19 @@
     state.stores=result.data||[];state.catalog=new Map(state.stores.map(s=>[s.store_code,s]));return state.stores;
   }
   async function loadMonth(date,force=false){
-    const month=date.slice(0,7);if(state.monthLoads.has(month))return state.monthLoads.get(month);if(!force&&state.monthCache.has(month))return state.monthCache.get(month);
+    const month=date.slice(0,7);if(state.monthLoads.has(month))return state.monthLoads.get(month);if(!window.ScoreReadSource.enabled()&&!force&&state.monthCache.has(month))return state.monthCache.get(month);
     const work=(async()=>{
       await loadDirectory();const r=S.range(date,'month');
+      const revisionSnapshot=await window.ScoreReadSource.load(db,window.OpsForecast.sampleStart(r.start),r.end);
+      const revisionReport=revisionSnapshot?window.ScoreReadSource.within(revisionSnapshot,r.start,r.end):null;
       const [batchRows,reportResult,reference,powerbiData]=await Promise.all([
-        paged('t995_score_import_batches','*',q=>q.gte('report_date',r.start).lte('report_date',r.end),'report_date'),
+        revisionReport?Promise.resolve(revisionReport.batches):paged('t995_score_import_batches','*',q=>q.gte('report_date',r.start).lte('report_date',r.end),'report_date'),
         db.from('t995_operations_daily_reports').select('*').gte('record_date',r.start).lte('record_date',r.end).order('record_date'),
         db.rpc('t995_get_operations_reference',{p_month:r.start}),
-        window.OpsForecast.load(db,r.start,r.end)
+        window.OpsForecast.load(db,r.start,r.end,revisionSnapshot?{scoreBatches:revisionSnapshot.batches}:{})
       ]);
       if(reportResult.error)throw reportResult.error;if(reference.error)throw reference.error;
-      const batches=M.latestBatches(batchRows),ids=batches.map(b=>b.id),rows=ids.length?await paged('t995_score_import_rows','batch_id,row_number,store_code,restaurant_name,order_number,payload',q=>q.in('batch_id',ids),'batch_id'):[];
+      const batches=M.latestBatches(batchRows),ids=batches.map(b=>b.id),rows=revisionReport?revisionReport.rows:ids.length?await paged('t995_score_import_rows','batch_id,row_number,store_code,restaurant_name,order_number,payload',q=>q.in('batch_id',ids),'batch_id'):[];
       return {rows,batches,powerbiData,reports:reportResult.data||[],history:reference.data?.history||[],mapping:reference.data?.mapping||[]};
     })();state.monthLoads.set(month,work);
     try{const data=await work;state.monthCache.set(month,data);return data;}finally{state.monthLoads.delete(month);}
@@ -41,14 +43,14 @@
   function model(date,p,data=state.cache){return M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...S.range(date,p)});}
   function metricsRows(s){return [
     ['去年單數',s.prior,'單'],['預估單數',s.forecast,'單'],['實際總單數',s.tc,'單'],['SSTG%',s.sstg,'%'],['TC預估達成率',s.tcAchievement,'%'],['實際工時',s.actualHours,'hrs'],['TPLH（扣FA）',s.tplh,''],['第三方佔比',s.faShare,'%'],['D7達成率',s.d7,'%'],['D25達成率',s.d25,'%'],
-    ['FA單數',s.fa,'單'],['預估工時',s.forecastHours,'hrs'],['SSTG%（扣FA）',s.sstgExFA,'%'],['預估工時達成率',s.hoursAchievement,'%'],['QT',s.qt,'分'],['平均留店時間',s.d7Avg,'秒'],['平均送達時間',s.d25Avg,'秒']
+    ['達成率採計實際TC',s.attainmentActual,'單'],['達成率採計預估TC',s.attainmentForecast,'單'],['FA單數',s.fa,'單'],['預估工時',s.forecastHours,'hrs'],['SSTG%（扣FA）',s.sstgExFA,'%'],['預估工時達成率',s.hoursAchievement,'%'],['QT',s.qt,'分'],['平均留店時間',s.d7Avg,'秒'],['平均送達時間',s.d25Avg,'秒']
   ];}
   function formattedMetric(key,value,unit){return unit==='%'?pct(value):unit==='秒'?time(value):fmt(value,['hrs','分',''].includes(unit)?2:0);}
   function renderMetrics(v){
     const hasScores=[...v.days.values()].some(day=>day.types.has('ByOrder')&&!day.scoreExcluded);
-    const primary=['實際總單數','SSTG%','TPLH（扣FA）','第三方佔比','D7達成率','D25達成率','實際工時','TC預估達成率'];
+    const primary=['D7達成率','D25達成率','實際工時','TPLH（扣FA）','第三方佔比','去年單數','預估單數','實際總單數','SSTG%','TC預估達成率'];
     const all=metricsRows(v.summary);
-    const card=([key,value,unit])=>'<article class="ops-kpi-card"><h4>'+escape(({'實際總單數':'實際 TC','SSTG%':'SSTG','TPLH（扣FA）':'TPLH','TC預估達成率':'TC 預估達成率'})[key]||key)+'</h4><strong>'+(!hasScores&&key!=='實際工時'?'—':formattedMetric(key,value,unit))+'</strong></article>';
+    const card=([key,value,unit])=>'<article class="ops-kpi-card"><h4>'+escape(({'實際總單數':'實際 TC','SSTG%':'SSTG','TPLH（扣FA）':'TPLH','TC預估達成率':'TC 預估達成率','去年單數':'去年 TC','預估單數':'預估 TC'})[key]||key)+(key==='D7達成率'||key==='D25達成率'?'<small class="scope-note">全部餐廳</small>':'')+'</h4><strong>'+(!hasScores&&key!=='實際工時'?'—':formattedMetric(key,value,unit))+'</strong></article>';
     E('opsSummaryMetrics').innerHTML='<h3 class="ops-summary-period">'+escape(periodTitle(selectedDate(),period()))+'</h3><div class="ops-kpi-cards">'+primary.map(key=>card(all.find(row=>row[0]===key))).join('')+'</div><details class="ops-secondary"><summary>其他指標</summary><div class="ops-kpi-cards ops-secondary-cards">'+all.filter(row=>!primary.includes(row[0])).map(card).join('')+'</div></details>';
   }
   function warnings(v,isDay,date){
@@ -121,7 +123,7 @@
     const suffix=period()==='day'?'餐廳':'店日';
     E('opsLineCounts').innerHTML=tiles([['已登記'+suffix,registered],['待檢查'+suffix,unregistered],['劃線缺項',missingLine],['簽名缺項',missingSignature]]);
   }
-  function renderAcWaitSummary(records,r,v){
+  function acWaitData(records,r,v){
     const acByStore=new Map();for(const ac of M.acAssignmentsForDate(r.start))for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
     const counts=new Map(M.acAssignmentsForDate(r.start).map(ac=>[ac.name,0]));
     for(const row of records){if(row.record_date<r.start||row.record_date>r.end||M.NON_DELIVERY_STORES.has(String(row.store_code)))continue;const name=acByStore.get(String(row.store_code));if(name)counts.set(name,(counts.get(name)||0)+1);}
@@ -129,20 +131,28 @@
     const pending=new Map(),orders=new Map();
     for(const row of records){if(row.record_date<r.start||row.record_date>r.end||row.status==='completed')continue;const name=acByStore.get(String(row.store_code));if(name)pending.set(name,(pending.get(name)||0)+1);}
     if(v)for(const day of v.days.values())for(const order of day.orders){const name=acByStore.get(String(order.store_code));if(name)orders.set(name,(orders.get(name)||0)+1);}
-    E('opsDelayAcSummary').innerHTML='<table class="ops-summary-ac-table"><thead><tr><th>AC</th><th>登記</th><th>待回覆</th><th>等餐／TC</th></tr></thead><tbody>'+ranked.map(([name,count])=>'<tr><td>'+escape(name)+'</td><td>'+count+' 筆</td><td>'+(pending.get(name)||0)+'</td><td>'+pct(orders.get(name)?count/orders.get(name):null)+'</td></tr>').join('')+'</tbody></table>';
+    return ranked.map(([name,count])=>({name,count,pending:pending.get(name)||0,rate:orders.get(name)?count/orders.get(name):null}));
   }
-  function renderAcLineSummary(records,r){
+  function renderAcWaitSummary(records,r,v){
+    E('opsDelayAcSummary').innerHTML='<table class="ops-summary-ac-table"><thead><tr><th>AC</th><th>登記</th><th>待回覆</th><th>等餐／TC</th></tr></thead><tbody>'+acWaitData(records,r,v).map(x=>'<tr><td>'+escape(x.name)+'</td><td>'+x.count+' 筆</td><td>'+x.pending+'</td><td>'+pct(x.rate)+'</td></tr>').join('')+'</tbody></table>';
+  }
+  function acLineData(records,r){
     const acByStore=new Map();for(const ac of M.acAssignmentsForDate(r.start))for(const code of ac.stores)if(!M.NON_DELIVERY_STORES.has(code))acByStore.set(code,ac.name);
     const acStats=new Map(M.acAssignmentsForDate(r.start).map(ac=>[ac.name,{count:0,done:0}])),storeStats=new Map();
-    for(const row of records){if(row.record_date<r.start||row.record_date>r.end||M.NON_DELIVERY_STORES.has(String(row.store_code)))continue;const code=String(row.store_code),name=acByStore.get(code);if(!name)continue;const done=Number(!!row.line_completed)+Number(!!row.signature_completed),a=acStats.get(name);a.count++;a.done+=done;const s=storeStats.get(code)||{store_code:code,restaurant_name:row.restaurant_name,count:0,done:0};s.count++;s.done+=done;storeStats.set(code,s);}
+    for(const row of records){if(row.record_date<r.start||row.record_date>r.end||M.NON_DELIVERY_STORES.has(String(row.store_code)))continue;const code=String(row.store_code),name=acByStore.get(code);if(!name)continue;const done=Number(!!row.line_completed)+Number(!!row.signature_completed),a=acStats.get(name);a.count++;a.done+=done;const s=storeStats.get(code)||{store_code:code,restaurant_name:row.restaurant_name,ac:name,count:0,done:0};s.count++;s.done+=done;storeStats.set(code,s);}
     const acRates=[...acStats].map(([name,x])=>({name,count:x.count,rate:x.count?x.done/(x.count*2):null})).sort((a,b)=>a.rate===null?(b.rate===null?a.name.localeCompare(b.name):1):b.rate===null?-1:a.rate-b.rate||a.name.localeCompare(b.name));
     const expected=new Map();
     const end=typeof opsToday==='function'&&opsToday()<r.end?opsToday():r.end;
     for(const date of S.dates(r.start,end))for(const ac of M.acAssignmentsForDate(date)){
       expected.set(ac.name,(expected.get(ac.name)||0)+ac.stores.filter(code=>!M.NON_DELIVERY_STORES.has(code)).length);
     }
-    E('opsLineAcSummary').innerHTML='<table class="ops-summary-ac-table"><thead><tr><th>AC</th><th>達成率</th><th>已登記</th><th>待檢查</th></tr></thead><tbody>'+acRates.map(x=>'<tr><td>'+escape(x.name)+'</td><td>'+(x.rate===null?'—':(x.rate*100).toFixed(1)+'%')+'</td><td>'+x.count+'</td><td>'+Math.max(0,(expected.get(x.name)||0)-x.count)+'</td></tr>').join('')+'</tbody></table>';
+    for(const x of acRates)x.missing=Math.max(0,(expected.get(x.name)||0)-x.count);
     const worstStores=[...storeStats.values()].map(x=>({...x,rate:x.done/(x.count*2)})).filter(x=>x.rate<1).sort((a,b)=>a.rate-b.rate||a.store_code.localeCompare(b.store_code)).slice(0,3);
+    return {acRates,worstStores};
+  }
+  function renderAcLineSummary(records,r){
+    const {acRates,worstStores}=acLineData(records,r);
+    E('opsLineAcSummary').innerHTML='<table class="ops-summary-ac-table"><thead><tr><th>AC</th><th>達成率</th><th>已登記</th><th>待檢查</th></tr></thead><tbody>'+acRates.map(x=>'<tr><td>'+escape(x.name)+'</td><td>'+(x.rate===null?'—':(x.rate*100).toFixed(1)+'%')+'</td><td>'+x.count+'</td><td>'+x.missing+'</td></tr>').join('')+'</tbody></table>';
     E('opsLineRank').innerHTML=renderPriorityRestaurants(worstStores,x=>(x.rate*100).toFixed(1)+'%',x=>'已登記 '+x.count+' 次','本期沒有待改善紀錄');
   }
   function renderPriorityRestaurants(rows,metric,details,empty){
@@ -190,8 +200,8 @@
   function renderWeather(){
     const d=selectedDate(),p=period(),r=S.range(d,p),target=E(state.context==='summary'?'opsSummaryWeather':'opsWeather'),months=S.months(r.start,r.end),hasData=months.some(m=>state.weather.has(m.slice(0,7)));
     if(!hasData){target.textContent=months.map(m=>state.weatherError.get(m.slice(0,7))).find(Boolean)||'讀取中央氣象署觀測資料中…';return;}
-    if(p==='day')target.innerHTML='<div class="ops-weather-cards">'+['新竹','桃園'].map(city=>{const row=weatherRow(d,city);return '<article class="ops-weather-card"><h4>'+city+'　'+d+'</h4><strong>'+weatherText(row)+'</strong><div>'+weatherValue(row)+'</div><span>'+(row?escape(row.station_name)+'站 '+row.station_id:'')+'</span></article>';}).join('')+'</div>';
-    else target.innerHTML='<div class="ops-table-wrap"><table class="ops-weather-table"><thead><tr><th>日期</th><th>新竹</th><th>桃園</th></tr></thead><tbody>'+S.dates(r.start,r.end).filter(date=>date<=opsToday()).map(date=>'<tr><th>'+date.slice(5)+'</th>'+['新竹','桃園'].map(city=>{const row=weatherRow(date,city);return '<td>'+weatherText(row)+'<br>'+weatherValue(row)+(row?'<br>'+escape(row.station_name)+'站 '+escape(row.station_id):'')+'</td>';}).join('')+'</tr>').join('')+'</tbody></table></div>';
+    if(p==='day')target.innerHTML='<div class="ops-weather-cards">'+M.BUSINESS.weatherCities.map(city=>{const row=weatherRow(d,city);return '<article class="ops-weather-card"><h4>'+city+'　'+d+'</h4><strong>'+weatherText(row)+'</strong><div>'+weatherValue(row)+'</div><span>'+(row?escape(row.station_name)+'站 '+row.station_id:'')+'</span></article>';}).join('')+'</div>';
+    else target.innerHTML='<div class="ops-table-wrap"><table class="ops-weather-table"><thead><tr><th>日期</th>'+M.BUSINESS.weatherCities.map(city=>'<th>'+escape(city)+'</th>').join('')+'</tr></thead><tbody>'+S.dates(r.start,r.end).filter(date=>date<=opsToday()).map(date=>'<tr><th>'+date.slice(5)+'</th>'+M.BUSINESS.weatherCities.map(city=>{const row=weatherRow(date,city);return '<td>'+weatherText(row)+'<br>'+weatherValue(row)+(row?'<br>'+escape(row.station_name)+'站 '+escape(row.station_id):'')+'</td>';}).join('')+'</tr>').join('')+'</tbody></table></div>';
     target.insertAdjacentHTML('beforeend','<div class="ops-weather-source"><a href="https://codis.cwa.gov.tw/StationData" target="_blank" rel="noopener">中央氣象署 CODiS</a> · 日觀測於隔日中午前更新</div>');
   }
   function appendTable(wb,name,rows,headers,percent=[]){
@@ -220,7 +230,7 @@
       const ws=XLSX.utils.aoa_to_sheet([['營運總覽','數值','單位'],...summary,['TC來源','DMS（ByOrder／ByDate）'],['預估公式',window.OpsForecast.FORMULA],['資料提示',v.forecastWarnings.join('；')]]);ws['!cols']=[{wch:24},{wch:22},{wch:12}];summary.forEach((r,i)=>{if(r[2]==='%'&&ws['B'+(i+2)])ws['B'+(i+2)].z='0.0%';});XLSX.utils.book_append_sheet(wb,ws,'營運總覽');appendScores(wb,data,r);
       appendTable(wb,'劃線簽名',S.lineExport(state.stores,records.line,r.start,r.end,opsToday()),['日期','店號','餐廳','是否登記','劃線','簽名','登記時間','更新時間']);
       appendTable(wb,'等餐紀錄',records.delay.map(x=>({日期:x.record_date,店號:x.store_code,餐廳:x.restaurant_name,訂單編號:x.order_number,狀態:x.status==='completed'?'已回覆':'待回覆',等餐原因:x.reason||'',登記時間:x.created_at,回覆時間:x.responded_at||''})),['日期','店號','餐廳','訂單編號','狀態','等餐原因','登記時間','回覆時間']);
-      const weather=S.dates(r.start,r.end).flatMap(date=>['新竹','桃園'].map(city=>{const x=weatherRow(date,city);return {日期:date,城市:city,測站:x?.station_name||'',測站代碼:x?.station_id||'',平均氣溫:x?.temperature??null,降雨毫米:x?.precipitation??null,微量降雨:x?.trace?'是':'否',觀測狀態:x?.status||'unavailable',來源:'https://codis.cwa.gov.tw/StationData',查詢時間:state.weather.get(date.slice(0,7))?.fetched_at||''};}));
+      const weather=S.dates(r.start,r.end).flatMap(date=>M.BUSINESS.weatherCities.map(city=>{const x=weatherRow(date,city);return {日期:date,城市:city,測站:x?.station_name||'',測站代碼:x?.station_id||'',平均氣溫:x?.temperature??null,降雨毫米:x?.precipitation??null,微量降雨:x?.trace?'是':'否',觀測狀態:x?.status||'unavailable',來源:'https://codis.cwa.gov.tw/StationData',查詢時間:state.weather.get(date.slice(0,7))?.fetched_at||''};}));
       appendTable(wb,'天氣觀測',weather,['日期','城市','測站','測站代碼','平均氣溫','降雨毫米','微量降雨','觀測狀態','來源','查詢時間']);
       XLSX.writeFile(wb,'營運'+({day:'日報',week:'週報',month:'月報'}[p])+'_'+r.start+(r.end===r.start?'':'_'+r.end)+'.xlsx');notify('已匯出成績、劃線簽名與等餐紀錄','summary');
     }catch(e){notify('匯出失敗：'+e.message,'summary');}finally{buttons.forEach(b=>b.disabled=false);}
@@ -240,5 +250,24 @@
   for(const id of ['opsDelayStore','opsLineStore'])E(id).oninput=async()=>{if(id==='opsLineStore'){opsSetToggle('opsLineMark',false);opsSetToggle('opsSignMark',false);}try{const store=await findRestaurant(id);if(store&&id==='opsLineStore')await fillLineState(store.store_code);}catch(e){E(id+'Name').textContent=e.message;}};
   E('opsExportSelected').onclick=()=>exportCombined(period());
   window.opsLoadDailyAnalytics=()=>{state.context='scores';return refresh(true);};
-  window.OpsReport={readRows:paged,directory:loadDirectory,fillLineState,open:(context,force=true)=>{state.context=context;return refresh(force);}};
+  // 總覽頁用：與匯總資料同一套計算，只回傳資料不渲染（UI 改版第 2 步）
+  async function overview(date,p='day'){
+    if(!state.catalog.size)await loadDirectory();
+    const r=S.range(date,p),[data,records]=await Promise.all([loadRange(r),loadRecords(r)]);
+    await loadWeatherRange(r).catch(()=>{});
+    const v=M.build({...data,mapping:new Map(data.mapping.map(x=>[M.clean(x.restaurant_name),x.area_code])),catalog:state.catalog,...r});
+    const acStoreCodes=new Set(M.acAssignmentsForDate(r.start).flatMap(ac=>ac.stores).filter(code=>!M.NON_DELIVERY_STORES.has(code)));
+    const acOf=new Map();for(const ac of M.acAssignmentsForDate(r.start))for(const code of ac.stores)acOf.set(code,ac.name);
+    const delayRank=S.delayRanking(records.delay.filter(x=>acStoreCodes.has(String(x.store_code))),r.start,r.end);
+    const types=new Set([...v.days.values()].flatMap(day=>[...day.types]));
+    const line=acLineData(records.line,r);
+    return {range:r,summary:v.summary,hasScores:[...v.days.values()].some(day=>day.types.has('ByOrder')&&!day.scoreExcluded),
+      types:{ByOrder:types.has('ByOrder'),ByDate:types.has('ByDate')},
+      acWait:acWaitData(records.delay,r,v),delayTop:delayRank.top.map(x=>({...x,ac:acOf.get(String(x.store_code))||''})),delayTiedOthers:delayRank.tiedOthers,
+      acLine:line.acRates,lineWorst:line.worstStores,
+      lineRegistered:records.line.filter(x=>acStoreCodes.has(String(x.store_code))).length,lineExpected:acStoreCodes.size,
+      weather:M.BUSINESS.weatherCities.map(city=>{const row=weatherRow(date,city);return {city,text:weatherText(row),value:weatherValue(row)};})};
+  }
+  window.OpsReport={readRows:paged,directory:loadDirectory,fillLineState,overview,open:(context,force=true)=>{state.context=context;return refresh(force);}};
 })();
+

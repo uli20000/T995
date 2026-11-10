@@ -1,7 +1,11 @@
 (function(root){
   'use strict';
   const C=typeof module!=='undefined'&&module.exports?require('./operations-calendar.js'):root.OpsCalendar;
-  const SETTINGS=Object.freeze({weeks:8,growth:0.06,switchThreshold:null,tplh:2.5,thirdParty:0.20});
+  const isNode=typeof module!=='undefined'&&module.exports;
+  const schema=isNode?require('./config/business-schema.js'):root.CenterBusinessSchema;
+  if(!schema)throw new Error('尚未載入中心營運設定驗證器');
+  const BUSINESS=schema.validate(isNode?(root.CenterBusinessConfig||require('./config/995-business.js')):root.CenterBusinessConfig,root.CENTER_CONFIG?.center);
+  const SETTINGS=Object.freeze({...BUSINESS.forecast});
   const clean=s=>String(s||'').normalize('NFKC').replace(/\s+/g,'').trim();
   const number=v=>v===null||v===undefined||String(v).trim()===''?null:Number.isFinite(Number(v))?Number(v):null;
   const addDays=(date,n)=>{const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);};
@@ -9,14 +13,14 @@
   const weekStart=date=>addDays(date,-((new Date(date+'T12:00:00Z').getUTCDay()+6)%7));
   const dates=(start,end)=>{const out=[];for(let d=start;d<=end;d=addDays(d,1))out.push(d);return out;};
   const sampleStart=start=>addDays(weekStart(start),-SETTINGS.weeks*7);
-  const FORMULA='Power BI預估｜去年對應週同星期（前52週）TC×1.06，各區進位；需求工時÷2.5；2026/11/1起排除苗栗三店；缺去年資料留空';
+  const FORMULA=BUSINESS.forecastFormula;
   function prepare({history=[],mapping=[],catalog=new Map(),batches=[],reports=[],inScope=()=>true}){
     const mapped=Array.isArray(mapping)?mapping:[...mapping].map(([restaurant_name,area_code])=>({restaurant_name,area_code}));
     const directory=new Map([...catalog.values()].map(s=>[clean(s.restaurant_name),String(s.store_code)]));
     const stores=[...new Map(mapped.map(s=>[clean(s.restaurant_name),{name:clean(s.restaurant_name),restaurant_name:s.restaurant_name,area:s.area_code,code:directory.get(clean(s.restaurant_name))||s.store_code||''}])).values()];
     const index=new Map(),conflicts=new Set();
     for(const h of history){if(h.period_code!=='full_day')continue;const name=clean(h.restaurant_name),date=String(h.record_date).slice(0,10),key=date+'|'+name,old=index.get(key);if(old&&['total_tc','tc_ex_third_party','prior_year_tc'].some(k=>number(old[k])!==number(h[k])))conflicts.add(key);else if(!old)index.set(key,h);}
-    const eligible=date=>stores.filter(s=>!['201','203'].includes(s.code)&&inScope(s.code,date,s.restaurant_name));
+    const eligible=date=>stores.filter(s=>!BUSINESS.nonDeliveryStores.includes(s.code)&&inScope(s.code,date,s.restaurant_name));
     const dmsDates=new Set(batches.filter(b=>b.report_type==='ByOrder'&&Number(b.row_count)>0).map(b=>b.report_date));
     const suspectDates=new Set();
     for(const date of dmsDates){const list=eligible(date);if(list.length&&list.every(s=>{const h=index.get(date+'|'+s.name);return h&&number(h.total_tc)===0;}))suspectDates.add(date);}
@@ -53,16 +57,20 @@
     }
     return {stores,index,eligible,actual,priorYear,forecast,suspectDates,conflicts};
   }
-  async function load(db,start,end){
+  async function load(db,start,end,options={}){
+    if(root.CENTER_CONFIG?.features?.scoreRevisions===true&&!root.ScoreReadSource&&!options.scoreBatches)throw Error("Revision reader is required; legacy fallback is disabled");
     const first=sampleStart(start),history=[],batches=[],reports=[],months=new Set();
     for(const d of dates(first,end))months.add(d.slice(0,7)+'-01');
     for(const d of dates(addDays(start,-364),addDays(end,-364)))months.add(d.slice(0,7)+'-01');
     const refs=await Promise.all([...months].map(p_month=>db.rpc('t995_get_operations_reference',{p_month})));
     for(const r of refs){if(r.error)throw r.error;history.push(...(r.data?.history||[]));}
-    for(let offset=0;;offset+=1000){const r=await db.from('t995_score_import_batches').select('report_date,report_type,row_count').gte('report_date',first).lte('report_date',end).eq('report_type','ByOrder').order('report_date').range(offset,offset+999);if(r.error)throw r.error;batches.push(...(r.data||[]));if((r.data||[]).length<1000)break;}
+    const revisionSnapshot=options.scoreBatches?{batches:options.scoreBatches}:root.ScoreReadSource?await root.ScoreReadSource.load(db,first,end):null;
+    if(revisionSnapshot)batches.push(...revisionSnapshot.batches.filter(x=>x.report_type==='ByOrder'&&x.report_date>=first&&x.report_date<=end));
+    else for(let offset=0;;offset+=1000){const r=await db.from('t995_score_import_batches').select('report_date,report_type,row_count').gte('report_date',first).lte('report_date',end).eq('report_type','ByOrder').order('report_date').range(offset,offset+999);if(r.error)throw r.error;batches.push(...(r.data||[]));if((r.data||[]).length<1000)break;}
     for(let offset=0;;offset+=1000){const r=await db.from('t995_operations_daily_reports').select('record_date,score_excluded,special_notes').gte('record_date',first).lte('record_date',end).order('record_date').range(offset,offset+999);if(r.error)throw r.error;reports.push(...(r.data||[]));if((r.data||[]).length<1000)break;}
     return {history,batches,reports};
   }
   const api={SETTINGS,FORMULA,clean,number,addDays,comparisonDate,weekStart,dates,sampleStart,prepare,load};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsForecast=api;
 })(typeof window!=='undefined'?window:globalThis);
+

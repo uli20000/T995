@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- T995 V8: multi-week opening + Taipei-week rollover refresh; confirmed UI unchanged. -->
 <html lang="zh-Hant">
-<head>
+<head><script src="center-config.js"></script><script src="center-runtime.js"></script><link rel="stylesheet" href="shared-shell.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#f4f0e8">
@@ -926,6 +926,7 @@
  .shift-add-slot,.shift-slot-remove,.shift-unavailable{width:100%;min-width:0;height:40px;min-height:40px;padding:4px 5px;font-size:12px}
 }
 </style>
+<link rel="stylesheet" href="front-shell.css?v=20261110-prod1">
 </head>
 
 <body>
@@ -1000,6 +1001,7 @@
 
   <section id="claimPage" class="mode-page">
 <div id="claimForm">
+      <div id="atomicRiderStatus" class="hint" role="status">原子領還車預設關閉，須完成測試資料庫及權限驗證後才啟用。</div>
 
       <section class="card">
         <div class="section-number">01・領車人</div>
@@ -1595,15 +1597,15 @@
       </section>
       <section class="card">
         <div class="section-number">週一至週日</div>
-        <div class="shift-helper">時間僅輸入 10–22 的整數，例如 10–15；每天填一組時段或選「無法上班」，第二時段選填。</div>
+        <div class="shift-helper">時間限 10:00–22:30，分鐘僅限 00／30；每天填一組時段或選「無法上班」，第二時段選填。</div>
         <div id="shiftDays" class="shift-days" style="margin-top:14px">
-          <div class="shift-day shift-day-structured" data-shift-day="monday"><div class="shift-day-name" data-shift-day-label>週一</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週一開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週一結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="tuesday"><div class="shift-day-name" data-shift-day-label>週二</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週二開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週二結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="wednesday"><div class="shift-day-name" data-shift-day-label>週三</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週三開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週三結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="thursday"><div class="shift-day-name" data-shift-day-label>週四</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週四開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週四結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="friday"><div class="shift-day-name" data-shift-day-label>週五</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週五開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週五結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="saturday"><div class="shift-day-name" data-shift-day-label>週六</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週六開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週六結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
-          <div class="shift-day shift-day-structured" data-shift-day="sunday"><div class="shift-day-name" data-shift-day-label>週日</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="週日開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="週日結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="monday"><div class="shift-day-name" data-shift-day-label>週一</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週一開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週一結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="tuesday"><div class="shift-day-name" data-shift-day-label>週二</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週二開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週二結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="wednesday"><div class="shift-day-name" data-shift-day-label>週三</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週三開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週三結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="thursday"><div class="shift-day-name" data-shift-day-label>週四</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週四開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週四結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="friday"><div class="shift-day-name" data-shift-day-label>週五</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週五開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週五結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="saturday"><div class="shift-day-name" data-shift-day-label>週六</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週六開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週六結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
+          <div class="shift-day shift-day-structured" data-shift-day="sunday"><div class="shift-day-name" data-shift-day-label>週日</div><div class="shift-day-content"><div class="shift-time-slots"><div class="shift-time-slot" data-shift-slot><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="週日開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="週日結束時間"></div></div><div class="shift-day-actions"><button type="button" class="shift-add-slot" data-shift-add-slot>＋新增時段</button><button type="button" class="shift-slot-remove" data-shift-remove-slot hidden>－移除新增時段</button><label class="shift-unavailable"><input type="checkbox" data-shift-unavailable>無法上班</label></div></div></div>
         </div>
         <label class="label" for="shiftNotes" style="margin-top:20px">備註／排班需求</label>
         <textarea id="shiftNotes" maxlength="500" placeholder="選填；若七天皆無法上班，必須說明原因"></textarea>
@@ -1679,6 +1681,9 @@
 </div>
 
 
+<script src="config/995-business.js"></script><script src="center-ui.js?v=20261110-prod1"></script>
+<script src="rider-rules.js"></script>
+<script src="rider-rpc-adapter.js"></script>
 <script>
 
 /* =====================================================
@@ -1686,16 +1691,29 @@
    ===================================================== */
 
 const SUPABASE_URL =
-  "https://nurnboqwhctyswcufkyk.supabase.co";
+  window.CENTER_CONFIG.supabaseUrl;
 
 const SUPABASE_KEY =
-  "sb_publishable_YieSqh1zXq8wIvQiO9B_wg_ZbDkne7G";
+  window.CENTER_CONFIG.publishableKey;
 
 const db =
-  supabase.createClient(
+  window.CenterRuntime.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+// Atomic RPCs remain opt-in until isolated database, RLS and concurrency validation.
+const atomicRiderEnabled = window.CENTER_CONFIG.features?.atomicRider === true;
+if(atomicRiderEnabled && window.CENTER_CONFIG.schema !== "shared_test_995"){
+  throw new Error("原子領還車僅限已驗證的 shared_test_995 測試結構。");
+}
+document.getElementById("atomicRiderStatus").textContent = atomicRiderEnabled
+  ? "原子領還車測試模式；資料庫、權限與併發驗證須另行確認。"
+  : "原子領還車尚未啟用；目前沿用既有流程，須完成測試資料庫及權限驗證後才切換。";
+const atomicRiderWorkflow = RiderRpcAdapter.createWorkflow(db, {
+  enabled: atomicRiderEnabled,
+  ...(atomicRiderEnabled ? {boundSchema: window.CENTER_CONFIG.schema} : {})
+});
 
 function trainingTaipeiParts(date = new Date()){
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -2196,7 +2214,7 @@ async function loadVehicle() {
     console.error(error);
 
     alert(
-      "系統發生錯誤，請稍後再試。"
+      error.message || "系統發生錯誤，請稍後再試。"
     );
 
   } finally {
@@ -2273,6 +2291,8 @@ function formatDateTime(value) {
   return date.toLocaleString(
     "zh-TW",
     {
+      timeZone: "Asia/Taipei",
+      hourCycle: "h23",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -2380,13 +2400,11 @@ function validateInspection() {
 
 
   if (
-    !/^[\u4e00-\u9fff]{3}$/.test(
-      reporter
-    )
+    !reporter
   ) {
 
     alert(
-      "領車人請填寫 3 個中文字。"
+      "請從在職名單選擇領車人姓名。"
     );
 
     reporterNameInput.focus();
@@ -2456,6 +2474,7 @@ function validateInspection() {
    ===================================================== */
 
 async function saveInspection() {
+  if(saveBtn.disabled) return;
 
   if (
     !validateInspection()
@@ -2474,6 +2493,8 @@ async function saveInspection() {
 
   try {
 
+    const riderEmployee = await requireActiveRider(reporterNameInput.value.trim());
+    if(!atomicRiderEnabled) await requireOriginalRiderReturn(currentVehicle.id, reporterNameInput.value.trim());
     const mileage =
       Number(
         mileageInput.value
@@ -2538,14 +2559,17 @@ async function saveInspection() {
     };
 
 
-    const result =
-      await db
-        .from(
-          "inspection_reports"
-        )
-        .insert(record)
-        .select()
-        .single();
+    const result = atomicRiderEnabled
+      ? {data: await atomicRiderWorkflow.submitReturn({
+          employeeId: riderEmployee.id,
+          employeeName: riderEmployee.full_name,
+          vehicleId: currentVehicle.id,
+          mileage,
+          checks: Object.fromEntries(checkItems.map(item=>[item.key,checkState[item.key].status])),
+          notes: Object.fromEntries(checkItems.filter(item=>checkState[item.key].status==="abnormal")
+            .map(item=>[item.key,checkState[item.key].note.trim()]))
+        }), error:null}
+      : await db.from("inspection_reports").insert(record).select().single();
 
 
     if (result.error) {
@@ -2555,7 +2579,9 @@ async function saveInspection() {
       );
 
       alert(
-        "巡檢紀錄儲存失敗，請確認資料庫欄位是否完整。"
+        result.error.code === "22023" && result.error.message
+          ? result.error.message
+          : "巡檢紀錄儲存失敗，請確認資料庫欄位是否完整。"
       );
 
       return;
@@ -2592,7 +2618,7 @@ async function saveInspection() {
 
       <div>
         <strong>領車人：</strong>
-        ${reporterNameInput.value.trim()}
+        ${escapeHtml(reporterNameInput.value.trim())}
       </div>
 
       <div>
@@ -2623,7 +2649,7 @@ async function saveInspection() {
         "inspectionForm"
       )
       .style.display = "none";
-
+    document.getElementById("inspectionBackTop").style.display = "none";
 
     document
       .getElementById(
@@ -2638,7 +2664,7 @@ async function saveInspection() {
     console.error(error);
 
     alert(
-      "系統發生錯誤，請稍後再試。"
+      error.message || "系統發生錯誤，請稍後再試。"
     );
 
   } finally {
@@ -2992,7 +3018,7 @@ async function loadClaimVehicle() {
     console.error(error);
 
     alert(
-      "系統發生錯誤，請稍後再試。"
+      error.message || "系統發生錯誤，請稍後再試。"
     );
 
   } finally {
@@ -3164,20 +3190,49 @@ function resetClaimForm() {
    SAVE CLAIM
    ===================================================== */
 
+
+// These checks fail closed on lookup errors. Database RPC enforcement is also
+// required to prevent simultaneous submissions or direct API bypass.
+async function requireActiveRider(name){
+  const r=await db.from("employee_directory").select("id,full_name").eq("full_name",name).eq("is_active",true).maybeSingle();
+  if(r.error)throw r.error;
+  if(!r.data)throw new Error("姓名不在在職名單，請找店長確認。");
+  return r.data;
+}
+async function requireNoPendingClaimToday(name){
+  const bounds=RiderRules.dayBounds();
+  const claims=await db.from("claim_records").select("vehicle_id,claimant_name,claimed_at").eq("claimant_name",name).gte("claimed_at",bounds.start).lt("claimed_at",bounds.end).order("claimed_at",{ascending:false}).limit(101);
+  if(claims.error)throw claims.error;
+  if((claims.data||[]).length>100)throw new Error("今日領車紀錄過多，請管理員核對。");
+  for(const claim of claims.data||[]){
+    const returned=await db.from("inspection_reports").select("id").eq("vehicle_id",claim.vehicle_id).eq("reporter_name",name).gte("reported_at",claim.claimed_at).limit(1);
+    if(returned.error)throw returned.error;
+    if(!returned.data?.length)throw new Error("你今天還有未還車紀錄，請先還車再領車。");
+  }
+}
+async function requireOriginalRiderReturn(vehicleId,name){
+  const claim=await db.from("claim_records").select("claimant_name,claimed_at").eq("vehicle_id",vehicleId).order("claimed_at",{ascending:false}).limit(1).maybeSingle();
+  if(claim.error)throw claim.error;
+  if(!claim.data)throw new Error("查無本車領車紀錄，請管理員核對。");
+  if(claim.data.claimant_name!==name)throw new Error("只允許原領車人還車，請確認在職名單姓名。");
+  const previous=await db.from("inspection_reports").select("id").eq("vehicle_id",vehicleId).eq("reporter_name",name).gte("reported_at",claim.data.claimed_at).limit(1);
+  if(previous.error)throw previous.error;
+  if(previous.data?.length)throw new Error("這次領車已完成還車，請勿重複送出。");
+}
+
 async function saveClaim() {
+  if(claimSaveBtn.disabled) return;
 
   const name =
     claimantName.value.trim();
 
 
   if (
-    !/^[\u4e00-\u9fff]{3}$/.test(
-      name
-    )
+    !name
   ) {
 
     alert(
-      "領車人請填寫 3 個中文字。"
+      "請從在職名單選擇領車人姓名。"
     );
 
     claimantName.focus();
@@ -3283,32 +3338,23 @@ async function saveClaim() {
 
   try {
 
-    const result =
-      await db
-        .from("claim_records")
-        .insert({
-
-          vehicle_id:
-            claimVehicle.id,
-
-          claimant_name:
-            name,
-
-          claim_point:
-            claimPoint.value,
-
-          recorder_number:
-            recorder,
-
-          battery_number:
-            batteryNumber || null,
-
-          oil_card_status:
-            oilCard.value
-
-        })
-        .select()
-        .single();
+    const riderEmployee = await requireActiveRider(name);
+    let result;
+    if(atomicRiderEnabled){
+      result = {data:await atomicRiderWorkflow.submitClaim({
+        employeeId:riderEmployee.id, employeeName:riderEmployee.full_name,
+        vehicleId:claimVehicle.id, claimPoint:claimPoint.value,
+        recorderNumber:recorder, batteryNumber:batteryNumber || null,
+        oilCardStatus:oilCard.value
+      }),error:null};
+    }else{
+      await requireNoPendingClaimToday(name);
+      result = await db.from("claim_records").insert({
+        vehicle_id:claimVehicle.id, claimant_name:name, claim_point:claimPoint.value,
+        recorder_number:recorder, battery_number:batteryNumber || null,
+        oil_card_status:oilCard.value
+      }).select().single();
+    }
 
 
     if (result.error) {
@@ -3318,7 +3364,9 @@ async function saveClaim() {
       );
 
       alert(
-        "領車紀錄儲存失敗，請稍後再試。"
+        result.error.code === "22023" && result.error.message
+          ? result.error.message
+          : "領車紀錄儲存失敗，請稍後再試。"
       );
 
       return;
@@ -3384,7 +3432,7 @@ async function saveClaim() {
 
     claimForm.style.display =
       "none";
-
+    document.getElementById("claimBackTop").style.display = "none";
 
     claimSuccess
       .classList
@@ -3396,7 +3444,7 @@ async function saveClaim() {
     console.error(error);
 
     alert(
-      "系統發生錯誤，請稍後再試。"
+      error.message || "系統發生錯誤，請稍後再試。"
     );
 
   } finally {
@@ -3411,10 +3459,13 @@ async function saveClaim() {
 }
 
 
-claimSaveBtn.addEventListener(
-  "click",
-  saveClaim
-);
+let claimSubmissionPending = false;
+claimSaveBtn.addEventListener("click", async () => {
+  if(claimSubmissionPending)return;
+  claimSubmissionPending = true;
+  try{await saveClaim();}catch(error){alert(error.message || "領車失敗，請稍後重試。");}
+  finally{claimSubmissionPending = false;}
+});
 
 
 
@@ -3895,7 +3946,7 @@ async function saveSurvey() {
     surveySuccess.classList.add("show");
   } catch (error) {
     console.error(error);
-    alert("系統發生錯誤，請稍後再試。");
+    alert(error.message || "系統發生錯誤，請稍後再試。");
   } finally {
     surveySaveBtn.disabled = false;
     surveySaveBtn.textContent = "送出駕駛意向調查";
@@ -4029,6 +4080,7 @@ function resetDefensiveForm(){
   defensiveNameSuggestions.classList.remove("show");
   defensiveNameSuggestions.innerHTML = "";
   defensiveMonthSelect.value = String(currentTrainingMonth());
+  Array.from(defensiveMonthSelect.options).forEach(option=>option.disabled=Number(option.value)>currentTrainingMonth());
   defensiveLessonPanel.style.display = "none";
   defensiveQuestions.style.display = "none";
   defensiveStatus.className = "training-message";
@@ -4038,9 +4090,13 @@ function resetDefensiveForm(){
   defensiveForm.style.display = "block";
 }
 
+let defensiveLoadedContext = null;
 async function loadDefensiveLesson(){
+  defensiveLoadedContext = null;
+  defensiveLesson = null;
   const name = defensiveNameInput.value.trim();
   const monthNo = selectedTrainingMonth();
+  if(!RiderRules.canTrain(currentTrainingYear(),monthNo)){alert("只能補做今年已到月份的課程，不可提前做。");return;}
   if(!name){ alert("請輸入姓名。"); defensiveNameInput.focus(); return; }
   defensiveLoadBtn.disabled = true;
   defensiveLoadBtn.textContent = "載入中…";
@@ -4055,13 +4111,6 @@ async function loadDefensiveLesson(){
       defensiveQuestions.style.display = "none";
       return;
     }
-    const targetResult = await db.from("driver_survey_targets").select("id").eq("respondent_name", name).limit(1);
-    if(targetResult.error) throw targetResult.error;
-    if(!targetResult.data?.length){
-      defensiveStatus.className = "training-message";
-      defensiveStatus.textContent = "查無此姓名，請先由後台加入應完成人員名單。";
-      return;
-    }
     const lessonResult = await db.from("defensive_driving_lessons").select("*").eq("month_no", monthNo).maybeSingle();
     if(lessonResult.error) throw lessonResult.error;
     if(!lessonResult.data){
@@ -4069,6 +4118,7 @@ async function loadDefensiveLesson(){
       return;
     }
     defensiveLesson = lessonResult.data;
+    defensiveLoadedContext = {name, year:currentTrainingYear(), month:monthNo};
     const existing = await db.from("defensive_driving_responses")
       .select("*")
       .eq("respondent_name", name)
@@ -4132,6 +4182,7 @@ defensiveSubmitBtn.addEventListener("click", async () => {
   const name = defensiveNameInput.value.trim();
   const a1 = document.querySelector('.answer-option[data-question="1"].selected')?.dataset.value;
   const a2 = document.querySelector('.answer-option[data-question="2"].selected')?.dataset.value;
+  if(!defensiveLoadedContext || defensiveLoadedContext.name!==name || defensiveLoadedContext.month!==selectedTrainingMonth() || !RiderRules.canTrain(defensiveLoadedContext.year,defensiveLoadedContext.month)){alert("姓名或月份已變更，請重新載入課程。");return;}
   if(!defensiveLesson || !name){ alert("請先載入當月課程。"); return; }
   if(!defensiveVideoOpenedAt){ alert("請先開啟並觀看當月影片。"); return; }
   if(!defensivePdfOpenedAt){ alert("請先開啟安全月曆 PDF。"); return; }
@@ -4142,6 +4193,7 @@ defensiveSubmitBtn.addEventListener("click", async () => {
   const now = new Date().toISOString();
   const attempt = Number(defensiveExistingResponse?.attempt_count || 0) + 1;
   try{
+    await requireActiveRider(name);
     const payload = {
       respondent_name: name,
       training_year: currentTrainingYear(),
@@ -4154,7 +4206,7 @@ defensiveSubmitBtn.addEventListener("click", async () => {
       completed_at: isCorrect ? now : null,
       status: isCorrect ? "completed" : "incomplete"
     };
-    const result = await db.from("defensive_driving_responses").upsert(payload, {onConflict:"respondent_name,month_no"});
+    const result = await db.from("defensive_driving_responses").upsert(payload, {onConflict:"respondent_name,training_year,month_no"});
     if(result.error) throw result.error;
     if(!isCorrect){
       alert("本次答題未通過，請重新觀看影片後再回答兩題。\n目前仍未完成本月課程。");
@@ -4192,6 +4244,7 @@ defensiveLoadBtn.addEventListener("click", loadDefensiveLesson);
 document.getElementById("defensiveBackBtn").addEventListener("click", showHome);
 document.getElementById("defensiveSuccessHomeBtn").addEventListener("click", showHome);
 defensiveMonthSelect.value = String(currentTrainingMonth());
+  Array.from(defensiveMonthSelect.options).forEach(option=>option.disabled=Number(option.value)>currentTrainingMonth());
 
 
 /* =====================================================
@@ -4420,7 +4473,7 @@ async function cleanupOldInspectionReports() {
 }
 
 
-cleanupOldInspectionReports();
+// Cleanup is intentionally not run when a rider opens the page.
 
 
 /* =====================================================
@@ -4458,7 +4511,7 @@ async function cleanupOldClaimRecords() {
 }
 
 
-cleanupOldClaimRecords();
+// Cleanup belongs to an explicit administrative retention workflow, never page load.
 
 
 /* =====================================================
@@ -4468,6 +4521,7 @@ cleanupOldClaimRecords();
 todayDate.textContent = new Date().toLocaleDateString(
   "zh-TW",
   {
+    timeZone: "Asia/Taipei",
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -4662,7 +4716,7 @@ function addShiftTimeSlot(dayElement){
   const slots=dayElement.querySelector(".shift-time-slots");if(slots.querySelectorAll("[data-shift-slot]").length>=2)return;
   const dayName=shiftDayLabels[dayElement.dataset.shiftDay]||"當日";const number=slots.querySelectorAll("[data-shift-slot]").length+1;
   const slot=document.createElement("div");slot.className="shift-time-slot shift-time-slot-extra";slot.setAttribute("data-shift-slot","");
-  slot.innerHTML=`<input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="10" data-shift-start aria-label="${dayName}第${number}時段開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="number" min="10" max="22" step="1" inputmode="numeric" placeholder="22" data-shift-end aria-label="${dayName}第${number}時段結束時間">`;
+  slot.innerHTML=`<input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-start aria-label="${dayName}第${number}時段開始時間"><span class="shift-time-separator">–</span><input class="shift-time-input" type="time" min="10:00" max="22:30" step="1800" data-shift-end aria-label="${dayName}第${number}時段結束時間">`;
   slots.appendChild(slot);updateShiftDayControls(dayElement);
 }
 shiftDaysContainer.addEventListener("change",event=>{if(event.target.matches("[data-shift-unavailable]"))updateShiftDayControls(event.target.closest("[data-shift-day]"));});
@@ -4680,12 +4734,9 @@ function readShiftDayValue(dayKey){
     const index=slots.findIndex(slot=>!slot.start||!slot.end);const incomplete=slots[index];
     return {error:`${dayName}時段請同時選擇開始與結束時間。`,focus:dayElement.querySelectorAll(incomplete.start?"[data-shift-end]":"[data-shift-start]")[index]};
   }
-  const invalid=filled.find(slot=>![slot.start,slot.end].every(value=>Number.isInteger(Number(value))&&Number(value)>=10&&Number(value)<=22));
-  if(invalid){const index=slots.indexOf(invalid);const startValue=Number(invalid.start);const focus=(invalid.start===""||!Number.isInteger(startValue)||startValue<10||startValue>22)?"[data-shift-start]":"[data-shift-end]";return {error:`${dayName}時間請輸入 10 到 22 的整數。`,focus:dayElement.querySelectorAll(focus)[index]};}
-  const intervals=filled.map(slot=>[Number(slot.start)*60,Number(slot.end)*60]).sort((a,b)=>a[0]-b[0]);
-  if(intervals.some(([start,end])=>start>=end))return {error:`${dayName}結束時間需晚於開始時間。`,focus:dayElement.querySelector("[data-shift-end]")};
-  for(let i=1;i<intervals.length;i++)if(intervals[i][0]<intervals[i-1][1])return {error:`${dayName}時段不能重疊。`,focus:dayElement.querySelectorAll("[data-shift-start]")[1]};
-  return {value:intervals.map(([start,end])=>`${start/60}-${end/60}`).join("/"),intervals};
+  const result=RiderRules.validateSlots(filled);
+  if(result.error)return {error:`${dayName}${result.error}`,focus:dayElement.querySelector("[data-shift-start]")};
+  return result;
 }
 async function submitShiftAvailability(){
   try{await loadShiftSubmissionSettings();}catch(e){shiftSubmitMessage.textContent="無法確認開放狀態，請稍後再試。";return;}
@@ -4781,5 +4832,7 @@ document.getElementById("shiftSuccessHomeBtn").addEventListener("click",showHome
 
 </script>
 
+<script src="front-shell.js?v=20261110-prod1"></script>
 </body>
 </html>
+
