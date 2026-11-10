@@ -16,3 +16,19 @@ html[data-display-mode="dark"] :is(.ops-file-card,.ops-file-card.ready,.ops-kpi-
 html[data-display-mode="dark"] :is(.ops-kpi-card strong,.ops-summary-priority-rank,.ops-summary-priority-list b,.ops-ac-summary-grid b){color:#ff91a5!important}
 html[data-display-mode="dark"] :is(.ops-area-table tfoot th,.ops-area-table tfoot td,.ops-area-table tbody tr:nth-child(even)){background:#2c3138;color:#f1f1f1}
 
+/* 夜間補漏（2026-11-10）：舊區塊寫死白底，字又跟著變淺，造成看不到字 */
+html[data-display-mode="dark"] :is(.ops-score-file-button,.period-choices button,.period-picker button,.ops-delete-btn,.search-box,.vehicle-card,.survey-card,.device-admin-type-btn,.summary-refresh-btn,.employee-add-panel,.employee-area-tab,.employee-directory-card,.employee-area-save-btn,.shift-test-toggle,.shift-week-option,.shift-week-btn,.shift-status-btn,.shift-export-week,.forecast-formula,.staffing-day-tab,.forecast-day-panel,.forecast-day-total-wrap,.shift-admin-scroll,.shift-person-cell,.survey-status-card,.empty,.bi-upload-button,.staffing-file-picker,.admin-fixed-card){background:#22262b!important;color:#f1f1f1!important;border-color:#4b5058!important}
+html[data-display-mode="dark"] :is(.survey-item,.forecast-day-heading,.forecast-day-total-card,.staffing-panel,.oil-status,.status.status-none,.employee-badge){background:#2c3138!important;color:#f1f1f1!important;border-color:#4b5058!important}
+html[data-display-mode="dark"] :is(.vehicle-card,.survey-card,.survey-status-card,.employee-directory-card,.forecast-day-panel,.search-box) :is(div,span,small,strong,p,label):not(.status-fail):not(.status-pass):not(.survey-result-pass):not(.survey-result-fail){color:inherit}
+html[data-display-mode="dark"] :is(.status-meta,.survey-time,.survey-detail,.device-latest-claim,.vehicle-info,.vehicle-info div,.claim-info,.center,.survey-item,.employee-area-tab small){color:#c9c5be!important}
+html[data-display-mode="dark"] :is(.status-fail,.survey-result-fail){color:#ffaaa3!important}
+html[data-display-mode="dark"] :is(.status-pass,.survey-result-pass){color:#8dd6a8!important}
+html[data-display-mode="dark"] :is(.ops-line-stat strong,.ops-delete-btn,.period-choices button,.period-picker button,.bi-upload-button){color:#ff91a5!important}
+html[data-display-mode="dark"] #opsSummaryPanel b{color:#ff91a5}
+html[data-display-mode="dark"] :is(.period-choices button,.period-picker button) :is(span,strong,small){color:#f1f1f1!important}
+html[data-display-mode="dark"] :is(.period-choices button.active,.period-picker button.active,.period-choices button[aria-pressed=true]),html[data-display-mode="dark"] :is(.period-choices button.active,.period-picker button.active) *{background:#b51b35!important;color:#fff!important}
+html[data-display-mode="dark"] :is(.ops-empty,.tracking-note,.hint,.ui-drop-tip){color:#c9c5be!important}
+html[data-display-mode="dark"] .summary-card.clickable :is(.summary-label,.summary-value){color:inherit!important}
+html[data-display-mode="dark"] :is(.shift-week-btn.active,.shift-status-btn.active,.employee-area-tab.active,.staffing-day-tab.active,.device-admin-type-btn.active){background:#b51b35!important;color:#fff!important;border-color:#b51b35!important}
+html[data-display-mode="dark"] :is(.shift-week-btn.active,.employee-area-tab.active,.staffing-day-tab.active) *{color:#fff!important}
+html[data-display-mode="dark"] :is(.forecast-data-warning,.forecast-week-gap.is-warning,.is-warning){color:#edce80!important}

@@ -120,6 +120,13 @@ html[data-display-mode=dark] .uo-progress .done{background:#1B3A24}
 #adminApp.ui-shell .ui-dropzone.ui-drag{border-color:var(--ui-red);background:var(--ui-miss)}
 #adminApp.ui-shell .ui-drop-tip{color:var(--ui-faint);font-size:13px;margin:6px 0 0;text-align:center}
 #adminApp.ui-shell .ui-import-history{margin:16px 0 20px;color:var(--ui-text)}
+#adminApp.ui-shell .ui-import-history>summary{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;cursor:pointer;list-style:none;min-height:40px}
+#adminApp.ui-shell .ui-import-history>summary::-webkit-details-marker{display:none}
+#adminApp.ui-shell .ui-import-history>summary h2{margin:0}
+#adminApp.ui-shell .ui-import-history>summary::after{content:'＋';display:inline-grid;place-items:center;width:26px;height:26px;border:1px solid var(--ui-line);border-radius:50%;color:var(--ui-muted);font-size:14px}
+#adminApp.ui-shell .ui-import-history[open]>summary::after{content:'－'}
+#adminApp.ui-shell .ui-import-history[open]>summary{margin-bottom:12px}
+#adminApp.ui-shell .ui-hist-latest{color:var(--ui-muted);font-size:14px}
 #adminApp.ui-shell .ui-table{width:100%;border-collapse:collapse;font-size:14px}
 #adminApp.ui-shell .ui-table th{color:var(--ui-muted);font-weight:600;font-size:13px;text-align:left!important;padding:8px 10px;border-bottom:1px solid var(--ui-line)}
 #adminApp.ui-shell .ui-table td{padding:8px 10px;border-bottom:1px solid var(--ui-line);text-align:left!important}
