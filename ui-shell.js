@@ -23,6 +23,7 @@
     {key:'analysis:alerts',label:'預警',ic:'🔔',href:'analysis.html#tab=alerts',sub:true},
     {key:'analysis:impact',label:'影響度排名',ic:'🎯',href:'analysis.html#tab=impact',sub:true},
     {key:'analysis:weekly',label:'週報草稿',ic:'📝',href:'analysis.html#tab=weekly',sub:true},
+    {key:'analysis:drill',label:'明細與熱圖',ic:'🔍',href:'analysis.html#tab=drill',sub:true},
     {key:'analysis:store',label:'餐廳頁',ic:'🏪',href:'analysis.html#tab=store',sub:true},
     {key:'analysis:actions',label:'行動追蹤',ic:'✅',href:'analysis.html#tab=actions',sub:true},
     {group:'車隊與設備'},
@@ -82,7 +83,7 @@
     nav.querySelectorAll('.ui-item').forEach(b=>b.classList.toggle('active',b.dataset.uiKey===key));
     const t=E('uiPageTitle');if(t)t.textContent=TITLES[key]||'';
   }
-  if(isAnalysis){mark((/^#tab=(alerts|impact|weekly|store|actions|targets)$/.test(location.hash)?'analysis:'+location.hash.slice(5):null)||'analysis');window.UiShell={mark};return;}
+  if(isAnalysis){mark((/^#tab=(alerts|impact|weekly|store|actions|targets|drill)$/.test(location.hash)?'analysis:'+location.hash.slice(5):null)||'analysis');window.UiShell={mark};return;}
 
   function go(n){
     if(n.mode==='home'){showAdminMode('home');return;}

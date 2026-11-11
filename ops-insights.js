@@ -215,6 +215,39 @@
     return lines.join('\n').trim()+'\n';
   }
 
-  const api={METRICS,addDays,byStore,center,value,fails,need,impact,streak,alerts,anomalies,weeklyDraft,weeklyText,pct};
+  /** C1 時段 × 星期熱圖。orders：{date, hour, code, fa, d7, d25, wait}；hour 為落單時間的小時（台灣時間），沒有時間的單另計 skipped。
+   *  口徑同上：D7／D25 只算非獨立店的非 FA 單；FA 佔比、等餐用全部單。單數少於 minOrders 的格子不給值，避免一兩張單就變紅。 */
+  const WEEKDAYS=['一','二','三','四','五','六','日'];
+  function heatmap(orders,metric,{independent=new Set(),minOrders=5}={}){
+    if(!METRICS[metric])throw new Error('不支援的指標：'+metric);
+    const grid=new Map(),hours=new Set(),all=blank({});let skipped=0;
+    const add=(t,o)=>{t.tc++;if(o.fa)t.fa++;else if(!independent.has(String(o.code||''))){const d7=String(o.d7||'').toUpperCase(),d25=String(o.d25||'').toUpperCase();if(d7==='Y')t.d7Y++;if(d7==='N')t.d7N++;if(d25==='Y')t.d25Y++;if(d25==='N')t.d25N++;}if(o.wait)t.wait++;};
+    for(const o of orders){
+      const h=Number(o.hour);
+      if(o.hour===null||o.hour===undefined||!Number.isInteger(h)||h<0||h>23){skipped++;continue;}
+      const wd=(new Date(o.date+'T12:00:00Z').getUTCDay()+6)%7,key=wd+'|'+h;
+      let t=grid.get(key);if(!t){t=blank({});grid.set(key,t);}
+      add(t,o);add(all,o);hours.add(h);
+    }
+    const base=x=>metric==='d7'||metric==='d25'?x[metric+'Y']+x[metric+'N']:x.tc;
+    const list=[...hours].sort((a,b)=>a-b);
+    const rows=WEEKDAYS.map((label,wd)=>({weekday:label,cells:list.map(h=>{const t=grid.get(wd+'|'+h)||blank({}),n=base(t),enough=metric==='waiting'?t.tc>0:n>=minOrders;return {hour:h,n,tc:t.tc,value:enough?value(t,metric):null};})}));
+    const overall=value(all,metric);
+    // 明顯差的格子：達成率比整體低（FA 比整體高）至少 5 點；等餐取筆數最多。最多 3 格。
+    const cells=rows.flatMap(r=>r.cells.map(c=>({...c,weekday:r.weekday}))).filter(c=>c.value!==null);
+    let worst;
+    if(metric==='waiting')worst=cells.filter(c=>c.value>0).sort((a,b)=>b.value-a.value||b.tc-a.tc).slice(0,3);
+    else if(overall===null)worst=[];
+    else{const gap=c=>METRICS[metric].kind==='share'?c.value-overall:overall-c.value;worst=cells.filter(c=>gap(c)>=0.05-EPS).sort((a,b)=>gap(b)-gap(a)||b.n-a.n).slice(0,3);}
+    return {metric,hours:list,rows,overall,skipped,total:all.tc+skipped,minOrders,worst};
+  }
+  /** 依 AC 分組（中心 → AC 層）。acOf(code) 取不到的歸「未分配」。 */
+  function byAc(stores,acOf=()=>null,independent=new Set()){
+    const map=new Map();
+    for(const s of stores){const name=acOf(s.code)||'未分配';const g=map.get(name)||{name,stores:[]};g.stores.push(s);map.set(name,g);}
+    return [...map.values()].map(g=>({name:g.name,stores:g.stores,total:center(g.stores,independent)}));
+  }
+
+  const api={METRICS,addDays,byStore,center,value,fails,need,impact,streak,alerts,anomalies,weeklyDraft,weeklyText,pct,heatmap,byAc,WEEKDAYS};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsInsights=api;
 })(typeof window!=='undefined'?window:globalThis);
