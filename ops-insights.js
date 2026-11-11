@@ -248,6 +248,86 @@
     return [...map.values()].map(g=>({name:g.name,stores:g.stores,total:center(g.stores,independent)}));
   }
 
-  const api={METRICS,addDays,byStore,center,value,fails,need,impact,streak,alerts,anomalies,weeklyDraft,weeklyText,pct,heatmap,byAc,WEEKDAYS};
+  // ===== C5 排班與成績對照、C6 派單時間 =====
+  const DAY_KEYS=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+  /** 指休時段文字 → [[開始分, 結束分]]；空白回 []，看不懂回 null（與後台人力建議同一套規則）。 */
+  function parseRanges(value){
+    const s=String(value||'').trim();if(!s)return [];
+    const out=[];
+    for(const part of s.split(/[，,、;；/\n]+/).map(x=>x.trim()).filter(Boolean)){
+      const m=part.match(/^(\d{1,2})(?::(\d{2}))?\s*[-~～至]\s*(\d{1,2})(?::(\d{2}))?$/);if(!m)return null;
+      const sh=+m[1],sm=+(m[2]||0),eh=+m[3],em=+(m[4]||0),a=sh*60+sm,b=eh*60+em;
+      if(sh>23||eh>24||sm>59||em>59||a>=b||b>1440)return null;out.push([a,b]);
+    }
+    return out;
+  }
+  /** 指休排班：每人每週取最後一次正式提交（測試資料不算），算每天有填可上班時段的人數與時數。 */
+  function shiftByDate(rows,dates){
+    const latest=new Map();
+    for(const r of [...(rows||[])].filter(r=>r&&r.is_test!==true).sort((a,b)=>String(b.submitted_at||'').localeCompare(String(a.submitted_at||'')))){const k=String(r.employee_id)+'|'+r.week_start;if(!latest.has(k))latest.set(k,r);}
+    const out=new Map();
+    for(const d of dates){
+      let people=0,hours=0,unreadable=0,submitted=0;
+      for(const r of latest.values()){
+        const off=Math.round((Date.parse(d+'T12:00:00Z')-Date.parse(String(r.week_start)+'T12:00:00Z'))/86400000);if(!(off>=0&&off<=6))continue;
+        submitted++;const ranges=parseRanges(r[DAY_KEYS[new Date(d+'T12:00:00Z').getUTCDay()]]);
+        if(ranges===null){unreadable++;continue;}
+        if(ranges.length){people++;hours+=ranges.reduce((n,[a,b])=>n+(b-a)/60,0);}
+      }
+      out.set(d,{people,hours,unreadable,submitted});
+    }
+    return out;
+  }
+  /** 逐日排班對照。day：{date, tc, nonfa, hours（實際工時，缺為 null）, d7（中心非獨立店，缺為 null）, excluded}
+   *  建議工時＝自送單（扣 FA）÷ 標準 TPLH；排太多＝實際比建議多 overHours 小時以上；偏少＝實際低於建議且當天 D7 未達標。 */
+  function staffing(days,{shift=new Map(),tplh=2.5,overHours=30,d7Target=null}={}){
+    const rows=days.map(x=>{
+      const s=shift.get(x.date)||null,base={date:x.date,tc:x.tc,nonfa:x.nonfa,people:s?s.people:null,shiftHours:s?s.hours:null,unreadable:s?s.unreadable:0,hours:x.hours,d7:x.d7};
+      if(x.excluded)return {...base,verdict:'excluded',tplh:null,suggest:null,diff:null};
+      if(!x.tc)return {...base,verdict:'noscore',tplh:null,suggest:null,diff:null};
+      const suggest=tplh>0?x.nonfa/tplh:null;
+      if(x.hours===null||x.hours===undefined||!(x.hours>0))return {...base,verdict:'nohours',tplh:null,suggest,diff:null};
+      const diff=suggest===null?null:x.hours-suggest,low=d7Target!==null&&x.d7!==null&&x.d7!==undefined&&x.d7<d7Target-EPS;
+      const verdict=diff===null?'ok':diff>=overHours-EPS?'over':diff<0&&low?'under':'ok';
+      return {...base,verdict,tplh:x.nonfa/x.hours,suggest,diff};
+    });
+    const judged=rows.filter(r=>r.diff!==null),sum=k=>judged.reduce((n,r)=>n+(r[k]||0),0);
+    return {rows,over:rows.filter(r=>r.verdict==='over').length,under:rows.filter(r=>r.verdict==='under').length,
+      total:judged.length?{nonfa:sum('nonfa'),hours:sum('hours'),suggest:sum('suggest'),diff:sum('diff'),tplh:sum('hours')>0?sum('nonfa')/sum('hours'):null}:null};
+  }
+  const SLOTS=[['11 時前',0,10],['11–13 時',11,13],['14–16 時',14,16],['17–20 時',17,20],['21 時後',21,23]];
+  /** 派單時間。order：{code, name, late（true／false／null）, stayMin（留店分鐘或 null）, hour（落單時，0–23 或 null）}
+   *  晚派比例的分母＝有派單與預計抵達時間可判讀的單；只列至少 minOrders 張可判讀的餐廳。 */
+  function dispatch(orders,{minOrders=20}={}){
+    const acc=()=>({orders:0,known:0,late:0,stay:0,stayN:0}),put=(t,o)=>{t.orders++;if(o.late!==null&&o.late!==undefined){t.known++;if(o.late)t.late++;}if(Number.isFinite(o.stayMin)){t.stay+=o.stayMin;t.stayN++;}},out=t=>({...t,share:t.known?t.late/t.known:null,avgStay:t.stayN?t.stay/t.stayN:null});
+    const stores=new Map(),slots=SLOTS.map(()=>acc()),all=acc();let noHour=0;
+    for(const o of orders){
+      const k=o.code||o.name;if(!stores.has(k))stores.set(k,{code:o.code||'',name:o.name||o.code||'未分類餐廳',...acc()});put(stores.get(k),o);put(all,o);
+      if(o.hour===null||o.hour===undefined){noHour++;continue;}const i=SLOTS.findIndex(([,a,b])=>o.hour>=a&&o.hour<=b);if(i>=0)put(slots[i],o);
+    }
+    const list=[...stores.values()].map(out),ranked=list.filter(s=>s.known>=minOrders&&s.late>0).sort((a,b)=>b.late-a.late||b.share-a.share||a.code.localeCompare(b.code));
+    return {all:out(all),stores:ranked,small:list.filter(s=>s.known<minOrders).length,slots:SLOTS.map(([label],i)=>({label,...out(slots[i])})).filter(s=>s.orders),noHour,minOrders};
+  }
+
+  // ===== E2 匯出：工作表名稱、純文字表格、Word 文件外框 =====
+  /** Excel 工作表名稱：去掉不允許的字元、最多 31 字、重複時加序號。 */
+  function sheetNames(list){
+    const used=new Set();
+    return list.map((raw,i)=>{
+      const base=(String(raw||'').replace(/[\[\]:*?\/\\]/g,' ').replace(/\s+/g,' ').trim()||'表'+(i+1)).slice(0,31);
+      let name=base,n=2;while(used.has(name.toLowerCase())){const tail='（'+n+++'）';name=base.slice(0,31-tail.length)+tail;}
+      used.add(name.toLowerCase());return name;
+    });
+  }
+  /** 表格轉成貼到 LINE 也看得懂的文字：每列一行，欄位用「｜」隔開；空白格寫「—」。 */
+  function tableText(rows){return rows.filter(r=>r.some(c=>String(c??'').trim())).map(r=>r.map(c=>String(c??'').replace(/\s+/g,' ').trim()||'—').join('｜')).join('\n');}
+  /** Word 可直接開啟的 HTML 文件（.doc）。body 需已跳脫。 */
+  function wordDoc(title,body){
+    const esc=v=>String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    return '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+esc(title)+'</title>'+
+      '<style>body{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;font-size:11pt;line-height:1.6}h1{font-size:16pt}h2,h3{font-size:13pt;margin:14pt 0 6pt}table{border-collapse:collapse;margin:6pt 0}th,td{border:1px solid #999;padding:3pt 6pt;font-size:10pt}th{background:#f2f2f2}p,li{margin:3pt 0}</style></head><body><h1>'+esc(title)+'</h1>'+body+'</body></html>';
+  }
+
+  const api={METRICS,addDays,byStore,center,value,fails,need,impact,streak,alerts,anomalies,weeklyDraft,weeklyText,pct,heatmap,byAc,WEEKDAYS,parseRanges,shiftByDate,staffing,dispatch,SLOTS,sheetNames,tableText,wordDoc};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.OpsInsights=api;
 })(typeof window!=='undefined'?window:globalThis);

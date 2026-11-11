@@ -1291,7 +1291,7 @@ button,[role="button"],input[type="button"],input[type="submit"],input[type="res
 </style>
 <link rel="stylesheet" href="operations-report.css?v=20261111-c2">
 <link rel="stylesheet" href="display-mode.css?v=20261111-c2">
-<link rel="stylesheet" href="ui-shell.css?v=20261111-c2">
+<link rel="stylesheet" href="ui-shell.css?v=20261111-v2e">
 </head>
 
 <body>
@@ -5249,22 +5249,28 @@ function t995RenderShiftWeekButtons(weeks){
     </div>`;
   }).join('');
 }
+let t995ShiftLoadVersion=0;
 async function t995LoadShiftAdmin(){
+  const loadVersion=window.CENTER_CONFIG?.center==="996"?++t995ShiftLoadVersion:null;
   const weeks=t995WeekChoices();const old=t995ShiftWeekSelect.value;const oldExport=document.getElementById("shiftExportWeekSelect")?.value;
   t995ShiftWeekSelect.innerHTML=weeks.map(w=>`<option value="${w.start}">${w.label}</option>`).join('');if(weeks.some(w=>w.start===old))t995ShiftWeekSelect.value=old;
   const exportSelect=document.getElementById("shiftExportWeekSelect");
   if(exportSelect){exportSelect.innerHTML=weeks.map(w=>`<option value="${w.start}">${w.dateLabel}</option>`).join('');exportSelect.value=weeks.some(w=>w.start===oldExport)?oldExport:t995ShiftWeekSelect.value;}
   t995ShiftAdminList.innerHTML='<div class="loading">載入中…</div>';t995ShiftSummary.textContent="";t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="loading">計算中…</div>';
   try{
-    // 初始化不存在的週次為關閉；ignoreDuplicates 保留既有勾選狀態。
-    const seed=await db.from("weekly_shift_open_weeks").upsert(weeks.map(w=>({week_start:w.start,is_open:false})),{onConflict:"week_start",ignoreDuplicates:true});
-    if(seed.error)throw seed.error;
+    // T996 缺少設定的週次預設視為關閉，只有負責人勾選時才寫入。
+    // 2026-11-11 使用者決定：管理員登入即可管理，不再先查共用密碼解鎖狀態（資料庫 is_employee_shift_modules_unlocked() 改為只看管理員）。
+    if(loadVersion===null){
+      const seed=await db.from("weekly_shift_open_weeks").upsert(weeks.map(w=>({week_start:w.start,is_open:false})),{onConflict:"week_start",ignoreDuplicates:true});
+      if(seed.error)throw seed.error;
+    }
     const [er,sr,settings,openWeeks]=await Promise.all([
       db.from("employee_directory").select("id,full_name,area_code,is_active").eq("is_active",true).order("area_code",{ascending:true}).order("full_name",{ascending:true}),
       db.from("weekly_shift_availability").select("id,employee_id,employee_name,employee_area_code,week_start,monday,tuesday,wednesday,thursday,friday,saturday,sunday,notes,submitted_at,is_test").eq("week_start",t995ShiftWeekSelect.value).order("submitted_at",{ascending:false}),
       db.from("staffing_settings").select("target_tplh,max_third_party_usage_pct,forecast_weeks,shift_test_mode").eq("singleton",true).maybeSingle(),
       db.from("weekly_shift_open_weeks").select("week_start,is_open").in("week_start",weeks.map(w=>w.start))
     ]);
+    if(loadVersion!==null&&loadVersion!==t995ShiftLoadVersion)return;
     if(er.error)throw er.error;if(sr.error)throw sr.error;if(settings.error)throw settings.error;if(openWeeks.error)throw openWeeks.error;
     t995Employees=er.data||[];if(settings.data)t995StaffingSettings=settings.data;
     t995ShiftOpenWeeks=new Set((openWeeks.data||[]).filter(row=>row.is_open).map(row=>row.week_start));
@@ -5273,8 +5279,8 @@ async function t995LoadShiftAdmin(){
     t995ShiftRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
     const forecastRows=t995Employees.map(e=>({employee:e,shift:latest.get(String(e.id))||null}));
     const testToggle=document.getElementById("shiftTestModeToggle");if(testToggle){testToggle.checked=Boolean(t995StaffingSettings.shift_test_mode);t995SyncShiftToggleVisual(testToggle);}
-    t995RenderShiftAdmin();await t995RenderStaffingRecommendation(t995ShiftWeekSelect.value,forecastRows);
-  }catch(e){t995ShiftRows=[];t995ShiftAdminList.innerHTML=`<div class="empty">讀取失敗：${esc(e.message||"請確認權限")}</div>`;t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="empty">人力資料讀取失敗</div>';}
+    t995RenderShiftAdmin();await t995RenderStaffingRecommendation(t995ShiftWeekSelect.value,forecastRows,loadVersion);
+  }catch(e){if(loadVersion!==null&&loadVersion!==t995ShiftLoadVersion)return;t995ShiftRows=[];t995ShiftAdminList.innerHTML=`<div class="empty">讀取失敗：${esc(e.message||"請確認權限")}</div>`;t995StaffingSummary.innerHTML="";t995StaffingWeekGap.hidden=true;t995StaffingForecastDataWarning.hidden=true;t995StaffingDayTabs.innerHTML="";t995StaffingList.innerHTML='<div class="empty">人力資料讀取失敗</div>';}
 }
 async function t995SetShiftWeekOpen(input){
   if(!input)return;
@@ -5380,10 +5386,11 @@ async function t995LoadAllPaged(table,select,fromDate,toDate,periodCode,orderCol
   }return out;
 }
 function t995MapAdd(map,key,value){map.set(key,(map.get(key)||0)+Number(value||0));}
-async function t995RenderStaffingRecommendation(weekStart,shiftRows){
+async function t995RenderStaffingRecommendation(weekStart,shiftRows,loadVersion=null){
   if(!t995AreaMapLoaded)await t995LoadAreaMap();
   const F=window.OpsForecast,weeks=F.SETTINGS.weeks;
   const powerbiData=await F.load(db,weekStart,t995DateAdd(weekStart,6));
+  if(loadVersion!==null&&loadVersion!==t995ShiftLoadVersion)return;
   const prepared=F.prepare({...powerbiData,mapping:t995AreaMap,inScope:window.OpsMetrics.storeInScope});
   const dayNames=['週一','週二','週三','週四','週五','週六','週日'];
   const dayForecasts=dayNames.map((day,offset)=>prepared.forecast(t995DateAdd(weekStart,offset)));
@@ -5865,7 +5872,7 @@ function t995OpenPasswordDialog(mode,targetMode){
 function t995ClosePasswordDialog(){
   t995ProtectedModal.style.display="none";t995ClearPasswordDialog();t995ProtectedTargetMode=null;
 }
-// 2026-11-10 使用者決定：在職名單與指休不再使用共用密碼，管理員登入即可進入（資料庫權限仍限管理員）。
+// 2026-11-11 使用者決定：在職名單與指休不使用共用密碼，管理員登入即可進入（資料庫權限仍限管理員）。
 async function t995EnterProtectedModule(mode){
   showAdminMode(mode);
 }
@@ -6326,9 +6333,9 @@ async function opsArchiveScoreSourceFiles(pair){
 <script src="operations-summary.js?v=20261111-c2"></script>
 <script src="operations-report.js?v=20261111-c2"></script>
 <script src="operations-entry.js?v=20261111-c2"></script>
-<script src="ui-shell.js?v=20261111-v2d"></script>
-<script src="kpi-settings.js?v=20261111-v2d"></script>
-<script src="ui-overview.js?v=20261111-v2d"></script>
+<script src="ui-shell.js?v=20261111-v2e"></script>
+<script src="kpi-settings.js?v=20261111-v2e"></script>
+<script src="ui-overview.js?v=20261111-v2e"></script>
 <script src="ui-ops.js?v=20261111-c2"></script>
 </body>
 </html>

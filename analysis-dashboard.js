@@ -110,10 +110,11 @@
   function feedbackGroups(data,source){const map=new Map();for(const x of data.feedback||[]){if(x.source_type!==source)continue;const key=x.restaurant_name||'未分類餐廳',v=map.get(key)||{name:key,code:x.store_code||'',count:0,rows:[]};v.count++;v.rows.push(x);if(!v.code&&x.store_code)v.code=x.store_code;map.set(key,v);}return [...map.values()].sort((a,b)=>b.count-a.count||a.name.localeCompare(b.name,'zh-Hant'));}
   function feedbackSidebarRows(data){const first=(source)=>feedbackGroups(data,source)[0];const a=first('0800'),b=first('4128'),ges=(data.feedback||[]).filter(x=>x.source_type==='GES'&&x.osat_survey!==null&&x.osat_survey!==undefined).sort((x,y)=>Number(x.osat_survey)-Number(y.osat_survey));return [{label:'0800',name:a?.name||'尚無資料',value:a?fmt(a.count)+' 筆':'—'},{label:'4128',name:b?.name||'尚無資料',value:b?fmt(b.count)+' 筆':'—'},{label:'GES OSAT最低',name:ges[0]?.restaurant_name||'尚無資料',value:ges[0]?pct(ges[0].osat_survey):'—'}];}
   function renderMetricTabs(){
-    const labels=[['sstg','SG／TG'],['d7','D7／D25'],['fa','TPLH／FA'],['waiting','等餐'],['feedback','GES／080'],['alerts','🔔 預警'],['impact','🎯 影響度'],['weekly','📝 週報草稿'],['store','🏪 餐廳頁'],['actions','✅ 行動追蹤'],['drill','🔍 明細熱圖']];
+    const labels=[['sstg','SG／TG'],['d7','D7／D25'],['fa','TPLH／FA'],['waiting','等餐'],['feedback','GES／080'],['alerts','🔔 預警'],['impact','🎯 影響度'],['weekly','📝 週報草稿'],['store','🏪 餐廳頁'],['actions','✅ 行動追蹤'],['drill','🔍 明細熱圖'],['staff','🗓️ 排班派單']];
     const nav=$('metricTabs');
     if(!nav.dataset.bound){nav.addEventListener('click',event=>{const button=event.target.closest('[data-metric]');if(!button)return;state.metric=button.dataset.metric;syncMetricTab();try{renderMetric(state.data,state.previous,range());}catch(error){status('此成績頁載入失敗：'+(error.message||error),true);}});nav.dataset.bound='true';}
     nav.innerHTML=labels.map(([key,label])=>'<button type="button" class="'+(state.metric===key?'active':'')+'" data-metric="'+key+'" aria-pressed="'+(state.metric===key)+'">'+label+'</button>').join('');nav.classList.remove('hidden');
+    const row=nav.parentElement,center=()=>{const on=nav.querySelector('.active');if(!on||row.scrollWidth<=row.clientWidth)return;const a=on.getBoundingClientRect(),b=row.getBoundingClientRect();if(a.width)row.scrollLeft+=a.left-b.left-(b.width-a.width)/2;};if(row&&typeof setTimeout==='function'){setTimeout(center,0);setTimeout(center,400);}
   }
   function syncMetricTab(){document.querySelectorAll('[data-metric]').forEach(button=>{const active=button.dataset.metric===state.metric;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));});}
   function metricTitle(metric){return labels[metric]||labels.sstg;}
@@ -432,7 +433,7 @@
   window.t995RefreshFeedback = () => { state.cache.clear(); loadReport(true); };
 
   // ===== 儀表板 v2｜B 組：預警與異常日（B3、B4）、影響度排名（B1）、週報草稿（B2）。計算在 ops-insights.js =====
-  const I=window.OpsInsights,INSIGHT_TABS=new Set(['alerts','impact','weekly','store','actions','targets','drill']);
+  const I=window.OpsInsights,INSIGHT_TABS=new Set(['alerts','impact','weekly','store','actions','targets','drill','staff']);
   state.impactMetric='d7';
   function acOfFor(date){const list=M.acAssignmentsForDate(date);return code=>list.find(a=>a.stores.includes(String(code)))?.name||null;}
   // 每日 × 餐廳格子：訂單來自成績 ByOrder（與 D7 頁同一套判讀），等餐筆數用等餐登記
@@ -715,22 +716,108 @@
     if(t.dataset.drillOpen!==undefined){D.ac='';D.store=t.dataset.drillOpen;D.date='';if(t.dataset.drillOpenMetric)D.metric=t.dataset.drillOpenMetric;state.metric='drill';syncMetricTab();return true;}
     return false;
   }
+  // ===== 儀表板 v2｜C5 排班與成績對照、C6 派單時間。計算在 ops-insights.js =====
+  const STAFF_OVER_HOURS=30;
+  const stayMinutes=v=>{const m=String(v??'').trim().match(/^(\d{1,2}):(\d{2}):(\d{2})$/);return m?Number(m[1])*60+Number(m[2])+Number(m[3])/60:null;};
+  const dayText=d=>Number(d.slice(5,7))+'/'+Number(d.slice(8,10))+' '+'日一二三四五六'[new Date(d+'T12:00:00Z').getUTCDay()];
+  const signed=(v,d=0)=>v===null||v===undefined||!Number.isFinite(v)?'—':(v>=0?'+':'−')+fmt(Math.abs(v),d);
+  async function readShift(r){
+    const rows=[];
+    for(let o=0;;o+=1000){const x=await db.from('weekly_shift_availability').select('employee_id,week_start,monday,tuesday,wednesday,thursday,friday,saturday,sunday,submitted_at,is_test').gte('week_start',M.addDays(r.start,-6)).lte('week_start',r.end).order('submitted_at',{ascending:false}).range(o,o+999);if(x.error)throw x.error;rows.push(...(x.data||[]));if(!x.data||x.data.length<1000)return rows;}
+  }
+  async function staffPage(r){
+    const data=state.data,excluded=new Set(data.reports.filter(x=>x.score_excluded).map(x=>x.record_date)),cells=insightCells(data,r),m=model(data,r),todayStr=today();
+    const dates=S.dates(r.start,[r.end,todayStr].sort()[0]),std=Number(M.BUSINESS.forecast?.tplh)||2.5;
+    let shift=null,shiftError='';try{shift=I.shiftByDate(await readShift(r),dates);}catch(e){shiftError=e.message||String(e);}
+    const days=dates.map(d=>{const day=m.days.get?m.days.get(d):null,x=day?.metrics||{},c=I.center(I.byStore(cells,d,d,excluded),independentStoreCodes);return {date:d,tc:x.tc||0,nonfa:x.nonfa||0,hours:day?.actualHours??null,d7:I.value(c,'d7'),excluded:excluded.has(d)};});
+    const st=I.staffing(days,{shift:shift||new Map(),tplh:std,overHours:STAFF_OVER_HOURS,d7Target:targets.d7});
+    const tag=row=>row.verdict==='over'?'<span class="sf-tag bad">排太多</span>':row.verdict==='under'?'<span class="sf-tag warn">偏少（D7 '+pct(row.d7)+'）</span>':row.verdict==='ok'?'<span class="sf-tag ok">合理</span>':row.verdict==='nohours'?'<span class="sf-tag part">缺工時</span>':row.verdict==='excluded'?'<span class="sf-tag part">不計成績</span>':'<span class="sf-tag part">沒有成績</span>';
+    const tplhCls=v=>v!==null&&Number.isFinite(targets.tplh)&&v<targets.tplh-1e-9?'st-bad':'';
+    const body=st.rows.map(x=>'<tr><th>'+escape(dayText(x.date))+'</th><td>'+(x.tc?fmt(x.tc):'—')+'</td><td>'+(x.tc?fmt(x.nonfa):'—')+'</td><td>'+(x.people===null?'—':fmt(x.people)+(x.unreadable?' <small title="時段寫法看不懂，沒有算進去">＋'+fmt(x.unreadable)+' 未判讀</small>':''))+'</td><td>'+(x.hours===null||x.hours===undefined?'—':fmt(x.hours,1))+'</td><td class="'+tplhCls(x.tplh)+'">'+fmt(x.tplh,2)+'</td><td>'+(x.suggest===null?'—':fmt(Math.round(x.suggest)))+'</td><td class="'+(x.verdict==='over'?'st-bad':'')+'">'+signed(x.diff===null?null:Math.round(x.diff))+'</td><td>'+tag(x)+'</td></tr>').join('');
+    const t=st.total,foot=t?'<tr class="sf-total"><th>合計（有工時的 '+fmt(st.rows.filter(x=>x.diff!==null).length)+' 天）</th><td></td><td>'+fmt(t.nonfa)+'</td><td></td><td>'+fmt(t.hours,1)+'</td><td class="'+tplhCls(t.tplh)+'">'+fmt(t.tplh,2)+'</td><td>'+fmt(Math.round(t.suggest))+'</td><td>'+signed(Math.round(t.diff))+'</td><td></td></tr>':'';
+    const lead=st.over||st.under?('這段期間 '+(st.over?st.over+' 天排太多':'')+(st.over&&st.under?'、':'')+(st.under?st.under+' 天偏少':'')+(t?'；有工時的日子合計比建議'+(t.diff>=0?'多 ':'少 ')+fmt(Math.abs(Math.round(t.diff)))+' 小時':'')+'。'):(t?'這段期間沒有明顯排太多或偏少的日子。':'這段期間還沒有填實際工時，無法判斷。');
+    const staffing='<section class="analysis-panel"><h3>逐日（中心）</h3><p class="ins-lead">'+escape(lead)+'</p><div class="scroll"><table class="table sf-table"><thead><tr><th>日期</th><th>TC</th><th>自送單（扣 FA）</th><th>指休排班（人）</th><th>實際工時</th><th>TPLH</th><th>建議工時（÷'+fmt(std,1)+'）</th><th>差</th><th>判斷</th></tr></thead><tbody>'+body+foot+'</tbody></table></div>'+
+      '<p class="ins-foot">建議工時＝自送單（扣 FA）÷ 指休排班標準 TPLH '+fmt(std,1)+'。排太多＝實際工時比建議多 '+STAFF_OVER_HOURS+' 小時以上；偏少＝低於建議且當天 D7 低於目標 '+pct(targets.d7)+'。實際工時取營運日報各區工時（扣調出、加調入），有區域沒填就算缺工時。'+(shiftError?'':' 指休排班＝當天有填可上班時段的人數（每人取最後一次正式提交，測試資料不算），是「可排」不是實際出勤。')+'</p>'+(shiftError?'<p class="ins-foot">指休資料讀取失敗：'+escape(shiftError)+'，排班人數顯示「—」。</p>':'')+'</section>';
+    const orders=analysisOrders(data,r).filter(o=>!excluded.has(o.date)).map(o=>({code:o.code,name:state.catalog.get(o.code)?.restaurant_name||o.name,late:o.late,hour:hourOf(o.moment),stayMin:stayMinutes(o.dateRaw?.['留店時間'])}));
+    const dp=I.dispatch(orders,{minOrders:20}),SHOW=10,slotMax=Math.max(0,...dp.slots.map(x=>x.share??0));
+    const storeRows=dp.stores.slice(0,SHOW).map(x=>'<tr><td>'+escape((x.code?x.code+' ':'')+x.name)+'</td><td>'+fmt(x.late)+'</td><td>'+pct(x.share)+'</td><td>'+(x.avgStay===null?'—':fmt(x.avgStay,1)+' 分')+'</td></tr>').join('');
+    const storeHtml=dp.stores.length?'<div class="scroll"><table class="table sf-table"><thead><tr><th>餐廳</th><th>晚派單</th><th>晚派比例</th><th>平均留店</th></tr></thead><tbody>'+storeRows+'</tbody></table></div>':'<div class="empty">'+(dp.all.known?'沒有晚派的餐廳':'這段期間沒有可判讀的派單時間')+'</div>';
+    const slotHtml=dp.slots.length?'<div class="scroll"><table class="table sf-table"><thead><tr><th>時段（落單）</th><th>訂單</th><th>晚派比例</th><th>平均留店</th></tr></thead><tbody>'+dp.slots.map(x=>'<tr><td>'+escape(x.label)+'</td><td>'+fmt(x.orders)+'</td><td class="'+(x.share!==null&&x.share===slotMax&&slotMax>0&&dp.slots.length>1?'st-bad':'')+'">'+pct(x.share)+'</td><td>'+(x.avgStay===null?'—':fmt(x.avgStay,1)+' 分')+'</td></tr>').join('')+'</tbody></table></div>':'<div class="empty">沒有落單時間可分時段</div>';
+    const dispatchHtml='<p class="ins-lead">晚派＝預計抵達前 20 分鐘內才派單（和 D7 頁的晚派單比例同一個定義）。全中心 '+fmt(dp.all.known)+' 張可判讀的單中晚派 '+fmt(dp.all.late)+' 張（'+pct(dp.all.share)+'）'+(dp.all.avgStay!==null?'，平均留店 '+fmt(dp.all.avgStay,1)+' 分':'')+'。</p>'+
+      '<div class="ins-grid2"><section class="analysis-panel"><h3>派單時間｜晚派最多的餐廳</h3>'+storeHtml+'<p class="ins-foot">依晚派單數排序，只列至少 '+dp.minOrders+' 張可判讀的餐廳'+(dp.stores.length>SHOW?'，顯示前 '+SHOW+' 家':'')+(dp.small?'；另有 '+fmt(dp.small)+' 家單數不足沒列':'')+'。留店取自成績 ByDate，沒有對到的不算。</p></section>'+
+      '<section class="analysis-panel"><h3>派單時間｜時段</h3>'+slotHtml+(dp.noHour?'<p class="ins-foot">'+fmt(dp.noHour)+' 張沒有落單時間，不分時段。</p>':'')+'</section></div>';
+    return '<p class="ins-lead">指休排的人力、實際工時、單量和 TPLH 並排，找出人排太多或太少的日子；下方看派單時間。</p>'+staffing+dispatchHtml;
+  }
+  // ===== 儀表板 v2｜E2 匯出選單：PDF（列印）、Word、本頁數字 Excel、複製文字。內容取自目前畫面，缺資料一樣是「—」 =====
+  function exportTitle(){const t=$('metricTitle')?.textContent||'分析儀表板',w=state.metric==='weekly'&&$('metricContent').querySelector('.wk-doc h2');return w?w.textContent:(M.BUSINESS.centerName?'T'+M.BUSINESS.center+' ':'')+t+'｜'+($('metricSubtitle')?.textContent||'');}
+  // 目前畫面的乾淨副本：去掉按鈕與表單外框，文字框換成填寫內容
+  function exportClone(){
+    const box=$('metricContent'),clone=box.cloneNode(true),src=[...box.querySelectorAll('textarea')];
+    clone.querySelectorAll('textarea').forEach((t,i)=>{const p=document.createElement('p');p.textContent=(src[i]?.value||'').trim()||'（未填）';t.replaceWith(p);});
+    clone.querySelectorAll('select').forEach(sel=>{const span=document.createElement('span');span.textContent=sel.selectedOptions?.[0]?.textContent||'';sel.replaceWith(span);});
+    clone.querySelectorAll('button.dr-row').forEach(b=>b.replaceWith(document.createTextNode(b.textContent)));
+    clone.querySelectorAll('button,input,.wk-tools,.wk-save,.ins-mtabs,.dr-metrics,script').forEach(x=>x.remove());
+    clone.querySelectorAll('details').forEach(d=>d.setAttribute('open',''));
+    return clone;
+  }
+  const cellRows=table=>[...table.rows].map(tr=>[...tr.cells].map(c=>c.textContent));
+  function exportText(){
+    if(state.metric==='weekly'&&state.weeklyDraft&&$('metricContent').querySelector('.wk-doc')){const box=$('metricContent'),fills={};box.querySelectorAll('.wk-form').forEach(f=>{fills[f.dataset.wkKey]={root_cause:f.root_cause.value.trim(),action_plan:f.action_plan.value.trim()};});return I.weeklyText(state.weeklyDraft,{title:exportTitle(),fills});}
+    const clone=exportClone(),out=[exportTitle()];
+    const walk=node=>{for(const el of node.children){if(el.matches('table')){out.push(I.tableText(cellRows(el)));continue;}if(el.matches('h2,h3,h4')){out.push('','【'+el.textContent.trim()+'】');continue;}if(el.matches('p,li,.ins-how,.dr-crumbs,.empty')){const t=el.textContent.replace(/\s+/g,' ').trim();if(t)out.push(t);continue;}walk(el);}};
+    walk(clone);return out.join('\n').replace(/\n{3,}/g,'\n\n').trim();
+  }
+  function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);}
+  const fileBase=()=>exportTitle().replace(/[\\\/:*?"<>|]/g,' ').replace(/\s+/g,' ').trim().slice(0,80);
+  function exportExcel(){
+    const tables=[...$('metricContent').querySelectorAll('table')];if(!tables.length)return '這一頁沒有表格可匯出，請改用「完整成績 Excel」。';
+    const names=I.sheetNames(tables.map(t=>t.closest('section')?.querySelector('h3')?.textContent||$('metricTitle').textContent)),wb=XLSX.utils.book_new();
+    tables.forEach((t,i)=>{const c=t.cloneNode(true);c.querySelectorAll('button.dr-row').forEach(b=>b.replaceWith(document.createTextNode(b.textContent)));c.querySelectorAll('button').forEach(b=>b.remove());XLSX.utils.book_append_sheet(wb,XLSX.utils.table_to_sheet(c,{raw:true}),names[i]);});
+    XLSX.writeFile(wb,fileBase()+'.xlsx');return '已下載 Excel（'+tables.length+' 張表）';
+  }
+  function exportWord(){const html=I.wordDoc(exportTitle(),exportClone().innerHTML);download(fileBase()+'.doc',new Blob(['﻿',html],{type:'application/msword'}));return '已下載 Word 檔';}
+  function openExportMenu(){
+    let sheet=$('exportSheet');
+    if(!sheet){
+      sheet=document.createElement('div');sheet.id='exportSheet';sheet.className='ex-backdrop hidden';
+      sheet.innerHTML='<div class="ex-sheet" role="dialog" aria-modal="true" aria-labelledby="exportSheetTitle"><h2 id="exportSheetTitle">匯出</h2><div class="ex-opts"></div><p class="ex-note">匯出內容與畫面一致；缺資料的數字一樣標「—」或「只算幾天」。</p><p class="ex-status" role="status"></p><button type="button" class="ex-cancel" data-ex="close">取消</button></div>';
+      document.body.appendChild(sheet);
+      sheet.addEventListener('click',async e=>{
+        if(e.target===sheet){closeExportMenu();return;}
+        const b=e.target.closest('[data-ex]');if(!b)return;const k=b.dataset.ex,msg=sheet.querySelector('.ex-status');
+        try{
+          if(k==='close'){closeExportMenu();return;}
+          if(k==='pdf'){closeExportMenu();setTimeout(()=>window.print(),50);return;}
+          if(k==='full'){closeExportMenu();state.fullExport?.();return;}
+          if(k==='excel')msg.textContent=exportExcel();
+          if(k==='word')msg.textContent=exportWord();
+          if(k==='copy'){await navigator.clipboard.writeText(exportText());msg.textContent='已複製文字，可以貼到 LINE';}
+        }catch(error){msg.textContent=(k==='copy'?'無法複製：':'匯出失敗：')+(error.message||error);}
+      });
+      sheet.addEventListener('keydown',e=>{if(e.key==='Escape')closeExportMenu();});
+    }
+    const weekly=state.metric==='weekly'&&!!$('metricContent').querySelector('.wk-doc'),what=weekly?'週報':'本頁';
+    sheet.querySelector('.ex-opts').innerHTML=[['pdf','📄 '+what+' PDF',weekly?'給主管':'列印或存成 PDF'],['word','📝 '+what+' Word','可再編輯'],['excel','📊 本頁數字 Excel','含明細表格'],['copy','📋 複製文字','貼到 LINE'],['full','📗 完整成績 Excel','原本的匯出，含各店與訂單']].map(([k,a,b])=>'<button type="button" class="ex-opt" data-ex="'+k+'"><span>'+a+'</span><small>'+b+'</small></button>').join('');
+    sheet.querySelector('.ex-status').textContent='';sheet.classList.remove('hidden');sheet.querySelector('.ex-opt')?.focus();
+  }
+  function closeExportMenu(){$('exportSheet')?.classList.add('hidden');$('export')?.focus();}
   async function renderInsight(r){
     window.UiShell?.mark?.('analysis:'+state.metric);
-    const titles={alerts:'預警與異常日',impact:'影響度排名：還差幾單才達標',weekly:'週報草稿',store:'餐廳頁：近 8 週所有指標',actions:'行動追蹤與自訂比較',targets:'目標值設定',drill:'明細與熱圖'};
+    const titles={alerts:'預警與異常日',impact:'影響度排名：還差幾單才達標',weekly:'週報草稿',store:'餐廳頁：近 8 週所有指標',actions:'行動追蹤與自訂比較',targets:'目標值設定',drill:'明細與熱圖',staff:'排班與派單'};
     $('metricTitle').textContent=titles[state.metric];$('metricSubtitle').textContent=periodLabel(r);
     $('biUploadFooter').classList.add('hidden');$('feedbackUploadFooter').classList.add('hidden');renderMetricTabs();syncMetricTab();
     const box=$('metricContent');
     if(state.metric==='impact'){box.innerHTML=impactPage(I.byStore(insightCells(state.data,r),r.start,r.end,new Set(state.data.reports.filter(x=>x.score_excluded).map(x=>x.record_date))),r);bindInsights(null,r);return;}
     if(state.metric==='weekly'&&state.period!=='week'){box.innerHTML=weeklyPage(null,r);bindInsights(null,r);return;}
     if(state.metric==='drill'){const id0=state.request;box.innerHTML='<div class="empty">整理明細中…</div>';try{const html=await drillPage(r);if(id0!==state.request||state.metric!=='drill')return;box.innerHTML=html;bindInsights(null,r);}catch(error){box.innerHTML='<div class="empty">讀取失敗：'+escape(error.message||error)+'</div>';}return;}
+    if(state.metric==='staff'){const id0=state.request;box.innerHTML='<div class="empty">整理排班與派單中…</div>';try{const html=await staffPage(r);if(id0!==state.request||state.metric!=='staff')return;box.innerHTML=html;bindInsights(null,r);}catch(error){box.innerHTML='<div class="empty">讀取失敗：'+escape(error.message||error)+'</div>';}return;}
     if(state.metric==='targets'){const id0=state.request;box.innerHTML='<div class="empty">讀取目標值中…</div>';const html=await targetsPage();if(id0!==state.request||state.metric!=='targets')return;box.innerHTML=html;bindInsights(null,r);bindV2(r);return;}
     const id=state.request,metric=state.metric;box.innerHTML='<div class="empty">讀取前幾週成績中…</div>';
     try{const ctx=await insightContext(r);if(id!==state.request||metric!==state.metric)return;const html=metric==='alerts'?alertsPage(ctx,r):metric==='weekly'?weeklyPage(ctx,r):metric==='store'?await storePage(ctx,r):await actionsPage(ctx,r);if(id!==state.request||metric!==state.metric)return;box.innerHTML=html;bindInsights(ctx,r);bindV2(r);}
     catch(error){if(id===state.request)box.innerHTML='<div class="empty">讀取失敗：'+escape(error.message||error)+'</div>';}
   }
   if(typeof window.addEventListener==='function')window.addEventListener('hashchange',()=>{const tab=(location.hash.match(/^#tab=(\w+)$/)||[])[1];if(!tab||!(INSIGHT_TABS.has(tab)||labels[tab])||!state.data)return;state.metric=tab;if(tab==='weekly'&&state.period!=='week'){state.period='week';loadReport();return;}syncMetricTab();renderMetric(state.data,state.previous,range());});
-  async function loadReport(force=false){sharedDate.set(state.date,state.period);const id=++state.request,r=range();renderChoices();$('report').classList.add('hidden');$('metricTabs').classList.add('hidden');$('refresh').disabled=true;status('讀取成績中…');try{const data=await loadRange(r,force);if(id!==state.request)return;const pr=previousRange(r,data);const timeline=state.period==='day'?[]:await Promise.all([-2,-1,0,1,2].map(async offset=>{const span=state.period==='week'?fullWeek(M.addDays(r.start,offset*7)):M.range(addMonths(r.start,offset),'month');if(span.start>today())return {range:span,offset,data:null};try{return {range:span,offset,data:offset===0?data:await loadRange(span,force)};}catch(error){return {range:span,offset,data:null,error:error.message};}}));if(id!==state.request)return;if(state.period==='week'){try{await readWeeklySales(timeline);}catch(e){$('biStatus').textContent='週 SSSG 讀取失敗：'+e.message;}if(id!==state.request)return;}state.data=data;state.timeline=timeline;state.comparisonRange=pr;state.previous=timeline.find(x=>x.offset===-1)?.data||null;try{await weatherForRange(r);}catch(e){}if(id!==state.request)return;status('');$('report').classList.remove('hidden');renderMetric(data,state.previous,r);$('export').onclick=()=>renderTrackingExport(data,r);}catch(e){if(id===state.request)status('載入失敗：'+e.message,true);}finally{if(id===state.request)$('refresh').disabled=false;}}
+  async function loadReport(force=false){sharedDate.set(state.date,state.period);const id=++state.request,r=range();renderChoices();$('report').classList.add('hidden');$('metricTabs').classList.add('hidden');$('refresh').disabled=true;status('讀取成績中…');try{const data=await loadRange(r,force);if(id!==state.request)return;const pr=previousRange(r,data);const timeline=state.period==='day'?[]:await Promise.all([-2,-1,0,1,2].map(async offset=>{const span=state.period==='week'?fullWeek(M.addDays(r.start,offset*7)):M.range(addMonths(r.start,offset),'month');if(span.start>today())return {range:span,offset,data:null};try{return {range:span,offset,data:offset===0?data:await loadRange(span,force)};}catch(error){return {range:span,offset,data:null,error:error.message};}}));if(id!==state.request)return;if(state.period==='week'){try{await readWeeklySales(timeline);}catch(e){$('biStatus').textContent='週 SSSG 讀取失敗：'+e.message;}if(id!==state.request)return;}state.data=data;state.timeline=timeline;state.comparisonRange=pr;state.previous=timeline.find(x=>x.offset===-1)?.data||null;try{await weatherForRange(r);}catch(e){}if(id!==state.request)return;status('');$('report').classList.remove('hidden');renderMetric(data,state.previous,r);state.fullExport=()=>renderTrackingExport(data,r);$('export').onclick=()=>openExportMenu();$('export').textContent='匯出 ▾';$('export').setAttribute('aria-haspopup','dialog');}catch(e){if(id===state.request)status('載入失敗：'+e.message,true);}finally{if(id===state.request)$('refresh').disabled=false;}}
   document.querySelectorAll('[data-period]').forEach(b=>b.onclick=()=>{const changed=state.period!==b.dataset.period;state.period=b.dataset.period;state.month=state.date.slice(0,7);if(changed)$('periodPicker').classList.remove('hidden');else $('periodPicker').classList.toggle('hidden');renderChoices();loadReport();});$('periodDate').onchange=()=>{state.date=$('periodDate').value||today();state.month=state.date.slice(0,7);renderChoices();loadReport();};$('periodPrev').onclick=()=>changePeriod(-1);$('periodNext').onclick=()=>changePeriod(1);$('refresh').onclick=()=>loadReport(true);
   (async()=>{try{const {data,error}=await db.auth.getSession();if(error)throw error;if(!data.session){$('authMessage').classList.remove('hidden');$('authMessage').innerHTML='請先登入營運後台，再開啟分析儀表板。<br><a href="admin.html">前往登入</a>';return;}const recent=window.ScoreReadSource.enabled()?{data:[],error:null}:await db.from('t995_score_import_batches').select('report_date').lte('report_date',today()).order('report_date',{ascending:false}).limit(1);if(recent.error)throw recent.error;const shared=sharedDate.get();state.date=shared?.date||recent.data?.[0]?.report_date||today();if(shared)state.period=shared.period;const wantTab=(location.hash.match(/^#tab=(\w+)$/)||[])[1];if(wantTab&&(INSIGHT_TABS.has(wantTab)||labels[wantTab])){state.metric=wantTab;if(wantTab==='weekly')state.period='week';}state.month=state.date.slice(0,7);$('dashboard').classList.remove('hidden');if(KS)await KS.load(db);await loadReport();}catch(e){$('authMessage').classList.remove('hidden');$('authMessage').textContent='登入狀態讀取失敗：'+e.message;}})();
 })();

@@ -100,5 +100,36 @@ tr.ins-after td{color:var(--muted);font-weight:500}
 .dr-heat th{font-size:12.5px;text-align:center}
 @media print{.dr-metrics,.dr-crumbs button{display:none!important}}
 /* 11 個分頁：上排 5 個成績頁、下排 6 個分析頁 */
-@media(min-width:1101px){.metric-upload-row{grid-template-columns:repeat(30,minmax(0,1fr))}.metric-upload-row .metric-tabs button:nth-child(-n+5){grid-column:span 6}.metric-upload-row .metric-tabs button:nth-child(n+6){grid-column:span 5}}
+@media(min-width:1101px){.metric-upload-row{grid-template-columns:repeat(35,minmax(0,1fr))}.metric-upload-row .metric-tabs button:nth-child(-n+5){grid-column:span 7}.metric-upload-row .metric-tabs button:nth-child(n+6){grid-column:span 5}}
 @media(max-width:1100px){.metric-upload-row{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* 儀表板 v2｜C5 排班與成績對照、C6 派單時間 */
+.sf-table td,.sf-table th{white-space:nowrap}
+.sf-table small{color:var(--muted);font-weight:500}
+.sf-total th,.sf-total td{border-top:2px solid var(--line);font-weight:800}
+.sf-tag{display:inline-block;padding:1px 10px;border-radius:999px;font-size:13px;font-weight:800;border:1px solid var(--line)}
+.sf-tag.ok{color:#1a7f37;border-color:#1a7f37}.sf-tag.bad{color:#fff;background:#c8102e;border-color:#c8102e}.sf-tag.warn{color:#9a6700;border-color:#d4a72c;background:#fff8c5}.sf-tag.part{color:var(--muted);border-style:dashed}
+html[data-display-mode=dark] .sf-tag.warn{background:transparent;color:#d29922}html[data-display-mode=dark] .sf-tag.ok{color:#3fb950;border-color:#3fb950}
+/* 儀表板 v2｜E2 匯出選單：桌機置中、手機由下方滑出 */
+.ex-backdrop{position:fixed;inset:0;z-index:80;background:rgb(0 0 0/38%);display:flex;align-items:center;justify-content:center;padding:16px}
+.ex-backdrop.hidden{display:none}
+.ex-sheet{width:min(420px,100%);background:var(--paper,#fff);color:var(--ink,#1f2328);border-radius:16px;padding:18px 18px 14px;box-shadow:0 10px 40px rgb(0 0 0/25%);text-align:left}
+.ex-sheet h2{margin:0 0 10px;font-size:18px;text-align:left}
+.ex-opts{display:grid;gap:6px}
+.ex-opt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;border:1px solid var(--line);background:var(--paper,#fff);color:inherit;border-radius:10px;padding:12px 14px;font-size:16px;font-weight:800;cursor:pointer;text-align:left}
+.ex-opt:hover,.ex-opt:focus-visible{border-color:var(--red);outline:none}
+.ex-opt small{color:var(--muted);font-weight:500;font-size:13px}
+.ex-note{margin:10px 0 0;color:var(--muted);font-size:13px}.ex-status{margin:6px 0 0;min-height:1.4em;font-weight:700;font-size:14px}
+.ex-cancel{width:100%;margin-top:6px;border:0;border-radius:10px;padding:11px;background:var(--red);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+@media(max-width:760px){.ex-backdrop{align-items:flex-end;padding:0}.ex-sheet{width:100%;border-radius:16px 16px 0 0;padding-bottom:calc(14px + env(safe-area-inset-bottom))}}
+@media print{.ex-backdrop{display:none!important}}
+/* 儀表板 v2｜E1 手機版：分頁按鈕兩欄、表格在框內左右滑 */
+@media(max-width:760px){
+  .metric-upload-row{display:flex!important;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:4px;margin:8px 0}
+  .metric-upload-row .metric-tabs button{flex:0 0 auto;width:auto!important;min-height:40px!important;padding:6px 14px!important;white-space:nowrap;scroll-snap-align:start;font-size:14px!important}
+  .ins-head{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ins-m b{font-size:22px}
+  #metricContent .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .analysis-panel,#metricContent>*{min-width:0}
+  .date-actions{flex-wrap:wrap}
+}
