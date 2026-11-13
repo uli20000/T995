@@ -30,9 +30,12 @@
       '018':'桃園','093':'桃園',
       '025':null,'173':null,'580':null
     },weatherCityByArea:{A:'新竹市',B:'新竹縣',C:'新竹縣',D:'桃園',E:'桃園',F:'桃園',G:'桃園',H:'桃園',I:'桃園',J:'桃園',K:null},
+    closureDays:["2025-11-11", "2026-07-10", "2026-07-11", "2026-10-23", "2026-10-24"],
+    closureDaysSource:'docs/停班停課紀錄-2025-2026.md（停班停課且當日 TC 明顯偏低者；局部鄉鎮不列）',
+    storeOpenDates:{},
     kpiTargets:{sstg:0.042,d7:0.25,d25:0.70,faShareMax:0.25,tplh:2.0},
     forecast:{weeks:8,growth:0.06,switchThreshold:null,tplh:2.5,thirdParty:0.20},
-    forecastFormula:'Power BI預估｜去年對應週同星期（前52週）TC×1.06，各區進位；需求工時÷2.5；2026/11/1起排除苗栗三店；缺去年資料留空',
+    forecastFormula:'Power BI預估｜去年對應週同星期（前52週）TC×1.06，各區進位；需求工時÷2.5；2026/11/1起排除苗栗三店；缺去年資料的店不計入、該區照算並列出店名',
     weeklySalesNotes:{'2026-10-19':' 10/23、10/24 停班停課，營業額為 0，採 BI 原週成績。','2026-10-26':' 跨 11/1 苗栗範圍異動，採 BI 原週餐廳範圍。'},
     weeklySalesLimitation:'週資料採 BI SSSG%_wk。W43 的 10/23、10/24 營業額為 0。W44 採原週餐廳範圍。'
   };
