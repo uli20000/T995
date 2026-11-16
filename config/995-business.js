@@ -32,7 +32,7 @@
     },weatherCityByArea:{A:'新竹市',B:'新竹縣',C:'新竹縣',D:'桃園',E:'桃園',F:'桃園',G:'桃園',H:'桃園',I:'桃園',J:'桃園',K:null},
     closureDays:["2025-11-11", "2026-07-10", "2026-07-11", "2026-10-23", "2026-10-24"],
     closureDaysSource:'docs/停班停課紀錄-2025-2026.md（停班停課且當日 TC 明顯偏低者；局部鄉鎮不列）',
-    storeOpenDates:{},
+    storeOpenDates:{'248':'2025-12-22'},
     kpiTargets:{sstg:0.042,d7:0.25,d25:0.70,faShareMax:0.25,tplh:2.0},
     forecast:{weeks:8,growth:0.06,switchThreshold:null,tplh:2.5,thirdParty:0.20},
     forecastFormula:'Power BI預估｜去年對應週同星期（前52週）TC×1.06，各區進位；需求工時÷2.5；2026/11/1起排除苗栗三店；缺去年資料的店不計入、該區照算並列出店名',
