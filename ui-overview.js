@@ -129,7 +129,7 @@
     window.OpsReport.readRows('t995_delay_orders','store_code,restaurant_name,record_date,status',q=>q.gte('record_date',m.start).lte('record_date',m.end).eq('status','pending'))
       .then(rows=>{rows=window.OpsMetrics.scopeData({delay:rows}).delay.filter(x=>!window.OpsMetrics.NON_DELIVERY_STORES.has(String(x.store_code)));
         set('uoPendDelay',pendCard(rows,m.start,{zero:'餐廳都已回覆等餐原因',unit:'餐廳還沒回覆等餐原因',go:'ops:delay',goText:'到等餐紀錄',sub:x=>(x.ac?x.ac+'｜':'')+'最早 '+md(x.rows.map(r=>r.record_date).sort()[0])}));},e=>fail('uoPendDelay',e));
-    if(!window.OpsAReplyAdmin?.readRange)set('uoPendA','<p class="uo-empty">此版本沒有 A 項回饋功能</p>');
+    if(!window.OpsAReplyAdmin?.readRange)set('uoPendA','<p class="uo-empty">此中心尚未開通 A 項回饋（需先啟用新版月份回覆連結）</p>');
     else window.OpsAReplyAdmin.readRange(m).then(rows=>{rows=rows.filter(x=>x.reply?.status!=='completed');
         set('uoPendA',pendCard(rows,m.start,{zero:'餐廳都已回饋 A 項',unit:'0800 A 項還沒填根源與行動',go:'ops:a0800',goText:'到 A 項回饋',sub:x=>{const c=new Map();for(const r of x.rows){const k=r.item_1||'其他';c.set(k,(c.get(k)||0)+1);}return (x.ac?x.ac+'｜':'')+[...c].map(([k,n])=>k+' '+n).join('、');}}));},e=>fail('uoPendA',e));
   }

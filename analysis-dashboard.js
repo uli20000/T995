@@ -68,6 +68,7 @@
   }
   // 0800 A 項的餐廳回覆（配餐人員／根源／行動）；回覆表還沒建立的中心就略過，不影響其他資料
   async function attachAReplies(rows){
+    if(window.CENTER_CONFIG?.features?.monthReplyGatewayReady!==true)return;
     const isA=t=>window.FeedbackAReply?FeedbackAReply.isAItem(t):/^A(\s|$)/.test(String(t||'').trim());
     const list=rows.filter(x=>x.source_type==='0800'&&isA(x.main_topic)&&x.id),map=new Map();
     try{for(let i=0;i<list.length;i+=150){const r=await db.from('feedback_a_replies').select('feedback_id,status,packer,root_cause,action_plan,responded_at').in('feedback_id',list.slice(i,i+150).map(x=>x.id));if(r.error)throw r.error;for(const x of r.data||[])map.set(x.feedback_id,x);}}
